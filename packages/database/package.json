@@ -1,0 +1,11 @@
+{
+    "name": "@v2/database",
+    "version": "0.1.0",
+    "private": true,
+    "type": "module",
+    "main": "./database.types.ts",
+    "types": "./database.types.ts",
+    "scripts": {
+        "gen:types": "npx supabase gen types typescript --project-id osocsrklgxzvdtkokxao > database.types.ts"
+    }
+}

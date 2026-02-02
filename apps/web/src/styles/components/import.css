@@ -1,0 +1,203 @@
+/* =========================================================
+   IMPORT — Import Center Components
+   ========================================================= */
+
+.sea .dropzone {
+    border: 1.5px dashed var(--glass-border-strong);
+    border-radius: 1.25rem;
+    padding: 1.25rem;
+    background: oklch(from var(--color-base-content) l c h / 0.03);
+    transition: border-color .18s var(--ease-smooth), background-color .18s var(--ease-smooth);
+}
+
+.sea .dropzone:hover {
+    border-color: var(--glass-border-hover);
+    background: oklch(from var(--color-primary) l c h / 0.06);
+}
+
+.sea .dropzone.is-dragover {
+    border-color: var(--glass-border-hover);
+    background: oklch(from var(--color-primary) l c h / 0.08);
+    box-shadow: 0 0 0 3px oklch(from var(--color-primary) l c h / 0.10);
+}
+
+.sea .import-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: .75rem;
+}
+
+.sea .import-kv {
+    border: 1px solid var(--glass-border-color);
+    border-radius: 1rem;
+    padding: .85rem;
+    background: oklch(from var(--color-base-100) l c h / 0.26);
+}
+
+.sea .import-kv .k {
+    font-size: .75rem;
+    font-weight: 900;
+    opacity: .7;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+}
+
+.sea .import-kv .v {
+    margin-top: .35rem;
+    font-weight: 900;
+}
+
+.sea .error-box {
+    border: 1px solid oklch(from var(--color-error) l c h / 0.28);
+    background: oklch(from var(--color-error) l c h / 0.10);
+    border-radius: 1rem;
+    padding: .85rem;
+    color: var(--color-error);
+    font-weight: 800;
+}
+
+.sea .job-card {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: .75rem;
+    padding: 1rem;
+    border-radius: 1.25rem;
+    position: relative;
+    overflow: hidden;
+    content-visibility: auto;
+    contain-intrinsic-size: 80px;
+}
+
+.sea .job-card.is-running::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    transform: translateX(-100%);
+    background: linear-gradient(90deg, transparent, oklch(from var(--color-primary) l c h / 0.06), transparent);
+    animation: job-shimmer 2s infinite;
+    pointer-events: none;
+}
+
+@keyframes job-shimmer {
+    100% {
+        transform: translateX(100%);
+    }
+}
+
+.sea .job-meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: .5rem;
+    align-items: center;
+    margin-top: .35rem;
+    color: var(--muted-fg);
+    font-size: .85rem;
+}
+
+.sea .progress {
+    height: 10px;
+    border-radius: 999px;
+    background: oklch(from var(--color-base-content) l c h / 0.10);
+    overflow: hidden;
+    border: 1px solid var(--glass-border-color);
+}
+
+.sea .progress>i {
+    display: block;
+    height: 100%;
+    width: 0%;
+    background: linear-gradient(90deg, var(--color-accent), var(--color-primary));
+    border-radius: 999px;
+}
+
+.sea .err-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    overflow: hidden;
+    border-radius: 1rem;
+    border: 1px solid var(--glass-border-color);
+}
+
+.sea .err-table th,
+.sea .err-table td {
+    padding: .75rem .85rem;
+    border-bottom: 1px solid var(--glass-border-color);
+    vertical-align: top;
+    font-size: .88rem;
+}
+
+.sea .err-table th {
+    text-align: left;
+    font-size: .72rem;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    color: var(--dim-fg);
+    background: oklch(from var(--color-base-content) l c h / 0.03);
+}
+
+.sea .err-table tr:last-child td {
+    border-bottom: none;
+}
+
+.sea .err-msg {
+    color: var(--muted-fg);
+    line-height: 1.45;
+}
+
+@media (max-width: 768px) {
+    .sea .import-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* =========================================================
+   Confetti Animation for Import Success
+   ========================================================= */
+
+@keyframes confetti-fall {
+    0% {
+        transform: translateY(0) rotate(0deg);
+        opacity: 1;
+    }
+
+    100% {
+        transform: translateY(100vh) rotate(720deg);
+        opacity: 0;
+    }
+}
+
+@keyframes confetti-spin {
+    0% {
+        transform: rotateX(0) rotateY(0);
+    }
+
+    100% {
+        transform: rotateX(360deg) rotateY(180deg);
+    }
+}
+
+.animate-confetti-fall {
+    animation: confetti-fall 3s ease-out forwards;
+}
+
+.animate-confetti-spin {
+    animation: confetti-spin 1s linear infinite;
+}
+
+/* Bounce subtle for success icon */
+@keyframes bounce-subtle {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-8px);
+    }
+}
+
+.animate-bounce-subtle {
+    animation: bounce-subtle 2s ease-in-out infinite;
+}

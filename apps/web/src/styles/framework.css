@@ -1,0 +1,137 @@
+/* =========================================================
+   FRAMEWORK — Tailwind CSS v4 + daisyUI Integration
+   
+   This file contains framework-level setup only.
+   除 @import "tailwindcss" 外，不要再引入其他 CSS 文件。
+   ========================================================= */
+
+@import "tailwindcss";
+
+/* daisyUI Plugin - 主题选择集中在这里定义 */
+@plugin "daisyui" {
+    themes: liquid-dark --default --prefersdark, liquid-light, warm-paper, midnight-oled;
+}
+
+/* ========== LIQUID DARK (默认 + 深色偏好) ========== */
+@plugin "daisyui/theme" {
+    name: "liquid-dark";
+    color-scheme: dark;
+
+    --color-primary: #9BC53D;
+    --color-primary-content: #0a1205;
+    --color-secondary: #D90368;
+    --color-secondary-content: #fef1f6;
+    --color-accent: #38bdf8;
+    --color-accent-content: #031525;
+
+    --color-neutral: #1f2937;
+    --color-neutral-content: #f8fafc;
+
+    --color-base-100: #030712;
+    --color-base-200: #0f172a;
+    --color-base-300: #1e293b;
+    --color-base-content: #f1f5f9;
+
+    --color-info: #38bdf8;
+    --color-success: #9BC53D;
+    --color-warning: #E98A15;
+    --color-error: #D90368;
+
+    --radius-selector: 0.75rem;
+    --radius-field: 0.75rem;
+    --radius-box: 1.25rem;
+    --border: 1px;
+}
+
+/* ========== LIQUID LIGHT ========== */
+@plugin "daisyui/theme" {
+    name: "liquid-light";
+    color-scheme: light;
+
+    --color-primary: #5a850d;
+    --color-primary-content: #ffffff;
+    --color-secondary: #be185d;
+    --color-secondary-content: #ffffff;
+    --color-accent: #0284c7;
+    --color-accent-content: #ffffff;
+
+    --color-neutral: #1f2937;
+    --color-neutral-content: #f9fafb;
+
+    --color-base-100: #f8fafc;
+    --color-base-200: #ffffff;
+    --color-base-300: #e2e8f0;
+    --color-base-content: #0f172a;
+
+    --color-info: #0284c7;
+    --color-success: #5a850d;
+    --color-warning: #d97706;
+    --color-error: #be185d;
+
+    --radius-selector: 0.75rem;
+    --radius-field: 0.75rem;
+    --radius-box: 1.25rem;
+    --border: 1px;
+}
+
+/* ========== WARM PAPER ========== */
+@plugin "daisyui/theme" {
+    name: "warm-paper";
+    color-scheme: light;
+
+    --color-primary: #7d5233;
+    --color-primary-content: #fffcf0;
+    --color-secondary: #5a850d;
+    --color-secondary-content: #fffcf0;
+    --color-accent: #9b7e3a;
+    --color-accent-content: #fffcf0;
+
+    --color-neutral: #4a3728;
+    --color-neutral-content: #fffcf0;
+
+    --color-base-100: #fff9e6;
+    --color-base-200: #fef1d1;
+    --color-base-300: #e8dcc4;
+    --color-base-content: #2d241e;
+
+    --color-info: #5b8a9c;
+    --color-success: #6b8e23;
+    --color-warning: #b8860b;
+    --color-error: #a52a2a;
+
+    --radius-selector: 0.75rem;
+    --radius-field: 0.75rem;
+    --radius-box: 1.25rem;
+    --border: 1px;
+}
+
+/* ========== MIDNIGHT OLED ========== */
+@plugin "daisyui/theme" {
+    name: "midnight-oled";
+    color-scheme: dark;
+
+    --color-primary: #38bdf8;
+    --color-primary-content: #000000;
+    --color-secondary: #f472b6;
+    --color-secondary-content: #000000;
+    --color-accent: #a78bfa;
+    --color-accent-content: #000000;
+
+    --color-neutral: #111827;
+    --color-neutral-content: #ffffff;
+
+    --color-base-100: #000000;
+    --color-base-200: #0a0a0a;
+    --color-base-300: #121212;
+    --color-base-content: #e5e7eb;
+
+    --color-info: #0ea5e9;
+    --color-success: #10b981;
+    --color-warning: #f59e0b;
+    --color-error: #ef4444;
+
+    --radius-selector: 0.75rem;
+    --radius-field: 0.75rem;
+    --radius-box: 1.25rem;
+    --border: 1px;
+}

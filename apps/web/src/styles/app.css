@@ -1,0 +1,20 @@
+/* =========================================================
+   Smart Error Archiver — Design System v4.0
+   Entry Point: Single import for main.tsx
+   
+   Architecture:
+   1. Framework layer (Tailwind + daisyUI) loads FIRST
+   2. Custom styles load AFTER, ensuring they can override
+   ========================================================= */
+
+/* 1) Design System Layer (Framework already loaded via Vite/PostCSS if needed) */
+/* 2) Framework Layer (Tailwind + daisyUI + themes) */
+@import "./framework.css";
+
+/* 3) Design System Layers (loaded AFTER framework) */
+@import "./themes.css";
+@import "./tokens.css";
+@import "./base.css";
+@import "./components/index.css";
+@import "./utilities.css";
+@import "./overrides.css";

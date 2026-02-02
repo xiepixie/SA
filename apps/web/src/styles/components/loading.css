@@ -1,0 +1,172 @@
+/* =========================================================
+   LOADING — Loading & Progress Components
+   ========================================================= */
+
+.sea .loading-glass {
+    width: 1.5rem;
+    height: 1.5rem;
+    border: 3px solid oklch(from var(--color-primary) l c h / 0.2);
+    border-top-color: var(--color-primary);
+    border-radius: 50%;
+    animation: spin .8s var(--ease-smooth) infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.sea .progress-container {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.sea .progress-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--color-base-content);
+    min-width: 2.5rem;
+    text-align: right;
+}
+
+.sea .progress {
+    flex: 1;
+    border-radius: 999px;
+    background: oklch(from var(--color-base-content) l c h / 0.08);
+    overflow: hidden;
+    position: relative;
+}
+
+.sea .progress-bar {
+    height: 100%;
+    border-radius: 999px;
+    background: var(--color-primary);
+    transition: width 0.4s var(--ease-spring);
+}
+
+.sea .progress-primary .progress-bar {
+    background: var(--color-primary);
+}
+
+.sea .progress-secondary .progress-bar {
+    background: var(--color-secondary);
+}
+
+.sea .progress-success .progress-bar {
+    background: #03a65a;
+}
+
+.sea .progress-warning .progress-bar {
+    background: #fc8621;
+}
+
+.sea .progress-error .progress-bar {
+    background: #db3056;
+}
+
+.sea .progress-info .progress-bar {
+    background: #0070e0;
+}
+
+.sea .animate-infinite-loading {
+    width: 30%;
+    height: 100%;
+    background: var(--color-primary);
+    animation: infinite-loading 1.5s infinite var(--ease-smooth);
+    border-radius: 999px;
+}
+
+@keyframes infinite-loading {
+    0% {
+        transform: translateX(-110%);
+    }
+
+    100% {
+        transform: translateX(350%);
+    }
+}
+
+.sea .skeleton {
+    background-color: oklch(from var(--color-base-content) l c h / 0.05);
+    background-image: linear-gradient(90deg,
+            transparent,
+            oklch(from var(--color-base-content) l c h / 0.08),
+            transparent);
+    background-size: 200% 100%;
+    animation: skeleton-shimmer 2s infinite linear;
+}
+
+@keyframes skeleton-shimmer {
+    0% {
+        background-position: 200% 0;
+    }
+
+    100% {
+        background-position: -200% 0;
+    }
+}
+
+.sea .bg-loading-indicator {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg,
+            transparent,
+            var(--color-primary),
+            var(--color-accent),
+            transparent);
+    z-index: var(--z-toast);
+    animation: loading-bar-sweep 2s infinite var(--ease-smooth);
+}
+
+@keyframes loading-bar-sweep {
+    0% {
+        transform: translateX(-100%);
+    }
+
+    100% {
+        transform: translateX(100%);
+    }
+}
+
+.sea .pulse-sync {
+    position: relative;
+}
+
+.sea .pulse-sync::after {
+    content: "";
+    position: absolute;
+    inset: -2px;
+    border-radius: inherit;
+    background: linear-gradient(135deg,
+            oklch(from var(--color-info) l c h / .14),
+            transparent 55%,
+            oklch(from var(--color-primary) l c h / .12));
+    opacity: 0;
+    pointer-events: none;
+}
+
+.sea .pulse-sync.is-on::after {
+    animation: sync-flash 540ms var(--ease-smooth) both;
+}
+
+@keyframes sync-flash {
+    0% {
+        opacity: 0;
+        filter: blur(10px);
+    }
+
+    35% {
+        opacity: .9;
+        filter: blur(0);
+    }
+
+    100% {
+        opacity: 0;
+        filter: blur(10px);
+    }
+}

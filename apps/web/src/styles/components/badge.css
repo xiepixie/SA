@@ -1,0 +1,61 @@
+/* =========================================================
+   BADGE — Status Badges
+   ========================================================= */
+
+.sea .se-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: .4rem;
+    padding: .25rem .6rem;
+    border-radius: 999px;
+    border: 1px solid var(--glass-border-color);
+    font-size: .78rem;
+    font-weight: 900;
+    line-height: 1;
+    white-space: nowrap;
+}
+
+.sea .se-badge.due {
+    background: var(--state-due-bg);
+    color: var(--color-warning);
+}
+
+.sea .se-badge.overdue {
+    background: var(--state-overdue-bg);
+    color: var(--color-secondary);
+}
+
+.sea .se-badge.new {
+    background: var(--state-new-bg);
+    color: var(--color-success);
+}
+
+.sea .se-badge.sync {
+    background: var(--state-sync-bg);
+    color: var(--color-info);
+}
+
+.sea .se-badge.job-queued {
+    background: var(--job-queued-bg);
+    color: var(--color-accent);
+}
+
+.sea .se-badge.job-running {
+    background: var(--job-running-bg);
+    color: var(--color-info);
+}
+
+.sea .se-badge.job-partial {
+    background: var(--job-partial-bg);
+    color: var(--color-warning);
+}
+
+.sea .se-badge.job-failed {
+    background: var(--job-failed-bg);
+    color: var(--color-error);
+}
+
+.sea .se-badge.job-done {
+    background: var(--job-done-bg);
+    color: var(--color-success);
+}

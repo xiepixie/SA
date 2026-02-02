@@ -1,0 +1,134 @@
+/* =========================================================
+   INSPECTOR — Detail Inspector Panel
+   V5.0 Premium Glass Implementation
+   ========================================================= */
+
+.sea .inspector {
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    background: oklch(from var(--color-base-100) l c h / 0.95);
+    backdrop-filter: blur(var(--glass-blur));
+    -webkit-backdrop-filter: blur(var(--glass-blur));
+    box-shadow: -10px 0 30px -10px oklch(0% 0 0 / 0.1);
+    position: relative;
+    overflow: hidden;
+}
+
+.sea .inspector-head {
+    padding: 1.5rem 2rem;
+    border-bottom: 1px solid var(--glass-border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.25rem;
+    background: oklch(from var(--color-base-100) l c h / 0.5);
+    z-index: 10;
+}
+
+.sea .inspector-body {
+    flex: 1;
+    overflow-y: overlay;
+    padding: 2rem;
+    padding-bottom: 100px;
+    /* Space for footer */
+    scrollbar-gutter: stable;
+}
+
+.sea .inspector-h {
+    font-weight: 950;
+    letter-spacing: -0.04em;
+    font-size: 1.25rem;
+    line-height: 1.2;
+    color: var(--color-base-content);
+}
+
+/* Metadata Key-Value Cards */
+.sea .kv {
+    margin-top: 1rem;
+    border: 1px solid var(--glass-border);
+    border-radius: 1.25rem;
+    background: oklch(from var(--color-base-content) l c h / 0.03);
+    padding: 1.25rem;
+    transition: all 0.2s var(--ease-smooth);
+}
+
+.sea .kv:hover {
+    background: oklch(from var(--color-base-content) l c h / 0.05);
+    border-color: oklch(from var(--color-base-content) l c h / 0.1);
+}
+
+.sea .kv .k {
+    font-size: 0.7rem;
+    font-weight: 900;
+    opacity: 0.5;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--color-base-content);
+}
+
+.sea .kv .v {
+    margin-top: 0.5rem;
+    font-weight: 800;
+    color: var(--color-base-content);
+    line-height: 1.5;
+    font-size: 0.95rem;
+}
+
+/* Preview Glass Area */
+.sea .preview-surface {
+    background: oklch(from var(--color-base-100) l c h / 0.4);
+    border: 1px solid var(--glass-border);
+    border-radius: 1.5rem;
+    padding: 1.5rem;
+    box-shadow: var(--shadow-sm);
+    margin-top: 1rem;
+}
+
+/* Inspector Animations & Transitions */
+.sea .panel-right {
+    will-change: transform, opacity, filter;
+    transform: translateX(30px);
+    opacity: 0;
+    filter: blur(8px);
+    pointer-events: none;
+    transition:
+        width 0.4s var(--ease-smooth),
+        min-width 0.4s var(--ease-smooth),
+        transform 0.5s var(--ease-spring),
+        opacity 0.3s var(--ease-smooth),
+        filter 0.3s var(--ease-smooth);
+}
+
+.sea .panel-right.is-open {
+    transform: translateX(0);
+    opacity: 1;
+    filter: blur(0);
+    pointer-events: auto;
+}
+
+/* Specialized Scroller */
+.sea .inspector-body::-webkit-scrollbar {
+    width: 6px;
+}
+
+.sea .inspector-body::-webkit-scrollbar-thumb {
+    background: oklch(from var(--color-base-content) l c h / 0.1);
+    border-radius: 10px;
+}
+
+.sea .inspector-body::-webkit-scrollbar-thumb:hover {
+    background: oklch(from var(--color-base-content) l c h / 0.2);
+}
+
+@media (max-width: 1024px) {
+    .sea .inspector {
+        position: fixed;
+        right: 0;
+        top: 0;
+        width: 100%;
+        max-width: 500px;
+        z-index: 1000;
+        box-shadow: -20px 0 50px -10px oklch(0% 0 0 / 0.3);
+    }
+}

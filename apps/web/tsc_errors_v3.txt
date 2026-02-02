@@ -1,0 +1,5 @@
+../server/src/index.ts(29,31): error TS6133: 'set' is declared but its value is never read.
+../server/src/lib/supabase.ts(38,17): error TS6133: 'data' is declared but its value is never read.
+../server/src/modules/study/index.ts(228,27): error TS6133: 'rpcResult' is declared but its value is never read.
+src/pages/QuestionBank.tsx(184,11): error TS6133: 'currentIndex' is declared but its value is never read.
+../../packages/markdown-parser/src/MarkdownRenderer.tsx(360,11): error TS6133: 'originalLen' is declared but its value is never read.

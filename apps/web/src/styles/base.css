@@ -1,0 +1,148 @@
+/* =========================================================
+   BASE — Reset, Typography, Global A11y Preferences
+   Rarely changes - foundational styles
+   ========================================================= */
+
+* {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    scrollbar-gutter: stable;
+}
+
+#root {
+    height: 100%;
+}
+
+body {
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    background-color: var(--color-base-100);
+    color: var(--color-base-content);
+    line-height: 1.6;
+    letter-spacing: -0.011em;
+    transition: background-color var(--theme-transition), color var(--theme-transition);
+}
+
+/* Keyboard focus: visible only when useful */
+:focus-visible {
+    outline: none;
+    box-shadow: var(--focus-ring);
+}
+
+@supports not selector(:focus-visible) {
+    :focus {
+        outline: none;
+        box-shadow: var(--focus-ring);
+    }
+}
+
+/* Reduced motion (system preference) */
+@media (prefers-reduced-motion: reduce) {
+
+    *,
+    ::before,
+    ::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+}
+
+/* Reduced motion (manual override) */
+.reduced-motion *,
+.reduced-motion ::before,
+.reduced-motion ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+}
+
+/* Disable animations (manual override) */
+.disable-animations *,
+.disable-animations ::before,
+.disable-animations ::after {
+    animation-name: none !important;
+    animation-duration: 0s !important;
+    transition: none !important;
+}
+
+/* More contrast (user preference) */
+@media (prefers-contrast: more) {
+    :focus-visible {
+        box-shadow: var(--focus-ring-strong);
+    }
+
+    .sea .glass-surface,
+    .sea .glass-card {
+        border-color: var(--glass-border-strong) !important;
+    }
+}
+
+/* Scrollbar styling */
+.sea {
+    scrollbar-width: thin;
+    scrollbar-color: oklch(from var(--color-base-content) l c h / 0.1) transparent;
+}
+
+/* WebKit Scrollbar */
+.sea ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+
+.sea ::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.sea ::-webkit-scrollbar-thumb {
+    background: oklch(from var(--color-base-content) l c h / 0.08);
+    border-radius: 10px;
+    border: 1px solid transparent;
+    background-clip: padding-box;
+    transition: background-color var(--dur-2);
+}
+
+.sea ::-webkit-scrollbar-thumb:hover {
+    background: oklch(from var(--color-base-content) l c h / 0.2);
+}
+
+.sea ::-webkit-scrollbar-corner {
+    background: transparent;
+}
+
+.sea[data-theme="liquid-dark"] ::-webkit-scrollbar-thumb {
+    background: oklch(from var(--color-primary) l c h / 0.12);
+}
+
+.sea[data-theme="liquid-dark"] ::-webkit-scrollbar-thumb:hover {
+    background: oklch(from var(--color-primary) l c h / 0.25);
+}
+
+/* Global scrollbar styling */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-thumb {
+    background: oklch(from var(--color-base-content) l c h / 0.20);
+    border-radius: 999px;
+}
+
+::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+/* Prevent scroll jank globally */
+.sea * {
+    scroll-behavior: auto;
+}

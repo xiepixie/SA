@@ -1,0 +1,135 @@
+/* =========================================================
+   Error Card Styling
+   ========================================================= */
+.error-card {
+    background: rgba(var(--color-base-100-rgb), 0.65);
+    backdrop-filter: blur(24px) saturate(1.5);
+    -webkit-backdrop-filter: blur(24px) saturate(1.5);
+    border: 1px solid rgba(var(--color-base-content-rgb), 0.08);
+    border-radius: 2rem;
+    overflow: hidden;
+}
+
+/* Environment Light / Glow Layer */
+.error-card::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 50% 0%,
+            var(--accent-color) 0%,
+            transparent 70%);
+    opacity: 0.05;
+    pointer-events: none;
+}
+
+/* =========================================================
+   Interactive Elements
+   ========================================================= */
+.error-icon-container {
+    background: rgba(var(--color-base-content-rgb), 0.03);
+    border: 1px solid rgba(var(--color-base-content-rgb), 0.05);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+.error-icon-container:hover {
+    transform: translateY(-2px);
+    background: rgba(var(--color-base-content-rgb), 0.05);
+    border-color: var(--accent-color);
+    box-shadow:
+        0 10px 30px -10px var(--accent-color),
+        0 0 20px -5px var(--accent-color);
+}
+
+/* Primary CTA Button */
+.error-cta-primary {
+    transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+.error-cta-primary:not(:disabled):hover {
+    transform: translateY(-2px) scale(1.01);
+    box-shadow:
+        0 15px 35px -10px var(--accent-color),
+        0 0 15px -5px var(--accent-color);
+}
+
+.error-cta-primary:active {
+    transform: translateY(0) scale(0.98);
+}
+
+/* Shimmer Animation for Buttons */
+.error-cta-primary::after {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(45deg,
+            transparent 45%,
+            rgba(255, 255, 255, 0.1) 50%,
+            transparent 55%);
+    transform: rotate(-45deg);
+    animation: error-shimmer 6s infinite linear;
+}
+
+@keyframes error-shimmer {
+    0% {
+        transform: translate(-30%, -30%) rotate(-45deg);
+    }
+
+    100% {
+        transform: translate(30%, 30%) rotate(-45deg);
+    }
+}
+
+/* =========================================================
+   Badges and Details
+   ========================================================= */
+.error-badge {
+    background: var(--accent-color);
+    color: var(--accent-color-content);
+    border-radius: 0.75rem;
+    font-weight: 700;
+    box-shadow: 0 4px 12px -4px var(--accent-color);
+}
+
+.keyboard-hint kbd {
+    box-shadow: 0 2px 0 rgba(var(--color-base-content-rgb), 0.2);
+}
+
+/* =========================================================
+   Animations
+   ========================================================= */
+.animate-blob-drift {
+    animation: blob-drift 25s infinite alternate ease-in-out;
+}
+
+@keyframes blob-drift {
+    from {
+        transform: translate(0, 0) rotate(0deg) scale(1);
+    }
+
+    to {
+        transform: translate(10%, 15%) rotate(15deg) scale(1.1);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+
+    .animate-blob-drift,
+    .animate-pulse,
+    .error-cta-primary::after {
+        animation: none !important;
+        display: none !important;
+    }
+
+    .error-icon-container:hover,
+    .error-cta-primary:hover {
+        transform: none !important;
+    }
+}

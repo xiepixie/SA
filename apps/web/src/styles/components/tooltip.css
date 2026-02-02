@@ -1,0 +1,186 @@
+/* =========================================================
+   TOOLTIP — Liquid Glass Refined Tooltips
+   ========================================================= */
+
+.sea .tooltip {
+    --tt-in-delay: 150ms;
+    --tt-out-delay: 100ms;
+    --tooltip-bg: var(--glass-bg);
+    --tooltip-color: var(--color-base-content);
+    --tooltip-offset: 8px;
+    /* Tooltip trigger element needs higher z-index */
+    position: relative;
+    z-index: 100;
+}
+
+.sea .tooltip-hidden::before,
+.sea .tooltip-hidden::after {
+    opacity: 0 !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+    transition-delay: 0ms !important;
+}
+
+/* --- Classic CSS Tooltip (Pseudo-element based) --- */
+
+.sea .tooltip::before {
+    --tt-bg: oklch(98% 0 0 / 0.98);
+    --tt-fg: oklch(20% 0 0);
+    --tt-border: oklch(100% 0 0 / 1);
+
+    background: var(--tt-bg) !important;
+    color: var(--tt-fg) !important;
+    border: 1px solid var(--tt-border) !important;
+    backdrop-filter: blur(12px) !important;
+    -webkit-backdrop-filter: blur(12px) !important;
+    box-shadow:
+        0 4px 6px -1px oklch(0% 0 0 / 0.1),
+        0 10px 15px -3px oklch(0% 0 0 / 0.1),
+        0 0 0 1px oklch(0% 0 0 / 0.05) !important;
+    font-size: 0.75rem !important;
+    font-weight: 700 !important;
+    text-transform: none !important;
+    padding: 0.5rem 0.85rem !important;
+    border-radius: 0.5rem !important;
+    letter-spacing: 0.02em !important;
+    /* CRITICAL: pointer-events:none prevents phantom clicks */
+    pointer-events: none !important;
+    transition:
+        opacity 0.2s var(--ease-out) var(--tt-out-delay),
+        transform 0.3s var(--ease-spring) var(--tt-out-delay) !important;
+    transform: scale(0.9) translateY(0) !important;
+    opacity: 0 !important;
+    will-change: transform, opacity;
+    /* Very high z-index to appear above everything */
+    z-index: 9999 !important;
+}
+
+.sea .tooltip:focus-within::before,
+.sea .tooltip:focus-visible::before {
+    transition-delay: 0s !important;
+}
+
+.sea[data-theme="liquid-light"] .tooltip::before,
+.sea[data-theme="warm-paper"] .tooltip::before {
+    --tt-bg: oklch(25% 0 0 / 0.95);
+    --tt-fg: oklch(98% 0 0);
+    --tt-border: oklch(25% 0 0 / 0.5);
+    box-shadow: 0 10px 25px -5px oklch(0% 0 0 / 0.25) !important;
+}
+
+.sea .tooltip:active::before,
+.sea .tooltip:active::after {
+    opacity: 0 !important;
+    transition: none !important;
+}
+
+.sea .tooltip:hover::before,
+.sea .tooltip:focus-within::before {
+    opacity: 1 !important;
+    transform: scale(1) translateY(0) !important;
+    transition-delay: var(--tt-in-delay) !important;
+}
+
+.sea .tooltip::after {
+    border-color: var(--tt-bg, oklch(98% 0 0 / 0.98)) transparent transparent transparent !important;
+    transition: opacity 0.2s var(--ease-out) !important;
+    opacity: 0 !important;
+    z-index: 1001;
+}
+
+/* ... existing arrow styles omitted for brevity since Portal won't use them directly mostly, 
+   but keeping them for legacy/non-portal usage transparency ... */
+
+/* --- Portal Tooltip Styles --- */
+/* These apply to the actual div rendered in the Portal */
+.tooltip-portal-content {
+    --tt-bg: oklch(98% 0 0 / 0.98);
+    --tt-fg: oklch(20% 0 0);
+    --tt-border: oklch(100% 0 0 / 1);
+
+    position: fixed;
+    /* Portal is fixed */
+    top: 0;
+    left: 0;
+    pointer-events: none;
+    /* Tooltip shouldn't block */
+    background: var(--tt-bg);
+    color: var(--tt-fg);
+    border: 1px solid var(--tt-border);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    box-shadow:
+        0 4px 6px -1px oklch(0% 0 0 / 0.1),
+        0 10px 15px -3px oklch(0% 0 0 / 0.1),
+        0 0 0 1px oklch(0% 0 0 / 0.05);
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 0.5rem 0.85rem;
+    border-radius: 0.5rem;
+    letter-spacing: 0.02em;
+    z-index: 9999;
+
+    /* Animation state handles */
+    opacity: 0;
+    transform: scale(0.9);
+    transition:
+        opacity 0.2s var(--ease-out),
+        transform 0.3s var(--ease-spring);
+    will-change: transform, opacity;
+}
+
+.tooltip-portal-content.visible {
+    opacity: 1;
+    transform: scale(1);
+}
+
+[data-theme="liquid-light"] .tooltip-portal-content,
+[data-theme="warm-paper"] .tooltip-portal-content {
+    --tt-bg: oklch(25% 0 0 / 0.95);
+    --tt-fg: oklch(98% 0 0);
+    --tt-border: oklch(25% 0 0 / 0.5);
+    box-shadow: 0 10px 25px -5px oklch(0% 0 0 / 0.25);
+}
+
+/* High Contrast Mode for Portal */
+@media (prefers-contrast: more) {
+    .tooltip-portal-content {
+        --tt-bg: oklch(100% 0 0 / 1);
+        --tt-fg: oklch(0% 0 0);
+        border: 2px solid oklch(0% 0 0);
+        backdrop-filter: none;
+        box-shadow: none;
+    }
+
+    [data-theme="liquid-light"] .tooltip-portal-content,
+    [data-theme="warm-paper"] .tooltip-portal-content {
+        --tt-bg: oklch(0% 0 0 / 1);
+        --tt-fg: oklch(100% 0 0);
+        border: 2px solid oklch(100% 0 0);
+    }
+}
+
+/* 3.3 Pointer Device Check: Avoid hover on touch screens */
+@media (hover: none) {
+    .tooltip-portal-content {
+        display: none !important;
+    }
+}
+
+/* 5.1 Max-width + Wrapping */
+.tooltip-portal-content {
+    max-width: min(260px, calc(100vw - 24px));
+    white-space: normal;
+    word-wrap: break-word;
+    line-height: 1.4;
+    text-align: center;
+}
+
+/* 5.2 Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+    .tooltip-portal-content {
+        transition: none !important;
+        transform: none !important;
+        animation: none !important;
+    }
+}

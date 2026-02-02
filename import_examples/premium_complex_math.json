@@ -1,0 +1,94 @@
+[
+    {
+        "title": "概率事件综合计算 (Complex Probability)",
+        "question_type": "fill_blank",
+        "difficulty": "hard",
+        "content": "设 $A,B,C$ 为三个随机事件, 已知 $A$ 与 $C$ 相互独立, $B$ 与 $C$ 互不相容, $A,B,C$ 都不发生的概率为 $\\frac{1}{12}$。\n若 $P(C)=\\frac{1}{4}, P(B \\cup C \\mid A)=\\frac{1}{3}, P(A\\bar{B})=P(\\bar{A}B)$, \n则 $P(A \\cup \\bar{B})=$ ______。",
+        "correct_answer": {
+            "type": "fill_blank",
+            "blanks": [
+                "$\\dfrac{19}{30}$"
+            ]
+        },
+        "explanation": "**分析：**\n本题核心在于往目标转化隐含条件：\n1. 由对称性 $P(A\\bar{B})=P(\\bar{A}B)$ 可知 $P(A)=P(B)$。\n2. 由互斥与独立可知 $P(BC)=0, P(AC)=P(A)P(C)$。\n3. 目标转化 $P(A \\cup \\bar{B}) = 1 - P(\\bar{A}B) = 1 - [P(B) - P(AB)]$。\n\n**推导：**\n**第一步：利用条件概率寻找 $P(AB)$ 与 $P(A)$ 的关系**\n$$\\begin{aligned} P(B \\cup C \\mid A) &= \\dfrac{P(AB) + P(AC)}{P(A)} \\\\ &= \\dfrac{P(AB)}{P(A)} + P(C) = \\dfrac{1}{3} \\\\ \\implies P(AB) &= (\\dfrac{1}{3} - \\dfrac{1}{4})P(A) = \\dfrac{1}{12}P(A) \\end{aligned}$$\n**第二步：利用加法公式求解 $P(A)$**\n已知 $P(A \\cup B \\cup C) = 1 - \\frac{1}{12} = \\frac{11}{12}$。\n$$\\begin{aligned} P(\\cup) &= 2P(A) + P(C) - [P(AB) + P(AC)] \\\\ \\dfrac{11}{12} &= 2P(A) + \\dfrac{1}{4} - [\\dfrac{1}{12}P(A) + \\dfrac{1}{4}P(A)] \\\\ \\dfrac{11}{12} - \\dfrac{1}{4} &= (2 - \\dfrac{1}{3})P(A) \\\\ \\dfrac{2}{3} &= \\dfrac{5}{3}P(A) \\implies P(A) = \\dfrac{2}{5} \\end{aligned}$$\n\n**结论：**\n$$\\begin{aligned} P(A \\cup \\bar{B}) &= 1 - P(\\bar{A}B) \\\\ &= 1 - [P(B) - P(AB)] \\\\ &= 1 - \\dfrac{11}{12}P(A) \\\\ &= 1 - \\dfrac{11}{30} = \\dfrac{19}{30} \\end{aligned}$$",
+        "subject_name": "概率论",
+        "tag_names": [
+            "概率论",
+            "加法公式",
+            "条件概率",
+            "独立性"
+        ]
+    },
+    {
+        "title": "多元函数微分学 - 极值判别 (Multivariable Calculus)",
+        "question_type": "choice",
+        "difficulty": "hard",
+        "content": "设函数 $f(x,y)$ 在点 $(0,0)$ 的某邻域内具有连续保持二阶偏导数，且满足：\n$f_x(0,0)=0, f_y(0,0)=0, f_{xx}(0,0)=2, f_{xy}(0,0)=1, f_{yy}(0,0)=2$。\n则在点 $(0,0)$ 处，该函数：",
+        "hints": {
+            "choices": [
+                {
+                    "id": "A",
+                    "text": "取得极大值"
+                },
+                {
+                    "id": "B",
+                    "text": "取得极小值"
+                },
+                {
+                    "id": "C",
+                    "text": "不取得极值"
+                },
+                {
+                    "id": "D",
+                    "text": "无法判定是否取得极值"
+                }
+            ]
+        },
+        "correct_answer": {
+            "type": "choice",
+            "choice_id": "B"
+        },
+        "explanation": "**解析：**\n利用二阶导数判别法（海森矩阵判别法）：\n1. 计算判别式 $\\Delta = AC - B^2$：\n其中 $A = f_{xx}(0,0) = 2, B = f_{xy}(0,0) = 1, C = f_{yy}(0,0) = 2$。\n$\\Delta = 2 \\times 2 - 1^2 = 3 > 0$。\n2. 根据判定标准：\n当 $\\Delta > 0$ 时，函数在该点取得极值。\n由于 $A = 2 > 0$，故该点为**极小值点**。\n\n**结论：** 选项 B 正确。",
+        "subject_name": "高等数学",
+        "tag_names": [
+            "多元函数",
+            "二阶导数判别法",
+            "海森矩阵"
+        ]
+    },
+    {
+        "title": "空字段测试 (Boundary Case)",
+        "question_type": "choice",
+        "difficulty": "medium",
+        "content": "",
+        "correct_answer": {
+            "type": "choice",
+            "choice_id": "NOT_EXIST"
+        },
+        "explanation": "Testing empty content and non-existent choice selection.",
+        "subject_name": "Testing",
+        "tag_names": [
+            "Boundary"
+        ]
+    },
+    {
+        "title": "数据类型混合测试 (Mixed Types)",
+        "question_type": "short_answer",
+        "difficulty": "easy",
+        "content": "1+1=?",
+        "correct_answer": {
+            "type": "short_answer",
+            "answers": [
+                2
+            ]
+        },
+        "explanation": "Answer is a number, should be a string.",
+        "metadata": {
+            "bad_field": [
+                1,
+                2,
+                3
+            ]
+        }
+    }
+]

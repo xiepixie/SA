@@ -1,0 +1,42 @@
+/* =========================================================
+   WINDOW CONTROLS — Reusable macOS-style traffic lights
+   Used in code blocks, math blocks, and other interactive containers
+   ========================================================= */
+
+@layer components {
+    .se-window-controls {
+        display: flex;
+        gap: var(--win-dot-gap);
+        align-items: center;
+    }
+
+    .se-dot {
+        width: var(--win-dot-size);
+        height: var(--win-dot-size);
+        border-radius: 50%;
+        position: relative;
+    }
+
+    .se-dot-red {
+        background: var(--win-dot-red);
+    }
+
+    .se-dot-amber {
+        background: var(--win-dot-amber);
+    }
+
+    .se-dot-green {
+        background: var(--win-dot-green);
+    }
+
+    /* Shadow-only implementation (Single element version) */
+    .se-window-dots-shadow {
+        width: var(--win-dot-size);
+        height: var(--win-dot-size);
+        border-radius: 50%;
+        background: var(--win-dot-red);
+        box-shadow:
+            calc(var(--win-dot-size) + var(--win-dot-gap)) 0 0 var(--win-dot-amber),
+            calc((var(--win-dot-size) + var(--win-dot-gap)) * 2) 0 0 var(--win-dot-green);
+    }
+}

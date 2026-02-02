@@ -1,0 +1,635 @@
+/* =========================================================
+   MATH — KaTeX Math Rendering
+   ========================================================= */
+
+@layer base {
+
+    /* 🧪 Fix: Neutralize Tailwind Typography (prose) styles that clash with math tags */
+    .prose :where(code):not(:where([class~="not-prose"], [class~="not-prose"] *)):where(.language-math, .math-inline, .math-block),
+    .math-inline,
+    .math-block,
+    .language-math {
+        background-color: transparent !important;
+        border: none !important;
+        padding: 0 !important;
+        box-shadow: none !important;
+        color: inherit !important;
+        text-decoration: none !important;
+    }
+
+    /* Ensure KaTeX internal elements also follow the inherited color */
+    .math-inline .katex,
+    .math-block .katex,
+    .language-math .katex {
+        color: inherit !important;
+    }
+
+    /* Remove prose backticks from math elements (Tailwind Typography quotes) */
+    .prose :where(code):not(:where([class~="not-prose"], [class~="not-prose"] *)):where(.language-math, .math-inline, .math-block)::before {
+        content: none !important;
+    }
+
+    /* For ::after (the trailing quote), we let our badge rule (further down) handle it via higher specificity or !important */
+
+    /* 🧪 Restoration: Ensure math-blocks still get their glass styling even inside prose */
+    .prose :where(code):not(:where([class~="not-prose"], [class~="not-prose"] *)):where(.math-block),
+    .prose :where(code):not(:where([class~="not-prose"], [class~="not-prose"] *)):where(.math-display) {
+        display: block !important;
+        border: 1px solid var(--glass-border-color) !important;
+        background: oklch(from var(--color-base-content) l c h / 0.03) !important;
+        padding: 0.75rem 1rem !important;
+        margin: 0.75rem 0 !important;
+        text-align: center !important;
+    }
+}
+
+@layer components {
+
+    .math-inline,
+    .math-block {
+        position: relative;
+        display: inline-block;
+        /* Crucial for positioning absolute children */
+        vertical-align: middle;
+        contain: layout style;
+        -webkit-font-smoothing: antialiased;
+        cursor: default;
+        border-radius: var(--radius-field, 10px);
+        transition: box-shadow .16s var(--ease-spring), background .16s ease, transform .16s var(--ease-spring);
+        outline: none;
+        border: none;
+        will-change: opacity, transform;
+        overflow: visible !important;
+        /* Ensure pseudo-elements aren't clipped */
+    }
+
+    .markdown-body {
+        counter-reset: equation;
+    }
+
+    .math-block {
+        display: block;
+        margin: 2.5rem 0;
+        text-align: center;
+        counter-increment: equation;
+        position: relative;
+        min-height: 1.8em;
+        padding: 2.5rem 4rem;
+        border-radius: 24px;
+        background: var(--glass-bg-reading);
+        backdrop-filter: blur(var(--glass-blur));
+        -webkit-backdrop-filter: blur(var(--glass-blur));
+        border: 1px solid var(--glass-border-color);
+        box-shadow: var(--shadow-premium-sm);
+        transition:
+            transform var(--dur-2) var(--ease-spring),
+            box-shadow var(--dur-2) var(--ease-smooth),
+            border-color var(--dur-1) var(--ease-smooth);
+    }
+
+    /* Equation Numbering Styling */
+    .math-block::before {
+        content: "Eq. " counter(equation);
+        position: absolute;
+        right: 1.75rem;
+        top: 50%;
+        transform: translateY(-50%);
+        font-family: var(--font-serif, serif);
+        font-weight: 600;
+        font-style: italic;
+        font-size: 0.85em;
+        color: var(--color-primary);
+        padding: 4px 12px;
+        background: oklch(from var(--color-primary) l c h / 0.05);
+        border-radius: 99px;
+        opacity: 0.3;
+        pointer-events: none;
+        transition: all var(--dur-2) var(--ease-smooth);
+        letter-spacing: 0.02em;
+        border: 1px solid transparent;
+    }
+
+    .math-block:hover {
+        border-color: oklch(from var(--color-primary) l c h / 0.2);
+        transform: translateY(var(--hover-raise-sm));
+        box-shadow: var(--shadow-premium-md);
+
+        /* Subtle Shimmer Effect using background-image */
+        background-image:
+            linear-gradient(120deg, transparent 33%, oklch(100% 0 0 / 0.05) 50%, transparent 66%);
+        background-size: 300% 100%;
+        animation: math-shimmer 3s infinite linear;
+    }
+
+    .math-block:hover::before {
+        opacity: 0.9;
+        background: oklch(from var(--color-primary) l c h / 0.1);
+        border-color: oklch(from var(--color-primary) l c h / 0.15);
+        transform: translateY(-50%) scale(1.05);
+    }
+
+    .math-inline {
+        display: inline-block;
+        min-width: 0.8em;
+        /* ✅ FIX: 使用 middle 并微调偏移，确保与文本垂直居中 */
+        vertical-align: middle;
+        margin-top: -0.15em;
+        padding: 0 4px;
+        border-radius: 6px;
+        transition: all var(--dur-1) ease;
+    }
+
+    .math-inline:hover {
+        background: oklch(from var(--color-primary) l c h / 0.08);
+        color: var(--color-primary) !important;
+    }
+
+    .math-inline.is-rendered,
+    .math-block.is-rendered {
+        animation: math-reveal 0.3s var(--ease-smooth);
+    }
+
+    @keyframes math-reveal {
+        from {
+            opacity: 0;
+            transform: translateY(4px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @keyframes math-shimmer {
+        0% {
+            background-position: 100% 0;
+        }
+
+        100% {
+            background-position: -100% 0;
+        }
+    }
+
+    .math-inline.is-active,
+    .math-block.is-active {
+        box-shadow: 0 0 0 3px oklch(from var(--color-primary) l c h / 0.15);
+        background: oklch(from var(--color-primary) l c h / 0.06);
+    }
+
+    .math-inline[data-tex]:active,
+    .math-block[data-tex]:active {
+        background: oklch(from var(--color-primary) l c h / 0.12);
+        transform: scale(var(--press-scale, 0.995));
+        transition: transform 0.1s ease;
+    }
+
+    .math-inline[data-tex]:focus-visible,
+    .math-block[data-tex]:focus-visible {
+        outline: 2px solid var(--color-primary);
+        outline-offset: 4px;
+    }
+
+    /* Premium Feedback: Copy Flash */
+    .math-inline.is-copied,
+    .math-block.is-copied {
+        animation: math-copied-flash 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
+    }
+
+    @keyframes math-copied-flash {
+        0% {
+            transform: scale(1);
+            filter: brightness(1);
+        }
+
+        15% {
+            transform: scale(1.02);
+            background: oklch(from var(--color-success) l c h / 0.12);
+            filter: brightness(1.15);
+            box-shadow:
+                0 0 0 4px oklch(from var(--color-success) l c h / 0.1),
+                0 8px 24px -8px oklch(from var(--color-success) l c h / 0.4);
+        }
+
+        100% {
+            transform: scale(1);
+            background: transparent;
+            filter: brightness(1);
+            box-shadow: 0 0 0 16px transparent;
+        }
+    }
+
+    /* Interaction Hint Overlay - Premium Top-Right Badge */
+    /* ✅ Repositioned to top-right for non-intrusive UX */
+    :where(.markdown-body, .prose) .math-inline::after,
+    :where(.markdown-body, .prose) .math-block::after,
+    .math-inline::after,
+    .math-block::after {
+        content: "TEX" !important;
+        position: absolute !important;
+        top: -6px !important;
+        right: -6px !important;
+        left: auto !important;
+        display: block !important;
+
+        /* Premium Liquid Glass Pill with Gradient */
+        background: linear-gradient(135deg,
+                oklch(from var(--color-primary) l c h / 0.95),
+                oklch(from var(--color-primary) calc(l - 0.08) c h / 0.9)) !important;
+        color: var(--color-primary-content) !important;
+        backdrop-filter: blur(12px) saturate(2) !important;
+        -webkit-backdrop-filter: blur(12px) saturate(2) !important;
+
+        font-family: var(--font-mono) !important;
+        font-size: 8px !important;
+        font-weight: 950 !important;
+        letter-spacing: 0.15em !important;
+        padding: 3px 8px !important;
+        border-radius: 99px !important;
+
+        border: 1px solid oklch(100% 0 0 / 0.3) !important;
+        box-shadow:
+            0 4px 12px -2px oklch(from var(--color-primary) l c h / 0.4),
+            inset 0 1px 1px oklch(100% 0 0 / 0.25) !important;
+
+        opacity: 0;
+        visibility: visible !important;
+        transform: translateY(4px) scale(0.85) !important;
+        transition:
+            opacity 0.2s ease,
+            transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1) !important;
+        pointer-events: none !important;
+        z-index: 100 !important;
+        white-space: nowrap !important;
+    }
+
+    /* Block math badge - slightly larger and positioned outside */
+    .math-block::after {
+        top: -10px !important;
+        right: 16px !important;
+        font-size: 10px !important;
+        padding: 5px 14px !important;
+    }
+
+    /* Hover State: Container Transformation */
+    @media (hover: hover) {
+
+        .math-inline:hover,
+        .math-block:hover {
+            z-index: 20;
+            background: oklch(from var(--color-primary) l c h / 0.04) !important;
+            box-shadow:
+                0 0 0 1px oklch(from var(--color-primary) l c h / 0.12),
+                0 8px 24px -8px oklch(0% 0 0 / 0.08);
+            overflow: visible !important;
+        }
+
+        /* Show the badge with slide-in effect */
+        :where(.markdown-body, .prose) .math-inline:hover::after,
+        :where(.markdown-body, .prose) .math-block:hover::after,
+        .math-inline:hover::after,
+        .math-block:hover::after {
+            opacity: 1 !important;
+            transform: translateY(0) scale(1) !important;
+        }
+    }
+
+    /* Subtle Liquid Reflection on Hover */
+    .math-block:hover::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(120deg, transparent 30%, oklch(100% 0 0 / 0.03) 50%, transparent 70%);
+        background-size: 200% 100%;
+        animation: math-shimmer 2s infinite linear;
+        pointer-events: none;
+    }
+}
+
+@keyframes math-shimmer {
+    0% {
+        background-position: 200% 0;
+    }
+
+    100% {
+        background-position: -200% 0;
+    }
+}
+
+/* Layout Skeleton for smooth rendering */
+.math-inline:not(.is-rendered),
+.math-block:not(.is-rendered) {
+    min-height: 1.5em;
+    min-width: 2.5em;
+    /* Slightly wider for better visibility */
+    background: linear-gradient(90deg,
+            oklch(from var(--color-base-content) l c h / 0.03) 0%,
+            oklch(from var(--color-base-content) l c h / 0.06) 50%,
+            oklch(from var(--color-base-content) l c h / 0.03) 100%);
+    background-size: 200% 100%;
+    animation: math-skeleton 1.5s ease-in-out infinite;
+    opacity: 1 !important;
+    /* Ensure visibility */
+}
+
+@keyframes math-skeleton {
+    0% {
+        background-position: 200% 0;
+    }
+
+    100% {
+        background-position: -200% 0;
+    }
+}
+
+.math-source-chip {
+    position: absolute;
+    top: 8px;
+    right: 12px;
+    font-size: 11px;
+    font-weight: 950;
+    padding: 4px 12px;
+    border-radius: 999px;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    border: 1px solid var(--glass-border-strong);
+    background: var(--color-primary);
+    color: var(--color-primary-content);
+    box-shadow: 0 4px 16px oklch(from var(--color-primary) l c h / 0.4);
+    z-index: 20;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s ease, transform 0.2s var(--ease-spring);
+    transform: translateY(4px);
+}
+
+.math-inline:hover .math-source-chip,
+.math-block:hover .math-source-chip,
+.math-inline:focus-within .math-source-chip,
+.math-block:focus-within .math-source-chip,
+.math-block.show-source .math-source-chip {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0);
+}
+
+@media (pointer: coarse) {
+    .math-source-chip {
+        opacity: 1;
+        transform: none;
+        pointer-events: auto;
+    }
+}
+
+/* =========================================================
+   LATEX SOURCE VIEW — Unified with Code Block Styling
+   ========================================================= */
+
+.math-block.show-source,
+.math-inline.show-source {
+    display: block;
+    padding: 0;
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    text-align: left;
+    animation: source-reveal 0.3s var(--ease-spring);
+}
+
+@keyframes source-reveal {
+    from {
+        opacity: 0;
+        transform: translateY(6px) scale(0.99);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+/* LaTeX-specific: Enable text wrapping with hanging indent */
+.latex-source .code-fence.mockup-code pre {
+    white-space: pre-wrap !important;
+    word-break: break-word;
+    word-wrap: break-word;
+    padding-left: calc(var(--code-gutter, 3.5rem) + 1.5rem);
+    text-indent: -1.5rem;
+}
+
+/* LaTeX Syntax Highlighting - Premium Palette */
+.show-source .tex-command,
+.latex-source .tex-command {
+    color: var(--color-info);
+    font-weight: 700;
+    text-shadow: 0 0 12px oklch(from var(--color-info) l c h / 0.2);
+}
+
+.show-source .tex-brace,
+.latex-source .tex-brace {
+    color: var(--color-warning);
+    font-weight: 800;
+}
+
+.show-source .tex-operator,
+.latex-source .tex-operator {
+    color: var(--color-secondary);
+    font-weight: 700;
+}
+
+.show-source .tex-newline,
+.latex-source .tex-newline {
+    color: var(--color-error);
+    font-weight: 900;
+    background: oklch(from var(--color-error) l c h / 0.08);
+    padding: 0 4px;
+    border-radius: 4px;
+}
+
+.show-source .tex-escape,
+.latex-source .tex-escape {
+    color: var(--color-accent, var(--color-primary));
+    font-weight: 600;
+    opacity: 0.9;
+}
+
+.show-source .tex-greek,
+.latex-source .tex-greek {
+    color: oklch(0.75 0.15 150);
+    font-weight: 700;
+    font-style: italic;
+    text-shadow: 0 0 8px oklch(0.75 0.15 150 / 0.1);
+}
+
+.show-source .tex-function,
+.latex-source .tex-function {
+    color: oklch(0.65 0.25 260);
+    font-weight: 800;
+}
+
+.show-source .tex-symbol,
+.latex-source .tex-symbol {
+    color: oklch(0.7 0.2 30);
+    font-weight: 600;
+}
+
+.show-source .tex-env-cmd,
+.latex-source .tex-env-cmd {
+    color: var(--color-primary);
+    font-weight: 950;
+    text-shadow: 0 0 10px oklch(from var(--color-primary) l c h / 0.3);
+}
+
+.show-source .tex-env-name,
+.latex-source .tex-env-name {
+    color: var(--color-primary);
+    font-weight: 700;
+    font-style: italic;
+    opacity: 0.8;
+}
+
+.math-source-content {
+    display: inline-block;
+    padding: 0.5rem 0.75rem;
+    background: var(--code-bg, oklch(from var(--color-base-300) l c h / 0.8));
+    border: 1px solid var(--code-border, var(--glass-border-color));
+    border-radius: var(--radius-field, 0.75rem);
+    font-family: var(--font-mono);
+    font-size: 0.85em;
+    color: var(--code-fg);
+    user-select: text;
+    -webkit-user-select: text;
+    overflow-x: auto;
+    max-width: 100%;
+}
+
+/* =========================================================
+   COMMAND REFERENCE PANEL — Contextual LaTeX Guide
+   ========================================================= */
+
+.latex-ref-panel {
+    position: absolute;
+    top: 54px;
+    right: 12px;
+    width: 260px;
+    max-height: calc(100% - 70px);
+    background: oklch(from var(--color-base-200) l c h / 0.85);
+    backdrop-filter: blur(32px) saturate(1.8);
+    -webkit-backdrop-filter: blur(32px) saturate(1.8);
+    border: 1px solid var(--glass-border-color);
+    border-radius: 20px;
+    box-shadow:
+        0 20px 40px -10px rgba(0, 0, 0, 0.3),
+        var(--shadow-premium-lg);
+    z-index: 100;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    animation: ref-panel-reveal 0.4s var(--ease-spring);
+    transform-origin: top right;
+}
+
+.latex-ref-panel.hidden {
+    display: none;
+}
+
+@keyframes ref-panel-reveal {
+    from {
+        opacity: 0;
+        transform: scale(0.92) translateY(-10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+.ref-panel-header {
+    padding: 14px 18px;
+    background: oklch(from var(--color-base-content) l c h / 0.05);
+    border-bottom: 1px solid var(--glass-border-color);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.ref-panel-title {
+    font-size: 0.7rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    color: var(--color-primary);
+    opacity: 0.9;
+}
+
+.ref-panel-close {
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 8px;
+    opacity: 0.5;
+    transition: all 0.2s ease;
+    cursor: pointer;
+}
+
+.ref-panel-close:hover {
+    opacity: 1;
+    background: oklch(from var(--color-error) l c h / 0.12);
+    color: var(--color-error);
+    transform: rotate(90deg);
+}
+
+.ref-panel-content {
+    padding: 10px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    scrollbar-width: thin;
+}
+
+.ref-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 14px;
+    border-radius: 12px;
+    background: oklch(from var(--color-base-content) l c h / 0.02);
+    border: 1px solid transparent;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: help;
+}
+
+.ref-item:hover {
+    background: oklch(from var(--color-primary) l c h / 0.05);
+    border-color: oklch(from var(--color-primary) l c h / 0.1);
+    transform: translateX(4px);
+}
+
+.ref-item-cmd {
+    font-family: var(--font-mono);
+    font-size: 0.8rem;
+    font-weight: 800;
+    color: var(--color-info);
+    min-width: 60px;
+}
+
+.ref-item-desc {
+    font-size: 0.7rem;
+    font-weight: 500;
+    color: oklch(from var(--color-base-content) l c h / 0.55);
+    line-height: 1.4;
+}
+
+.ref-empty {
+    padding: 24px;
+    text-align: center;
+    font-size: 0.75rem;
+    color: oklch(from var(--color-base-content) l c h / 0.4);
+    font-style: italic;
+}
+
+/* End of math.css */

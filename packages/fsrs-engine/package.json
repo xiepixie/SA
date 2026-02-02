@@ -1,0 +1,21 @@
+{
+  "name": "@v2/fsrs-engine",
+  "version": "0.1.0",
+  "type": "module",
+  "main": "index.ts",
+  "types": "index.ts",
+  "exports": {
+    ".": "./index.ts",
+    "./ffi": "./ffi.ts"
+  },
+  "scripts": {
+    "build": "cargo build --release",
+    "build:debug": "cargo build",
+    "test": "cargo test",
+    "test:ts": "bun test",
+    "clean": "cargo clean"
+  },
+  "devDependencies": {
+    "bun-types": "latest"
+  }
+}

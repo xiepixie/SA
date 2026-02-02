@@ -1,0 +1,36 @@
+{
+  "compilerOptions": {
+    "target": "ESNext",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "lib": [
+      "ESNext",
+      "DOM",
+      "DOM.Iterable"
+    ],
+    "strict": true,
+    "baseUrl": ".",
+    "paths": {
+      "@v2/shared": [
+        "packages/shared/index.ts"
+      ],
+      "@v2/database": [
+        "packages/database/database.types.ts"
+      ],
+      "@v2/fsrs": [
+        "packages/fsrs-engine/ffi.ts"
+      ],
+      "@v2/server": [
+        "apps/server/src/index.ts"
+      ]
+    },
+    "types": [
+      "bun",
+      "vite/client"
+    ]
+  },
+  "include": [
+    "apps/**/*",
+    "packages/**/*"
+  ]
+}

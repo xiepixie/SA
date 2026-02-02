@@ -1,0 +1,340 @@
+/* =========================================================
+   TRANSITIONS — Page & View Transitions
+   ========================================================= */
+
+/* View Transition API */
+::view-transition-old(root),
+::view-transition-new(root) {
+    animation: none;
+    mix-blend-mode: normal;
+}
+
+::view-transition-new(root) {
+    z-index: 2147483646;
+}
+
+::view-transition-old(root) {
+    z-index: 1;
+}
+
+@supports (view-transition-name: root) {
+
+    ::view-transition-old(root),
+    ::view-transition-new(root) {
+        animation-duration: var(--route-in);
+        animation-timing-function: var(--route-ease);
+        mix-blend-mode: normal;
+    }
+
+    ::view-transition-old(root) {
+        animation-name: vt-old;
+    }
+
+    ::view-transition-new(root) {
+        animation-name: vt-new;
+    }
+
+    @keyframes vt-old {
+        from {
+            opacity: 1;
+            filter: blur(0);
+            transform: scale(1);
+        }
+
+        to {
+            opacity: 0;
+            filter: blur(10px);
+            transform: scale(.995);
+        }
+    }
+
+    @keyframes vt-new {
+        from {
+            opacity: 0;
+            filter: blur(10px);
+            transform: scale(.995);
+        }
+
+        to {
+            opacity: 1;
+            filter: blur(0);
+            transform: scale(1);
+        }
+    }
+
+    /* Disable default scale/blur transitions specifically for theme switching 
+       to prevent shaking and allow the custom clip-path ripple to take center stage. */
+    html.is-theme-switching::view-transition-old(root),
+    html.is-theme-switching::view-transition-new(root) {
+        animation: none;
+        transform: none;
+        filter: none;
+        mix-blend-mode: normal;
+        animation-duration: 500ms !important;
+    }
+}
+
+/* Page Stage */
+.sea .page-stage {
+    position: relative;
+    width: 100%;
+    perspective: 1000px;
+}
+
+/* Full-height pages (e.g., ReviewSession) - prevent double scrollbars */
+.sea .page-stage:has(.review-layout) {
+    height: 100%;
+}
+
+.sea .page-stage:has(.review-layout) .page-content {
+    height: 100%;
+}
+
+/* Disable parent scroll when ReviewSession is mounted */
+.sea .main-body:has(.review-layout) {
+    overflow: hidden;
+}
+
+.sea .page {
+    position: absolute;
+    inset: 0;
+    min-width: 0;
+    overflow: hidden;
+    will-change: transform, opacity, filter;
+}
+
+/* Page Enter/Exit */
+.sea .page-enter {
+    opacity: 0;
+    transform: translateY(var(--motion-distance-sm)) scale(var(--motion-scale-in));
+    filter: blur(10px);
+}
+
+.sea .page-enter-active {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: blur(0);
+    transition:
+        opacity var(--route-in) var(--route-ease),
+        transform var(--route-in) var(--route-ease-pop),
+        filter var(--route-in) var(--route-ease);
+}
+
+.sea .page-exit {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: blur(0);
+}
+
+.sea .page-exit-active {
+    opacity: 0;
+    transform: translateY(calc(var(--motion-distance-sm) * -1)) scale(var(--motion-scale-out));
+    filter: blur(10px);
+    transition:
+        opacity var(--route-out) var(--route-ease),
+        transform var(--route-out) var(--route-ease),
+        filter var(--route-out) var(--route-ease);
+}
+
+/* Directional Transitions */
+.sea .nav-push .page-enter {
+    transform: translateX(var(--motion-distance)) scale(0.995);
+}
+
+.sea .nav-push .page-exit-active {
+    transform: translateX(calc(var(--motion-distance) * -0.8)) scale(0.995);
+}
+
+.sea .nav-pop .page-enter {
+    transform: translateX(calc(var(--motion-distance) * -1)) scale(0.995);
+}
+
+.sea .nav-pop .page-exit-active {
+    transform: translateX(calc(var(--motion-distance) * 0.8)) scale(0.995);
+}
+
+.sea .nav-swap .page-enter {
+    opacity: 0;
+    transform: translateY(6px);
+    filter: blur(8px);
+}
+
+.sea .nav-swap .page-exit-active {
+    opacity: 0;
+    transform: translateY(-6px);
+    filter: blur(8px);
+}
+
+/* Page Content */
+.sea .page-content {
+    animation: page-content-in var(--route-in) var(--route-ease) both;
+}
+
+@keyframes page-content-in {
+    from {
+        opacity: 0;
+        transform: translateY(var(--motion-distance-sm));
+        filter: blur(6px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+        filter: blur(0);
+    }
+}
+
+.sea .nav-push .page-content,
+.sea .nav-pop .page-content {
+    animation-name: page-enter;
+}
+
+@keyframes page-enter {
+    from {
+        opacity: 0;
+        transform: translateY(8px) scale(0.995);
+        filter: blur(12px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+        filter: blur(0);
+    }
+}
+
+/* Theme Switching Optimization: High Fidelity & Low Latency */
+@property --glass-bg {
+    syntax: "<color>";
+    inherits: true;
+    initial-value: oklch(100% 0 0 / 0.6);
+}
+
+@property --glass-border-color {
+    syntax: "<color>";
+    inherits: true;
+    initial-value: oklch(100% 0 0 / 0.1);
+}
+
+/* 1. Prevent Layout Shaking during theme switch */
+html.is-theme-switching {
+    scrollbar-gutter: stable;
+    /* overflow: hidden; */
+    /* Only hide overflow if really necessary to avoid jitter */
+}
+
+/* 2. Default state: No global transitions to avoid accidental interpolation during daily interaction */
+.sea .sidebar,
+.sea .main,
+.sea .glass-surface,
+.sea .nav-item,
+.sea .sidebar-header,
+.sea .sidebar-footer,
+.sea .btn,
+.sea .input,
+.sea .alert {
+    transition: none;
+}
+
+/* 3. Theme switching state: DISABLE CSS Transitions to avoid clashing with View Transition Ripple.
+   The ripple handles 100% of the movement. */
+html.is-theme-switching .sea,
+html.is-theme-switching .sea *,
+html.is-theme-switching .sea .sidebar,
+html.is-theme-switching .sea .main,
+html.is-theme-switching .sea .glass-surface,
+html.is-theme-switching .sea .nav-item,
+html.is-theme-switching .sea .sidebar-header,
+html.is-theme-switching .sea .sidebar-footer,
+html.is-theme-switching .sea .btn,
+html.is-theme-switching .sea .input,
+html.is-theme-switching .sea .alert {
+    transition: none !important;
+    /* Degrade backdrop-filter to avoid GPU re-composition lag during heavy ripple */
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+}
+
+/* 4. Local Interaction Transitions: Keep these for hover/active states */
+.sea .btn,
+.sea .nav-item {
+    transition:
+        background-color var(--dur-2) var(--ease-smooth),
+        color var(--dur-2) var(--ease-smooth),
+        transform var(--dur-2) var(--ease-spring),
+        box-shadow var(--dur-2) var(--ease-smooth),
+        filter var(--dur-2) var(--ease-smooth);
+}
+
+.sea .glass-card {
+    transition:
+        transform .22s var(--ease-spring),
+        box-shadow .22s var(--ease-smooth),
+        border-color .22s var(--ease-smooth),
+        background-color .22s var(--ease-smooth);
+}
+
+.sea .text-gradient,
+.sea .nav-item.active,
+.sea .rating-btn:hover {
+    transition:
+        color var(--theme-dur) var(--theme-ease),
+        background-color var(--theme-dur) var(--theme-ease),
+        box-shadow var(--theme-dur) var(--theme-ease),
+        border-color var(--theme-dur) var(--theme-ease);
+}
+
+/* Popover / Dropdown */
+.sea .dropdown-content {
+    transform-origin: top center;
+    animation: popover-in var(--dur-2) var(--ease-spring) both;
+}
+
+@keyframes popover-in {
+    from {
+        opacity: 0;
+        transform: translateY(8px) scale(.985);
+        filter: blur(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+        filter: blur(0);
+    }
+}
+
+/* Review Layout Responsive */
+@media (max-width: 1024px) {
+    .sea .review-layout {
+        grid-template-columns: 320px minmax(0, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .sea .review-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .sea .review-queue {
+        display: none;
+    }
+}
+
+/* Reduced Motion */
+@media (prefers-reduced-motion: reduce) {
+
+    .sea,
+    .sea .glass-surface,
+    .sea .glass-card,
+    .sea .glass-inline,
+    .sea .btn,
+    .sea .input,
+    .sea .select,
+    .sea .textarea,
+    .sea .nav-item,
+    .sea .chip,
+    .sea .se-badge {
+        transition: none !important;
+    }
+}

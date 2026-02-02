@@ -1,0 +1,1904 @@
+{
+    "nav": {
+        "sections": {
+            "main": "Navigation",
+            "systems": "System"
+        },
+        "items": {
+            "welcome": "Home",
+            "dashboard": "Dashboard",
+            "review": "Daily Review",
+            "exams": "Exams",
+            "questions": "Library",
+            "import": "Import",
+            "sync": "Sync",
+            "manage": "Management",
+            "settings": "Settings"
+        },
+        "sidebar": "Sidebar",
+        "startReview": "Start Review",
+        "openMenu": "Open Menu",
+        "collapse": "Collapse sidebar (Cmd+B)",
+        "expand": "Expand sidebar (Cmd+B)",
+        "signOut": "Sign Out",
+        "logout": {
+            "title": "Sign Out?",
+            "description": "You will need to sign in again to access your data."
+        }
+    },
+    "common": {
+        "untitled": "Untitled",
+        "actions": {
+            "save": "Save Changes",
+            "cancel": "Cancel",
+            "confirm": "Confirm",
+            "close": "Close",
+            "dismiss": "Dismiss",
+            "delete": "Delete",
+            "retry": "Retry",
+            "search": "Search",
+            "copy": "Copy",
+            "reset": "Reset",
+            "add": "Add",
+            "exit": "Exit",
+            "edit": "Edit",
+            "type": "Type",
+            "actions": "Actions",
+            "clear_all": "Clear All",
+            "undo": "Undo",
+            "remove": "Remove",
+            "click_to_view": "Click to Resolve",
+            "locate": "Locate",
+            "collapse": "Collapse",
+            "expand": "Expand",
+            "retry_failed": "Retry Failed",
+            "back_to_dashboard": "Back to Dashboard"
+        },
+        "search": "Search",
+        "loading": "Loading...",
+        "auto_save": "Auto-saved",
+        "status": {
+            "loading": "Loading...",
+            "error": "Error",
+            "success": "Complete",
+            "ready": "Ready",
+            "copied": "Copied",
+            "in_progress": "In Progress",
+            "completed": "Completed",
+            "abandoned": "Abandoned",
+            "time_est": "EST. TIME",
+            "weak": "WEAKNESS",
+            "items": "items",
+            "minutes_short": "m",
+            "locked": "Locked",
+            "processing": "Processing"
+        },
+        "units": {
+            "cards_per_day": "Items / Day",
+            "days_abbr": "d"
+        },
+        "search_placeholder": "Type to filter results…",
+        "no_results": "No records match your search",
+        "all": "All Categories",
+        "recommended": "Recommended",
+        "experimental": "Technical Preview",
+        "standard": "Standard Specification",
+        "general": {
+            "all": "Comprehensive",
+            "unknown": "Unclassified",
+            "universal": "Universal"
+        },
+        "continents": {
+            "asia_oceania": "Asia & Oceania",
+            "europe_africa": "Europe & Africa",
+            "americas": "Americas",
+            "system": "System Default"
+        },
+        "time": {
+            "just_now": "Moments ago",
+            "mins_ago": "{{count}}m ago",
+            "hours_ago": "{{count}}h ago",
+            "yesterday": "Yesterday",
+            "days_ago": "{{count}}d ago"
+        },
+        "time_left": "{{hours}}h {{minutes}}m remaining",
+        "copy": "Copy",
+        "difficulty": {
+            "easy": "Foundational",
+            "medium": "Intermediate",
+            "hard": "Advanced"
+        },
+        "type": {
+            "choice": "Selective Response",
+            "fill_blank": "Cloze Deletion",
+            "short_answer": "Open Response"
+        },
+        "toast": {
+            "info": "Notification",
+            "success": "Success",
+            "warning": "Warning",
+            "error": "Error"
+        },
+        "subjects": "Subjects",
+        "tags": "Tags",
+        "archive": "Archive",
+        "delete": "Delete"
+    },
+    "markdown": {
+        "notifications": {
+            "tex_copied": "TeX Formula copied to clipboard",
+            "code_copied": "Code copied",
+            "code_lines_copied": "Copied {{count}} selected lines",
+            "latex_source_copied": "LaTeX source copied",
+            "copy_failed": "Copy failed",
+            "copy_failed_manual": "Copy failed. Please long-press to select text and copy manually"
+        }
+    },
+    "renderer": {
+        "header": {
+            "echo": "Echo",
+            "last_mistake": "Last Wrong Response"
+        },
+        "hints": {
+            "fragment": "Hint Segment {{n}}",
+            "get_hint": "Request Logical Hint",
+            "refine_logic": "Refine Solution Logic"
+        },
+        "analysis": {
+            "title": "Analysis",
+            "reconstruction_complete": "Analysis Complete",
+            "valid": "Correct",
+            "fallacy": "Incorrect",
+            "no_analysis": "No analysis available for this question."
+        },
+        "fill_blank": {
+            "placeholder": "Input variable…",
+            "blank_label": "Blank #{{index}}",
+            "correct": "Correct Answer",
+            "match": "Correct",
+            "miss": "Incorrect",
+            "expected": "Expected",
+            "enter_hint": "Press Enter to check"
+        },
+        "short_answer": {
+            "placeholder": "Commit descriptive response…",
+            "your_answer": "Your Answer",
+            "model_answer": "Model Answer",
+            "no_reference": "No reference answer available"
+        },
+        "question": "Question",
+        "answer_explanation": "Answer & Explanation",
+        "empty": {
+            "title": "No Content"
+        },
+        "sections": {
+            "content": "Question Content",
+            "interaction": "Your Answer",
+            "explanation": "Detailed Analysis",
+            "expert_insight": "Expert Analysis",
+            "hints": "Thought Process",
+            "answer_visual": "Reference Visual"
+        },
+        "answer": {
+            "reveal": "Reveal Solution",
+            "reset": "Reset Interaction"
+        }
+    },
+    "dashboard": {
+        "overdue_warning": "{{count}} overdue",
+        "on_track": "On track",
+        "all_clear": {
+            "title": "SYSTEM CLEAR",
+            "subtitle": "Retention maintained at peak efficiency."
+        },
+        "metrics": {
+            "pulse": "Due Today",
+            "stability": "Memory Stability",
+            "persistence": "Streak Days",
+            "base": "Total Cards"
+        },
+        "retention": {
+            "title": "Retention Analysis",
+            "desc": "Statistical distribution of memory stability.",
+            "avg_stability": "Mean Stability",
+            "peak_accuracy": "Peak Recall",
+            "overdue_drift": "Latency Impact",
+            "sync_health": "Cloud Integrity",
+            "efficiency": "Efficiency",
+            "volume": "Volume"
+        },
+        "subjects": {
+            "title": "Subject Distribution",
+            "empty": "No subjects yet. Import questions to get started."
+        },
+        "discipline": {
+            "title": "Learning Patterns",
+            "footer": "Last 42-day cycle",
+            "last_42_days": "Last 42 Days",
+            "reviews": "reviews",
+            "active_rate": "Active Rate",
+            "efficiency": "Efficiency",
+            "active": "Active"
+        },
+        "milestone": {
+            "title": "Performance Milestone",
+            "desc": "You successfully stabilized <1>{{count}} concepts</1> within the last 7-day period."
+        },
+        "insight": {
+            "title": "Learning Insights",
+            "desc": "Analysis of your last <1>{{count}} interactions</1> suggests an optimal recall target of <2>{{percentage}}%</2>.",
+            "drift": "Decay Adjustment",
+            "sync": "Scheduling Optimization (FSRS)",
+            "density": "Workload",
+            "target_accuracy": "Target Precision",
+            "suggested_action": "Strategic Action",
+            "action_focus": "Prioritize the bottom 20% stability quartile",
+            "action_rest": "Learning queue cleared. We recommend periodic rest.",
+            "act_now": "Act Now"
+        },
+        "quality": {
+            "title": "Diagnostic Metrics",
+            "lapse_rate": "Retention Failure Rate",
+            "new_traps": "Critical Vulnerabilities",
+            "new_traps_desc": "High-frequency errors identified in the last 7 days."
+        }
+    },
+    "welcome": {
+        "default_username": "Practitioner",
+        "greeting": {
+            "morning": "Good morning",
+            "afternoon": "Good afternoon",
+            "evening": "Good evening",
+            "night": "Good evening"
+        },
+        "hero": {
+            "badge": "Active Workspace",
+            "title": "Manage your",
+            "subtitle": "Knowledge Base.",
+            "status": "{{count}} items are pending review. Synchronize now to maintain data consistency.",
+            "btn_review": "Initiate Review",
+            "btn_analyze": "View Analytics"
+        },
+        "states": {
+            "loading": {
+                "desc": "Synchronizing laboratory data…"
+            },
+            "ready": {
+                "badge": "Pending",
+                "title": "Session Available",
+                "btn": "Start Session",
+                "segmented_hint": "Distributed practice yields 20% higher retention."
+            },
+            "clear": {
+                "badge": "Optimized",
+                "title": "Queue Synchronized",
+                "desc": "All scheduled tasks for today have been completed.",
+                "btn_practice": "Extra Practice",
+                "btn_browse": "Browse Repository"
+            },
+            "empty": {
+                "badge": "Initialization",
+                "title": "System Cold Start",
+                "desc": "Import structured data to initialize your knowledge repository.",
+                "btn_import": "Import Data"
+            }
+        },
+        "onboarding": {
+            "step1": "Import structured source files",
+            "step2": "Initialize memory cards",
+            "step3": "Start scheduled review"
+        },
+        "quick_actions": {
+            "recommended": "Primary Path",
+            "quick_access": "Rapid Navigation",
+            "review": {
+                "title": "Daily Review",
+                "desc": "{{count}} pending",
+                "desc_empty": "System optimized",
+                "benefit": "Estimated duration: {{time}}m",
+                "unit": "pending"
+            },
+            "library": {
+                "title": "Repository",
+                "desc": "Browse knowledge base",
+                "benefit": "Categorize and archive structured intelligence."
+            },
+            "matrix": {
+                "title": "Analytics",
+                "desc": "Performance variance",
+                "benefit": "Identify structural weaknesses in memory."
+            },
+            "import": {
+                "title": "Data Import",
+                "desc": "Ingest external data",
+                "benefit": "Convert raw materials into practice units.",
+                "status_running": "Processing data pipeline…"
+            },
+            "access_now": "Enter"
+        },
+        "timer": {
+            "daily": "Cycle Reset",
+            "custom": "Target Deadline",
+            "days": "Days",
+            "hours": "Hours",
+            "min": "Min",
+            "sec": "Sec",
+            "event_label": "Milestone Title",
+            "event_placeholder": "e.g., Examination, Project Deadline…"
+        },
+        "sessions": {
+            "short": "Concentrated Session",
+            "urgent": "Intensive Review"
+        },
+        "footer": {
+            "active_nodes": "Active Knowledge Units",
+            "nodes_synced": "{{count}} units synchronized",
+            "stability": "Global Stability",
+            "latency": "Response Latency",
+            "insight_ready": "Intelligence Ready",
+            "insight_desc": "Latest optimization parameters have been calculated."
+        }
+    },
+    "review": {
+        "exit": "Exit",
+        "exit_confirm": "You've reviewed {{reviewed}} items with {{remaining}} remaining. Are you sure you want to exit?",
+        "undo": "Undo Last Rating",
+        "queue": {
+            "title": "Question List",
+            "pending": "Queued",
+            "remaining": "{{count}} items remaining"
+        },
+        "card": {
+            "badge": "Review Active",
+            "status": "Inquiry",
+            "btn_reveal": "Display Solution (Space)",
+            "no_explanation": "No supplementary analysis available."
+        },
+        "answer": {
+            "divider": "Analysis",
+            "title": "Reference Solution",
+            "no_explanation": "No detailed technical analysis provided."
+        },
+        "rating": {
+            "again": "Again",
+            "hard": "Hard",
+            "good": "Good",
+            "easy": "Easy",
+            "footer": "Engagement feedback will optimize the next exposure interval."
+        },
+        "action": {
+            "confirm_choice": "Confirm Selection",
+            "evaluate": "Verify Response",
+            "show_answer": "Reveal Solution",
+            "reveal_answer": "Reveal Answer"
+        },
+        "shortcut": {
+            "reveal": "Reveal",
+            "rate": "Assess"
+        },
+        "setup": {
+            "badge": "Review Planner",
+            "title": "Choose Your Review Strategy",
+            "desc": "Select a prioritization method based on the FSRS spaced repetition algorithm to study more efficiently.",
+            "mode_selection": "Algorithm Strategy",
+            "items": "Due for Review",
+            "start_prefix": "Ready",
+            "start_btn": "Start Review",
+            "estimated": "Estimated time",
+            "intel_title": "Session Intelligence",
+            "pending_items": "Pending Units",
+            "workload": "Memory Burden",
+            "forecast_7d": "7D Forecast",
+            "tip": "Pro Tip: 'Optimal' mode uses the FSRS engine to prioritize items with the highest projected decay."
+        },
+        "sort": {
+            "optimal": {
+                "label": "Recommended",
+                "desc": "Balances urgency and difficulty to prioritize items that need the most attention."
+            },
+            "overdue": {
+                "label": "Overdue First",
+                "desc": "Sorts by how long items are past due, tackling the most delayed ones first."
+            },
+            "weakness": {
+                "label": "Weakest First",
+                "desc": "Focuses on items with the lowest retention, helping you strengthen weak spots."
+            },
+            "challenge": {
+                "label": "Hardest First",
+                "desc": "Tackles the most difficult items first while your focus is sharpest."
+            },
+            "fresh": {
+                "label": "Newest First",
+                "desc": "Reviews recently added items first to reinforce new learning."
+            },
+            "random": {
+                "label": "Random Order",
+                "desc": "Shuffles the order to simulate real test conditions and improve flexibility."
+            }
+        },
+        "hints": {
+            "need_hint": "Request Hint?",
+            "all_revealed": "All hints exposed",
+            "reveal_next": "Expose Hint {{n}}"
+        },
+        "complete": {
+            "title": "Session Mastered",
+            "subtitle": "Knowledge points have been consolidated into your long-term memory.",
+            "badge": "Session Complete",
+            "analysis_title": "Retention Insights",
+            "analysis_subtitle": "Memory Distribution",
+            "engine_tag": "FSRS v4.0 Algorithm",
+            "health_label": "Session Health",
+            "health_value": "EXCELLENT",
+            "quote": "Consistency is the catalyst for long-term retention.",
+            "streak_title": "Level Up!",
+            "next_session_hint": "Next session in 4 hours",
+            "accuracy": "Accuracy",
+            "reviewed": "Reviewed",
+            "streak": "Max Streak",
+            "time": "Total Time",
+            "btn_again": "Review Again",
+            "btn_dashboard": "Return to Dashboard"
+        },
+        "loading": {
+            "title": "Loading Review Queue",
+            "desc": "Fetching your study data...",
+            "insight_1": "Loading review algorithm...",
+            "insight_2": "Analyzing memory state...",
+            "insight_3": "Calculating optimal order...",
+            "insight_4": "Preparing review content..."
+        },
+        "empty": {
+            "title": "All Caught Up",
+            "desc": "Excellent! No cards are due for review right now. You can add new questions to your library or check back later.",
+            "btn_dashboard": "Return to Dashboard",
+            "btn_library": "Visit Library",
+            "hint": "New reviews will be scheduled automatically by the FSRS algorithm"
+        },
+        "early": {
+            "title": "Want to keep studying?",
+            "upcoming": "Next 3 Days",
+            "all": "All Cards",
+            "warning": "Early review may affect optimal FSRS scheduling"
+        },
+        "mode": {
+            "due": "Due Reviews",
+            "upcoming": "Next 3 Days",
+            "all": "All",
+            "reset": "Return to due reviews"
+        },
+        "state": {
+            "new": "New",
+            "learning": "Learning",
+            "review": "Review",
+            "relearning": "Relearning"
+        }
+    },
+    "import": {
+        "upload": {
+            "badge": "Import",
+            "title_main": "Build your",
+            "title_accent": "Knowledge Base",
+            "desc": "Support Markdown, JSON, or plain text. We'll automatically convert your notes into cards.",
+            "dropzone": "Drop files here or click to upload",
+            "dropzone_hint": "Support .md, .json, .txt (Max 10MB)",
+            "drop_hint": "or drag and drop files here",
+            "btn_select": "Select File",
+            "label_csv_template": "CSV TEMPLATE",
+            "label_json_template": "JSON TEMPLATE",
+            "tip_title": "Pro Tip",
+            "tip_desc": "Stay atomic: one card, one concept. This significantly boosts long-term recall efficiency.",
+            "security_title": "Private & Secure",
+            "security_desc": "Your data remains private. Never used for training.",
+            "privacy_title": "Local Processing",
+            "privacy_desc": "Your data is processed locally in your browser for maximum privacy.",
+            "resources_title": "Templates",
+            "resources_desc": "Download templates for easier data import.",
+            "resource_template": "Download Template",
+            "resource_guide": "Formatting Guide",
+            "csv_title": "CSV Template",
+            "csv_desc": "Spreadsheet format",
+            "json_title": "JSON Structure",
+            "json_desc": "Hierarchical data",
+            "features_title": "Key Features",
+            "feature_taxonomy": "Auto Tagging",
+            "feature_taxonomy_desc": "Automatic tag extraction from content.",
+            "feature_preview": "Live Preview",
+            "feature_preview_desc": "See exactly how cards will look during study.",
+            "feature_validation": "Validation",
+            "feature_validation_desc": "Real-time error checking before importing.",
+            "tab_file": "File Upload",
+            "tab_paste": "Plain Text",
+            "formats_hint": "Supports .CSV, .JSON",
+            "paste_ph": "Paste your JSON or CSV content here...",
+            "paste_hint_title": "Smart Detection",
+            "paste_hint_desc": "Automatically detects structure",
+            "btn_analyze": "Analyze Content"
+        },
+        "preview": {
+            "title": "Import Preview",
+            "studio_pipeline": "Records",
+            "stats": "{{count}} items found",
+            "status_critical": "Errors",
+            "status_warnings": "Warnings",
+            "status_ready": "Ready to Import",
+            "btn_optimize": "Auto Fix",
+            "btn_deploy_pipeline": "Start Import ({{count}})",
+            "stats_label": "Items",
+            "search_ph": "Search...",
+            "ph_search": "Search items...",
+            "filter_all": "All Items",
+            "filter_error": "Errors",
+            "filter_warning": "Warnings",
+            "untitled_object": "Untitled Question",
+            "live_workspace": "Workspace",
+            "draft_item": "Draft",
+            "mode_preview": "Preview",
+            "mode_structure": "Fields",
+            "mode_source": "Source",
+            "answer_visible": "Answer Visible",
+            "show_answer": "Show Answer",
+            "simulation": "Preview",
+            "neural_interaction": "Interaction",
+            "detailed_insight": "Details",
+            "property_inspector": "Item Properties",
+            "btn_delete": "Delete Item",
+            "tags_ph_empty": "Add tags...",
+            "tags_ph_add": "Add...",
+            "simulation_view": "Simulation Preview",
+            "simulation_badge": "SIMULATION",
+            "btn_prev_problem": "Previous Item",
+            "btn_next_problem": "Next Item",
+            "label_toggle": "COLAPSE/EXPAND",
+            "label_markdown": "Markdown Engine",
+            "label_json_schema": "JSON Schema",
+            "label_json_logic": "JSON Logic",
+            "json_error": "Invalid JSON syntax",
+            "btn_import_items": "Import {{count}} Items",
+            "status_skipped": "{{count}} skipped",
+            "status_importing": "Importing...",
+            "status_blocked": "Please resolve errors before importing",
+            "status_verified": "Validated",
+            "errors": "{{count}} Errors",
+            "warnings": "{{count}} Warnings",
+            "btn_import": "Import ({{count}})",
+            "btn_preview": "Visual",
+            "btn_edit": "Form",
+            "validation_required": "Actions Required",
+            "validation_suggestions": "Suggestions",
+            "no_content": "No content",
+            "correct_answer": "Correct Answer",
+            "explanation": "Explanation",
+            "no_explanation": "No explanation available.",
+            "field_title": "Title",
+            "field_difficulty": "Difficulty",
+            "field_type": "Type",
+            "field_content": "Question Content",
+            "field_answer": "Correct Answer (JSON)",
+            "field_explanation": "Explanation",
+            "field_tags": "Tags",
+            "ph_title": "Enter title...",
+            "ph_content": "Enter question content...",
+            "ph_explanation": "Enter explanation...",
+            "raw_snapshot": "Raw Data",
+            "btn_export_json": "Export JSON",
+            "field_subject": "Subject",
+            "ph_subject": "Enter subject name...",
+            "advanced_data": "Raw Data",
+            "field_hints": "Hints",
+            "field_metadata": "Metadata",
+            "label_row": "ROW",
+            "label_units": "ITEMS",
+            "status_blocked_upper": "BLOCKED",
+            "status_issues_upper": "{{count}} ISSUES",
+            "core_config": "Basic Info",
+            "section_images": "Media",
+            "field_image_url": "Question Image",
+            "field_explanation_image_url": "Explanation Image",
+            "guided_editor": "Field Editor",
+            "source_editor": "JSON Editor",
+            "editor_mode_guided": "Form",
+            "editor_mode_source": "JSON",
+            "click_to_view": "Click to locate"
+        },
+        "importing": {
+            "title": "Importing Questions",
+            "preparing": "Processing data...",
+            "inserting": "Saving to database...",
+            "processing": "Processing..."
+        },
+        "done": {
+            "title": "Import Successful",
+            "title_failed": "Import Failed",
+            "desc": "Questions have been successfully imported into your library.",
+            "desc_failed": "An error occurred during import. Please check the report.",
+            "desc_partial": "Partial success. Some items require attention.",
+            "stat_imported": "Imported",
+            "stat_failed": "Failed",
+            "stat_cards": "Cards Created",
+            "error_details": "Error Details",
+            "row": "Row {{count}}",
+            "btn_more": "Import More",
+            "btn_view": "View Library",
+            "btn_review": "Start Study"
+        },
+        "steps": {
+            "upload": "Upload",
+            "preview": "Preview",
+            "done": "Complete"
+        }
+    },
+    "quick_import": {
+        "title": "Express Import",
+        "subtitle": "JSON Object Ingestion",
+        "input_label": "Payload Editor",
+        "input_format": "JSON Specification",
+        "placeholder": "[{\"title\": \"Identifier\", \"question_type\": \"choice\", \"difficulty\": \"medium\", ...}]",
+        "full_mode": "Standard Mode",
+        "cancel": "Abort",
+        "close": "Close",
+        "btn_import": "Execute Ingestion",
+        "verifying": "Validating Schema…",
+        "importing": "Committing Data…",
+        "success": "Successfully integrated {{count}} units.",
+        "skipped": "{{count}} records rejected due to validation failure.",
+        "error_title": "Ingestion Failure",
+        "more_errors": "+ {{count}} additional conflicts",
+        "help_req": "Mandatory:",
+        "help_opt": "Optional:",
+        "help_req_fields": "title",
+        "help_opt_fields": "question_type, difficulty, content, answer, explanation, tags"
+    },
+    "library": {
+        "question": "Question",
+        "question_list": "Question List",
+        "select_question": "Select Question: {{title}}",
+        "status": {
+            "overdue": "Overdue",
+            "due": "Due Today",
+            "new": "New Unit",
+            "mastery": "Mastered"
+        },
+        "search_placeholder": "Query repository or metadata…",
+        "stats": {
+            "count": "{{count}} records",
+            "total": "Total"
+        },
+        "toolbar": {
+            "select_mode": "Select Mode",
+            "exit_select": "Cancel",
+            "bulk_inspector": "Batch Diagnostic",
+            "select_all": "Select All",
+            "tags": "Metadata Filters…",
+            "batch_actions": "BATCH OPERATIONS ENABLED"
+        },
+        "filters": {
+            "all": "All Units",
+            "all_types": "All Classifications",
+            "choice": "Selective",
+            "fill_blank": "Cloze",
+            "short_answer": "Open",
+            "status": {
+                "all": "Global Status",
+                "overdue": "Critical Latency",
+                "due": "Due Today",
+                "new": "Uninitialized"
+            },
+            "type": "Classification",
+            "subject_select": "Select Subject",
+            "all_subjects": "All Subjects",
+            "no_tags": "No Tags Found",
+            "active": "Active Filters",
+            "clear_all": "Clear All"
+        },
+        "sort": {
+            "smart": "Cognitive Priority",
+            "smart_desc": "Latency → Due → Uninitialized",
+            "due_soonest": "Chronological Due",
+            "lowest_mastery": "Lowest Proficiency",
+            "least_stable": "Lowest Stability",
+            "most_reviewed": "Exposure Count"
+        },
+        "select_hints": {
+            "range": "Select Interval",
+            "multi": "Multi-selection",
+            "exit": "Deactivate Select Mode"
+        },
+        "bulk": {
+            "scope": "Current view selection",
+            "select_all": "Select All",
+            "deselect_all": "Deselect All",
+            "confirm_delete": "Delete",
+            "items": "items",
+            "items_count": "{{count}} items selected",
+            "edit": "Edit"
+        },
+        "grid": {
+            "empty": "No matching records found",
+            "empty_desc": "Modify filter parameters or ingest new data.",
+            "selection_banner": {
+                "active": "Batch Operations Active",
+                "hint": "Click to select · Shift + Click for range · Esc to abort",
+                "clear": "Clear Selection"
+            },
+            "selection_count": "Selected {{count}} of {{total}}"
+        },
+        "card": {
+            "untitled": "Unidentified Unit",
+            "no_content": "No descriptor provided",
+            "difficulty": {
+                "easy": "Foundational",
+                "medium": "Intermediate",
+                "hard": "Advanced",
+                "med": "Int.",
+                "title": "Complexity"
+            },
+            "due": {
+                "in": "In {{days}} days",
+                "ago": "{{days}} days latent",
+                "overdue": "Overdue",
+                "today": "Today",
+                "tomorrow": "Tomorrow"
+            },
+            "metrics": {
+                "stability": "Stability",
+                "mastery": "Proficiency",
+                "reviews": "Exposures"
+            }
+        },
+        "inspector": {
+            "badge": "Question Details",
+            "content": "Inquiry Content",
+            "logic": "Rational Analysis",
+            "logic_pending": "No analysis committed",
+            "btn_evaluate": "Trigger Review",
+            "interactive_preview": "Operational Preview",
+            "ready_to_inspect": "Ready to Inspect",
+            "select_guide": "Select any item from the grid to view its details.",
+            "modes": {
+                "preview": "Verification",
+                "edit": "Modification",
+                "meta": "Learning Data"
+            },
+            "mode_switcher": "View mode",
+            "navigation": {
+                "prev": "Previous",
+                "next": "Next"
+            },
+            "meta": {
+                "title": "Study Metrics",
+                "type": "Classification",
+                "stability": "Memory Stability",
+                "stability_unit": "(days)",
+                "half_life": "Half-life",
+                "reviews": "Review Count",
+                "reps": "Total Repetitions",
+                "lapses": "Forgotten Count",
+                "state": "Study State",
+                "mastery": "Mastery",
+                "next_session": "Scheduled For",
+                "not_scheduled": "Not Scheduled",
+                "ready_now": "Ready for Review",
+                "history": "Recent Activity",
+                "estimated_recall": "Estimated time until retention drops to 90%",
+                "lifecycle": "Card Lifecycle",
+                "created_at": "Created On",
+                "last_review": "Last Studied",
+                "never_reviewed": "Never Reviewed",
+                "technical": "Metadata",
+                "content_hash": "Data Fingerprint",
+                "last_synced_hash": "Sync Hash",
+                "integrity_check": "Data Integrity",
+                "integrity_match": "VALIDATED",
+                "history_hint": "Detailed logs coming soon"
+            },
+            "edit": {
+                "title": "Edit Question",
+                "advanced": "Advanced Fields",
+                "unsaved": "Unsaved changes",
+                "synced": "Changes Synced",
+                "label_title": "Title",
+                "label_answers": "Answers",
+                "ph_title": "Question identifier",
+                "ph_correct": "Correct answer (multi-line supported)…",
+                "ph_wrong": "Common misconceptions…",
+                "ph_md": "# Use Markdown structure…",
+                "ph_explain": "Enter final solution, strategy, and comprehensive explanation...",
+                "ph_model_answer": "Reference standard answer...",
+                "label_correct": "Correct Answer",
+                "label_mistake": "Option Analysis",
+                "label_type": "Classification",
+                "label_tags": "Metadata",
+                "label_content": "Question Content (Markdown)",
+                "label_meta": "Metadata (JSON)",
+                "label_explanation": "Explanation",
+                "explanation_title": "Analysis & Explanation",
+                "choices_title": "Choice Options",
+                "choices_hint": "Toggle number to mark correct",
+                "choice_placeholder": "Option content...",
+                "why_choice": "Explain why this option is correct/wrong...",
+                "add_choice": "Add Choice",
+                "hints_title": "Logic Hints",
+                "hints_hint": "Step-by-step guidance",
+                "hint_placeholder": "Hint content...",
+                "add_hint": "Add Step Hint",
+                "no_correct_warning": "Please mark at least one correct answer",
+                "blanks_title": "Fill-in Answers",
+                "blanks_hint": "One answer per blank in order",
+                "blank_placeholder": "Answer...",
+                "add_blank": "Add Blank",
+                "short_answer_title": "Reference Answer",
+                "mark_correct": "Mark as Correct",
+                "unmark_correct": "Unmark Correct",
+                "swap": "Swap",
+                "live_preview": "Live Preview",
+                "edit_source": "Source Editor",
+                "btn_save": "Save Changes",
+                "btn_saved": "Saved"
+            },
+            "bulk": {
+                "title": "Bulk Actions",
+                "selected": "{{count}} items selected",
+                "composition": "Distribution",
+                "common_state": "Common State",
+                "avg_stability": "Average Stability",
+                "mixed": "Mixed Types",
+                "batch_ops": "Quick Update",
+                "update_difficulty": "Update Difficulty",
+                "manage_tags": "Manage Tags",
+                "tags_append_hint": "Tags will be added to existing ones",
+                "warning": "Applying change to {{count}} items. This action is irreversible.",
+                "apply": "Apply Changes"
+            }
+        },
+        "unsaved_modal": {
+            "title": "Unsaved Changes",
+            "description": "The current question has unsaved modifications. Leaving will discard your work.",
+            "fields_label": "Changed Fields",
+            "btn_cancel": "Go Back",
+            "btn_discard": "Discard Changes",
+            "btn_save": "Save & Continue"
+        },
+        "filter_by_subject": "Filter by this subject",
+        "filter_by_tag": "Filter by this tag"
+    },
+    "exams": {
+        "header": {
+            "title": "Exams",
+            "subtitle": "Create and manage tests from your question library",
+            "btn_create": "Create Exam"
+        },
+        "stats": {
+            "total_exams": "Total Exams",
+            "total_exams_tooltip": "Total number of completed tests.",
+            "avg_score": "Average Score",
+            "avg_score_tooltip": "Your average precision across all tests.",
+            "streak": "Study Streak",
+            "streak_tooltip": "Consecutive days of taking exams.",
+            "total_time": "Total Time Spent",
+            "total_time_tooltip": "Cumulative time spent on formal testing.",
+            "weak_subjects": "Weak Subjects",
+            "weak_subjects_tooltip": "Areas where you frequently make mistakes."
+        },
+        "create": {
+            "quick_start": "Quick Start",
+            "custom_config": "Custom Settings",
+            "title": "Create New Exam",
+            "step_info": "Step {{current}} / {{total}}",
+            "btn_generate": "Generate Exam"
+        },
+        "milestone": {
+            "title": "Progress Milestone",
+            "desc": "Tracking your proficiency growth over time.",
+            "streak_unit": "{{count}} days",
+            "excellent": "Excellent Performance"
+        },
+        "generate_title": {
+            "general": "General",
+            "practice": "Practice",
+            "comprehensive": "Comprehensive"
+        },
+        "modes": {
+            "eval": {
+                "title": "Exam Mode",
+                "desc": "Hide feedback until submission. Best for formal testing."
+            },
+            "drill": {
+                "title": "Practice Mode",
+                "desc": "Get instant feedback after each response."
+            }
+        },
+        "list": {
+            "title": "Recent Exams",
+            "view_report": "View Report",
+            "duration": "Duration: {{m}}m {{s}}s",
+            "score": "Score: {{score}}%",
+            "search": "Filter history...",
+            "filter": "Sort Options",
+            "col_id": "Exam ID",
+            "col_subject": "Subject",
+            "col_metrics": "Metrics",
+            "col_score": "Score",
+            "col_actions": "Actions",
+            "remaining": "{{count}} remaining",
+            "elapsed": "{{time}} elapsed",
+            "empty_title": "No History Found",
+            "empty_desc": "Complete your first exam to see results here.",
+            "btn_continue": "Resume Exam",
+            "btn_retry": "Try Again"
+        }
+    },
+    "history": {
+        "search_placeholder": "Search history...",
+        "stats": {
+            "questions": "Questions",
+            "correct": "Correct",
+            "time": "Time"
+        },
+        "efficiency": "Efficiency",
+        "efficiency_unit": "s / item",
+        "grade": "Grade"
+    },
+    "banner": {
+        "remaining": "{{time}} available",
+        "abandon": "Abort Session",
+        "confirm_abandon": "Terminate current assessment protocol?",
+        "confirm": "Abort",
+        "cancel": "Return"
+    },
+    "filters": {
+        "title": "Advanced Parameters",
+        "active": "{{count}} parameters active",
+        "desc": "Refine historical data query.",
+        "status": "State",
+        "mode": "Protocol",
+        "time_range": "Temporal Range",
+        "time_today": "Current Cycle",
+        "time_week": "7-Day Interval",
+        "time_month": "30-Day Interval",
+        "score_range": "Precision Variance",
+        "sort_by": "Metric Rank",
+        "sort_date": "Recency",
+        "sort_score": "Peak Precision",
+        "sort_duration": "Optimized Speed",
+        "sort_questions": "Volume"
+    },
+    "timer": {
+        "pause": "Suspend",
+        "resume": "Resume",
+        "paused": "Protocol Suspended",
+        "paused_desc": "Session state cached. Select Resume to proceed.",
+        "tab_warning": "Switching active tabs does not suspend the temporal engine.",
+        "abandon_warning": "Session state will not be committed. Progress will be lost."
+    },
+    "wizard": {
+        "nav": {
+            "prev": "Previous Stage",
+            "next": "Proceed"
+        },
+        "step1": {
+            "title": "Define Domains",
+            "desc": "Specify knowledge domains for inclusion.",
+            "search": "Filter domains…",
+            "all": "Comprehensive Select",
+            "clear": "Clear Selection",
+            "available": "Eligible units",
+            "show_more": "Expand ({{count}})",
+            "show_less": "Collapse",
+            "error": "A minimum of one domain must be specified.",
+            "search_placeholder": "Search domains…"
+        },
+        "step2": {
+            "title": "Targeting Parameters",
+            "desc": "Specify optional filters for granular targeting.",
+            "tags": "Metadata Tags",
+            "tags_desc": "Target high-specific concepts",
+            "mastery": "Proficiency Range",
+            "difficulty": "Complexity Tier",
+            "type": "Logic Classification",
+            "clear": "Reset Filters"
+        },
+        "step3": {
+            "title": "Sampling Strategy",
+            "desc": "Determine record selection logic",
+            "question_count": "Payload Volume",
+            "question_types": "Unit Classifications",
+            "unit": "units",
+            "recommended": "Optimal",
+            "available_hint": "Only {{count}} eligible records identified.",
+            "shuffle": "Randomize Sequence",
+            "shuffle_desc": "Mitigates order-bias during recall.",
+            "archived": "Include Archives",
+            "archived_desc": "Include suppressed or archived units."
+        },
+        "step4": {
+            "title": "Verification & Activation",
+            "desc": "Final review of assessment configuration.",
+            "mode": "Operation Mode",
+            "overview": "Configuration Summary",
+            "overview_desc": "Verify parameters before protocol activation.",
+            "stats_count": "Volume",
+            "stats_subjects": "Domains",
+            "stats_time": "Estimated Duration",
+            "time_limit": "Temporal Constraint",
+            "enable_limit": "Activate Timer",
+            "mins": "min",
+            "more_subjects": " + {{count}} additional"
+        }
+    },
+    "strategies": {
+        "weakness": {
+            "title": "Deficiency Prioritization",
+            "desc": "Target units with statistical high error rates."
+        },
+        "due_first": {
+            "title": "Recall Prioritization",
+            "desc": "Target units at the critical decay threshold."
+        },
+        "new_first": {
+            "title": "Acquisition First",
+            "desc": "Prioritize uninitialized knowledge units."
+        },
+        "random": {
+            "title": "Stochastic Selection",
+            "desc": "Uniform random sampling across repository."
+        }
+    },
+    "live_stats": {
+        "title": "Configuration Analytics",
+        "desc": "Real-time estimation based on current parameters.",
+        "realtime_config": "Protocol Config",
+        "intensity_high": "High Cognitive Load",
+        "ready": "System Ready",
+        "configuring": "Calculating Payload…",
+        "coverage": "Payload Volume",
+        "coverage_unit": "/ {{count}} target",
+        "est_time": "Est. Duration",
+        "time_unit": "min",
+        "time_avg": "2m / unit baseline",
+        "time_value": "{{count}} min",
+        "selected_subjects": "Active Domains",
+        "no_subjects": "Define domains to begin telemetry.",
+        "distribution": "Complexity Variance",
+        "strategy": "Selection Logic",
+        "not_found": "Zero Records Identified",
+        "not_found_desc": "Refine parameters to expand potential selection.",
+        "insufficient": "Suboptimal Volume",
+        "insufficient_tip": "Payload size is below recommended threshold.",
+        "ready_btn": "Ready for Execution",
+        "ready_tip": "Select “Generate Assessment” to activate protocol."
+    },
+    "grades": {
+        "excellent": "Superior",
+        "good": "Proficient",
+        "average": "Competent",
+        "pass": "Marginal",
+        "poor": "Deficient"
+    },
+    "sync": {
+        "hero": {
+            "badge": "Community Network",
+            "title": "Collaborative Library",
+            "desc": "Access high-quality shared repositories and maintain bidirectional synchronization."
+        },
+        "features": {
+            "discover": "Explore",
+            "discover_desc": "Discover peer-reviewed data",
+            "save": "Initialize Sync",
+            "save_desc": "Commit to local repository",
+            "sync": "Automated Updates",
+            "sync_desc": "Real-time version control"
+        },
+        "status": {
+            "integrity": "Network Integrity",
+            "version": "v2.4"
+        },
+        "tabs": {
+            "discover": "Discovery",
+            "my_forks": "Subscribed",
+            "activity": "Telemetry"
+        },
+        "controls": {
+            "search": "Filter hub…",
+            "refine": "Parameters",
+            "scan": "Re-scan"
+        },
+        "filter": {
+            "subject": "Domain",
+            "tags": "Metadata",
+            "difficulty": "Complexity",
+            "type": "Logic",
+            "forked": {
+                "all": "All Records",
+                "forked": "Subscribed",
+                "not_forked": "Available"
+            }
+        },
+        "discover": {
+            "empty": "No remote records identified",
+            "empty_desc": "Refine network filters.",
+            "already_forked": "Subscribed",
+            "go_to_fork": "Inspect Local Copy"
+        },
+        "feed": {
+            "title": "Network Activity",
+            "activity": "Inspect stream",
+            "sync_required": "Revision Available",
+            "author": "{{name}}",
+            "forks": "{{count}} Subscriptions",
+            "forks_count": "subscriptions",
+            "btn_details": "Inspect",
+            "btn_fork": "Subscribe to Repository",
+            "btn_load_more": "Load more"
+        },
+        "my_forks": {
+            "title": "Managed Subscriptions",
+            "empty": "No active subscriptions detected.",
+            "empty_cta": "Browse network",
+            "last_synced": "Last Contact",
+            "source_deleted_hint": "Origin de-provisioned",
+            "status": {
+                "up_to_date": "Synchronized",
+                "outdated": "Revision Pending",
+                "source_deleted": "Disconnected"
+            },
+            "diff": {
+                "title_changed": "Identifier Revision",
+                "content_changed": "Content Mutation",
+                "answer_changed": "Logic Update"
+            },
+            "actions": {
+                "view_diff": "Inspect Revision",
+                "pull": "Update Local",
+                "pull_all": "Global Sync"
+            },
+            "confirm": {
+                "title": "Confirm Operational Update",
+                "warning": "This procedure will overwrite local modifications with the remote master version. This is irreversible.",
+                "checkbox": "I acknowledge and authorize the overwrite procedure.",
+                "btn_pull": "Authorize Sync"
+            }
+        },
+        "activity": {
+            "title": "Network Log",
+            "empty": "Log clear",
+            "events": {
+                "fork_success": "Record Subscribed",
+                "sync_success": "State Synchronized",
+                "sync_failed": "Sync Error",
+                "source_updated": "Remote Update Identified"
+            }
+        },
+        "matrix": {
+            "title": "Connectivity Status",
+            "active_links": "Active Channels",
+            "protocol": "Transport Protocol",
+            "notifications": "Revision Alerts",
+            "btn_settings": "Manage Connectivity",
+            "propagation": "Sync Progress"
+        },
+        "auth": {
+            "required_title": "Authentication Mandatory",
+            "required_desc": "Please authorize to access high-frequency network features.",
+            "login_btn": "Authorize"
+        }
+    },
+    "detail": {
+        "header": {
+            "exit": "Return to Repository",
+            "btn_share": "Export/Share"
+        },
+        "main": {
+            "asset_watermark": "QUESTION",
+            "state_watermark": "LEARNING DATA",
+            "tab_asset": "Logic Unit",
+            "tab_state": "Telemetry"
+        },
+        "actions": {
+            "edit": "Modify Record",
+            "fork": "Incorporate into Workspace"
+        },
+        "metrics": {
+            "success": "Recall Rate",
+            "forks": "Usage Count",
+            "time": "Mean Response Latency",
+            "integrity": "Data Integrity"
+        },
+        "lineage": {
+            "title": "Provenance & Versioning",
+            "created_by": "Originator",
+            "last_update": "Last Committed",
+            "revision": "Version Index",
+            "legal_status": "Legal Protocol",
+            "license": "Governed by Creative Commons (CC BY 4.0) attribution standards."
+        },
+        "fsrs": {
+            "title": "FSRS Stability Tier",
+            "due_date": "Next Scheduled Exposure",
+            "stability_index": "Stability",
+            "retention": "Retention"
+        },
+        "history": {
+            "title": "interaction Logs",
+            "btn_audit": "Inspect Audit Trail"
+        },
+        "matrix": {
+            "title": "Advanced Analytics",
+            "desc": "Performance variance modeling.",
+            "benefit": "Visualize cognitive trends over temporal cycles."
+        },
+        "focus": {
+            "title": "Manual Intervention",
+            "desc": "Bypass scheduling for immediate review."
+        }
+    },
+    "footer": {
+        "active_nodes": "Operational Units",
+        "stability": "Global Stability Index"
+    },
+    "settings": {
+        "sidebar": {
+            "general": {
+                "title": "General",
+                "desc": "Profile & Time preference"
+            },
+            "algorithm": {
+                "title": "FSRS Engine",
+                "desc": "Memory model tuning"
+            },
+            "display": {
+                "title": "Appearance",
+                "desc": "Theme & Visual effects"
+            },
+            "security": {
+                "title": "Security",
+                "desc": "API & Authorization"
+            }
+        },
+        "health": {
+            "title": "System Status",
+            "core_sync": "Core Sync",
+            "storage": "Storage",
+            "cache": "Cache",
+            "status_operational": "Operational",
+            "status_degraded": "Degraded",
+            "status_storage_free": "{{percentage}} optimized"
+        },
+        "general": {
+            "title": "General Settings",
+            "profile": {
+                "title": "User Profile",
+                "desc": "How you appear in the system.",
+                "display_name": "Display Name",
+                "placeholder": "Enter your name"
+            },
+            "temporal": {
+                "title": "Time & Schedule",
+                "desc": "Configure how the daily cycle is calculated.",
+                "rollover": "Daily Reset Time",
+                "rollover_hint": "Determines when today's tasks refresh.",
+                "timezone": "Timezone",
+                "countdown": "Timer Mode",
+                "target_date": "Target Date",
+                "target_time": "Target Time",
+                "use_rollover": "Sync with daily reset"
+            },
+            "notifications": {
+                "title": "Notifications",
+                "desc": "Manage alerts and status updates.",
+                "push": "Push Notifications",
+                "push_desc": "Receive review reminders on your device.",
+                "drift": "Model Drift Alerts",
+                "drift_desc": "Notify if algorithm parameters change significantly.",
+                "sync": "Sync Completion",
+                "sync_desc": "Show toast when data sync finishes."
+            },
+            "language": {
+                "title": "Language",
+                "desc": "System-wide interface language.",
+                "label": "Selected Language"
+            }
+        },
+        "profiles": {
+            "page_title": "Memory Optimization Profiles",
+            "page_desc": "Configure specialized learning strategies for different knowledge domains.",
+            "back_to_settings": "Return to Settings",
+            "selector": {
+                "title": "Profiles",
+                "global_default": "Global Default",
+                "add_override": "+ Add Subject Override",
+                "status": {
+                    "inherited": "Inherited",
+                    "custom": "Custom",
+                    "low_confidence": "Learning"
+                }
+            },
+            "picker": {
+                "title": "Add Subject Override",
+                "desc": "Select a subject to create custom FSRS settings",
+                "search": "Search subjects...",
+                "no_match": "No subjects match your search",
+                "all_configured": "All subjects already have overrides"
+            },
+            "header": {
+                "inheritance": {
+                    "label": "Inheritance Mode",
+                    "inherit_all": "Follow Global Strategy",
+                    "customize": "Customize Parameters",
+                    "revert": "Reset to Inherited",
+                    "revert_confirm": "Revert to inherited state? All custom settings for this subject will be cleared."
+                },
+                "actions": {
+                    "reset": "Discard Changes",
+                    "delete": "Remove Override"
+                }
+            },
+            "tabs": {
+                "overview": "Overview",
+                "tuning": "Tuning",
+                "advanced": "Advanced Weights"
+            },
+            "overview": {
+                "metrics": {
+                    "daily_load": "Est. Daily Load",
+                    "peak_day": "Peak Intensity",
+                    "confidence": "AI Confidence"
+                },
+                "forecast": "14-Day Capacity Projection",
+                "data_sufficiency": "Based on {{count}} items in memory",
+                "unreliable_hint": "Projections may be unreliable due to low data volume.",
+                "empty": "Optimization engine requires active interaction logs.",
+                "empty_desc": "Start reviewing to generate workload predictions and map potential stability decay."
+            },
+            "tuning": {
+                "controls": {
+                    "retention": {
+                        "label": "Retention Target",
+                        "recommended": "Optimal: 90%"
+                    },
+                    "daily_cap": {
+                        "label": "Daily Review Cap",
+                        "unlimited": "Unlimited",
+                        "custom": "Manual Cap"
+                    },
+                    "style": {
+                        "label": "Review Style",
+                        "conservative": "Stable (High retention)",
+                        "balanced": "Balanced (Standard)",
+                        "aggressive": "Efficient (Low workload)"
+                    },
+                    "presets": {
+                        "label": "Quick Presets"
+                    }
+                },
+                "preview": {
+                    "title": "Live Simulation",
+                    "deep_dive": "Deep comparison",
+                    "status": {
+                        "estimating": "Estimating...",
+                        "updated": "Simulation Updated ✓"
+                    },
+                    "delta": {
+                        "daily_load": "Daily Load",
+                        "peak_day": "Peak Day",
+                        "intervals": "Interval Shift"
+                    },
+                    "risks": {
+                        "low_retention": "High risk of rapid forgetting",
+                        "high_retention": "Workload will increase significantly",
+                        "low_cap": "Risk of review backlog accumulation",
+                        "low_confidence": "Insufficient data for accurate simulation"
+                    }
+                }
+            },
+            "deep_dive": {
+                "title": "Change Impact Audit",
+                "comparison": "Detailed Comparison",
+                "digest": "Modification Summary",
+                "explain": "AI Logic Rationale",
+                "workload": "Overall Workload Change",
+                "peak": "Peak Shift",
+                "actions": {
+                    "back": "Back to tuning",
+                    "save": "Save Changes",
+                    "discard": "Discard Draft"
+                }
+            },
+            "advanced": {
+                "sandbox": {
+                    "label": "Sandbox Mode",
+                    "desc": "Changes made here are isolated until applied to production."
+                },
+                "weights": {
+                    "label": "FSRS Weight Matrix",
+                    "import": "Import Configuration",
+                    "export": "Export Configuration",
+                    "reset": "Restore Defaults"
+                },
+                "validation": {
+                    "title": "Diagnostic Panel",
+                    "schema_valid": "Schema Valid",
+                    "range_valid": "Parameters Safe",
+                    "run_simulation": "Execute High-Precision Simulation"
+                },
+                "diff": {
+                    "title": "Manual Tuning Warning",
+                    "confirm_risk": "I understand that manual weight tuning may lead to scheduling instability."
+                },
+                "versioning": {
+                    "undo": "Undo last change",
+                    "history": "Version History",
+                    "rollback": "Rollback"
+                }
+            },
+            "dirty_bar": {
+                "changed": "{{count}} parameters modified",
+                "uncommitted_desc": "Uncommitted modifications to scheduling parameters",
+                "save": "Save Changes",
+                "discard": "Discard",
+                "discard_confirm": "You have unsaved changes. Discard them?",
+                "save_apply": "Save & Apply"
+            },
+            "toast": {
+                "save_success": "Profile settings applied successfully.",
+                "delete_success": "Subject override removed. Fallback to global settings."
+            },
+            "modal": {
+                "unsaved_title": "Unsaved Changes",
+                "unsaved_desc": "You have uncommitted changes to the current profile. What would you like to do?",
+                "save_switch": "Save & Switch",
+                "discard_switch": "Discard & Switch"
+            }
+        },
+        "algorithm": {
+            "title": "Algorithm Settings (FSRS)",
+            "desc": "Algorithmic optimization of review intervals. 90% is the balanced optimum.",
+            "global_config_label": "Global Default Engine Configuration",
+            "retention": {
+                "title": "Retention Strategy",
+                "desc": "Configure the target recall probability for the FSRS model.",
+                "label": "Global Retention",
+                "global_config_label": "Global Default Engine Configuration"
+            },
+            "capacity": {
+                "title": "Load Management",
+                "desc": "Define daily volume constraints and intensity.",
+                "daily_cap": "Daily Cap",
+                "daily_cap_desc": "Limits daily review items to maintain a sustainable workload.",
+                "style": "Review Intensity",
+                "style_desc": "Adjusts spacing to prioritize mastery or efficiency."
+            },
+            "daily_cap_unlimited": "Unlimited",
+            "styles": {
+                "conservative": "Stable",
+                "balanced": "Optimized",
+                "aggressive": "Efficient"
+            },
+            "slider_labels": {
+                "speed": "Fast Pace",
+                "standard": "Balanced",
+                "stability": "Max Reten.",
+                "standard_desc": "Adaptive Tuning"
+            },
+            "presets": {
+                "title": "Model Presets",
+                "desc": "Select a pre-configured weight set for standard learning patterns."
+            },
+            "presets_data": {
+                "balanced": {
+                    "name": "Standard Equilibrium",
+                    "desc": "Default optimized parameters for general use."
+                },
+                "conservative": {
+                    "name": "Persistence Priority",
+                    "desc": "Higher frequency reviews for high-stakes recall."
+                },
+                "aggressive": {
+                    "name": "Efficiency Priority",
+                    "desc": "Extended intervals for maximum learning throughput."
+                }
+            },
+            "subject_config_title": "Advanced Subject Support",
+            "subject_config_desc": "Access per-subject profiles to manage specialized optimization strategies.",
+            "subject_config_btn": "Manage FSRS Profiles",
+            "isolation_status": "Multi-domain Isolation ready",
+            "locked_title": "Expert Mode Required",
+            "locked_desc": "Manual weight tuning is restricted to avoid model degradation.",
+            "btn_reset": "Restore Model Defaults",
+            "stats": {
+                "total_reviews": "Total Reviews",
+                "avg_stability": "Mean Stability",
+                "lapse_rate": "Lapse Rate",
+                "weight_status": "Parameter Status",
+                "custom": "Custom Tuning",
+                "default": "Standard",
+                "need_login": "Login Required",
+                "need_data": "Insufficient Data"
+            },
+            "expert": {
+                "title": "Expert Tuning",
+                "mode_label": "Enable Expert Mode",
+                "warning_title": "Advanced Tuning",
+                "custom_weights_detected": "Manual configuration detected. This overrides standard optimization algorithms.",
+                "groups": {
+                    "s0": "Initial Stability (S₀)",
+                    "d0": "Initial Complexity (D₀)",
+                    "stability": "Iterative Learning",
+                    "lapse": "Recovery Logic"
+                }
+            }
+        },
+        "display": {
+            "title": "Appearance",
+            "appearance": {
+                "title": "Theme Mode",
+                "desc": "Select how the interface adapts to your environment.",
+                "system": "System Sync",
+                "light": "Light Mode",
+                "dark": "Dark Mode"
+            },
+            "light": {
+                "title": "Daylight Theme",
+                "desc": "Theme for bright environments."
+            },
+            "dark": {
+                "title": "Night Theme",
+                "desc": "Theme for low light conditions."
+            },
+            "themes": {
+                "dark": "Industrial Dark",
+                "light": "Standard Light",
+                "liquid_light": "Liquid Glass (Light)",
+                "liquid_light_desc": "Minimalist High-Contrast",
+                "warm_paper": "Warm Matte",
+                "warm_paper_desc": "Low Blue Light",
+                "liquid_dark": "Liquid Glass (Dark)",
+                "liquid_dark_desc": "Balanced Navy Hues",
+                "midnight_oled": "Absolute Zero (OLED)",
+                "midnight_oled_desc": "True Black Efficiency"
+            },
+            "ux": {
+                "title": "VFX & Motion",
+                "desc": "Configure interface animations and visual polish.",
+                "reflections": "Glass Reflections",
+                "animations": "Enable Animations",
+                "reduced_motion": "Reduce Motion"
+            },
+            "theme": {
+                "toggle": "Switch Theme",
+                "switchToLight": "Switch to Light",
+                "switchToDark": "Switch to Dark"
+            }
+        },
+        "security": {
+            "title": "Security & Sync",
+            "keys": {
+                "title": "Access Keys",
+                "desc": "Manage your personal access tokens for API integrations.",
+                "primary_label": "Production Access Token",
+                "status_active": "Status: Active • Full Access",
+                "btn_generate": "Generate Key"
+            },
+            "sync": {
+                "title": "Device Sync",
+                "desc": "Manage cloud synchronization across your devices.",
+                "btn_revoke": "Revoke Access",
+                "last_sync": "Last Sync: {{time}}"
+            }
+        },
+        "status": {
+            "loading": "Loading...",
+            "saving": "Saving...",
+            "success": "Success",
+            "error": "Error",
+            "weak": "Weak",
+            "items": "items",
+            "minutes_short": "m"
+        },
+        "preview": {
+            "rollover_label": "Cycle Reset",
+            "rollover_countdown": "({{hours}}h {{minutes}}m remaining)",
+            "rollover_impact": "Impacts current queue",
+            "countdown_daily": "Daily progression",
+            "countdown_daily_short": "Daily Progression",
+            "countdown_custom": "Deadline: {{time}}",
+            "countdown_custom_short": "Project Milestone"
+        },
+        "expert": {
+            "mode_label": "Expert Mode",
+            "enable": "Enable Expert Mode",
+            "disable": "Disable Expert Mode",
+            "exit": "Exit Expert Mode",
+            "warning": "Warning: Manual tuning may affect scheduling accuracy."
+        },
+        "theme": {
+            "title": "Theme",
+            "toggle": "Toggle Theme",
+            "switchToLight": "Light Mode",
+            "switchToDark": "Dark Mode",
+            "light": "Light",
+            "dark": "Dark",
+            "system": "Auto"
+        },
+        "shortcuts": {
+            "title": "Keyboard Shortcuts",
+            "desc": "Manage your keyboard shortcuts for efficiency.",
+            "global": {
+                "title": "Global Shortcuts",
+                "desc": "Available on any page",
+                "toggle_sidebar": "Toggle Sidebar",
+                "dismiss_toast": "Dismiss Notification"
+            },
+            "review": {
+                "title": "Review Session",
+                "desc": "Shortcuts during review mode",
+                "reveal": "Reveal Answer",
+                "choice_a": "Select A",
+                "choice_b": "Select B",
+                "choice_c": "Select C",
+                "choice_d": "Select D",
+                "rate_again": "Rate: Again",
+                "rate_hard": "Rate: Hard",
+                "rate_good": "Rate: Good",
+                "rate_easy": "Rate: Easy",
+                "undo": "Undo Rating"
+            },
+            "inspector": {
+                "title": "Question Inspector",
+                "desc": "Shortcuts in the library detail panel",
+                "mode_preview": "Preview Mode",
+                "mode_edit": "Edit Mode",
+                "mode_meta": "Metadata",
+                "toggle_answer": "Toggle Answer",
+                "toggle_preview": "Toggle Live Preview",
+                "save": "Save Changes"
+            },
+            "table": {
+                "key": "Key",
+                "action": "Action",
+                "context": "Context"
+            },
+            "recording": "Recording New Shortcut",
+            "press_keys": "Press keys combination..."
+        }
+    },
+    "errors": {
+        "report_copied": "Diagnostic info copied",
+        "retrying": "Retrying…",
+        "retry": "Retry Now",
+        "hard_reload": "Force Reload",
+        "continue_review": "Continue Review",
+        "go_back": "Go Back",
+        "go_home": "Home",
+        "safe_mode": "Enter Safe Mode",
+        "reload_page": "Reload Page",
+        "copied": "Copied successfully",
+        "copy_report": "Copy Diagnostic Report",
+        "dev_details": "Details",
+        "keyboard_prefix": "Press",
+        "keyboard_suffix": "to return home",
+        "key_esc": "ESC",
+        "troubleshooting": "Troubleshooting",
+        "suggest": {
+            "network": "Check your network connection",
+            "vpn": "Try disabling any active VPN or proxy",
+            "refresh": "Try refreshing the page",
+            "browser": "Ensure your browser is up to date",
+            "storage": "Check if your disk is full",
+            "contact": "If the issue persists, contact support"
+        },
+        "not_found": {
+            "title": "Page Not Found",
+            "description": "The page you are looking for does not exist or has been moved."
+        },
+        "boundary": {
+            "title": "Application Error",
+            "message": "An unexpected error occurred. You can retry or return to the home page."
+        }
+    },
+    "auth": {
+        "login": {
+            "title": "Welcome Back",
+            "desc": "Sign in to synchronize your learning data.",
+            "btn": "Sign In",
+            "switch": "No account? Sign up now"
+        },
+        "signup": {
+            "title": "Create Account",
+            "desc": "Join the community for personalized spaced-repetition.",
+            "btn": "Sign Up",
+            "switch": "Already have an account? Sign in"
+        },
+        "fields": {
+            "email": "Email Address",
+            "password": "Password",
+            "email_ph": "example@domain.com",
+            "password_ph": "••••••••",
+            "caps_lock": "Caps Lock is ON",
+            "remember_me": "Keep me signed in",
+            "remember_me_hint": "Disable on shared devices to protect your privacy.",
+            "strength": {
+                "0": "Too Short",
+                "1": "Weak",
+                "2": "Moderate",
+                "3": "Strong",
+                "4": "Excellent"
+            }
+        },
+        "status": {
+            "loading": "Verifying…",
+            "success_login": "Login successful. Redirecting...",
+            "success_signup": "Account created! Please check your email for verification.",
+            "error_invalid": "Invalid email or password.",
+            "error_exists": "This email is already registered.",
+            "error_general": "Authentication failed. Please try again later.",
+            "error_email_not_confirmed": "Please verify your email address first.",
+            "error_rate_limit": "Too many attempts. Please wait a moment.",
+            "error_network": "Network error. Please check your connection.",
+            "error_password_length": "Password must be at least 8 characters.",
+            "reset_email_required": "Please enter your email to reset password.",
+            "reset_sent": "A password reset link has been sent to your email."
+        },
+        "forgot": "Forgot Password?",
+        "hero": {
+            "brand": "Smart Archive",
+            "version": "V2.4.0 Release",
+            "headline": "Build your <span>personal</span> knowledge base",
+            "subtitle": "Professional error management and spaced-repetition system powered by the FSRS algorithm.",
+            "stats": {
+                "nodes": "Total Units",
+                "retention": "Est. Retention"
+            }
+        },
+        "footer": {
+            "security": "Encrypted Security",
+            "version": "Engine: FSRS V5.3"
+        }
+    },
+    "boot": {
+        "title": "Loading Application",
+        "subtitle": "Smart Archive V2",
+        "status": "System ready, synchronizing data",
+        "steps": {
+            "renderer": "Initializing UI components",
+            "sync": "Synchronizing local database",
+            "review": "Calculating today's review schedule"
+        }
+    },
+    "manage": {
+        "header": {
+            "title": "Management",
+            "subtitle": "Configure subjects, tags, and track system logs",
+            "btn_bulk": "Merge Assets",
+            "btn_new": "Add New"
+        },
+        "tabs": {
+            "subjects": "Subjects",
+            "tags": "Tags",
+            "audit": "System Log"
+        },
+        "search": "Search {{tab}}...",
+        "types": {
+            "subject": "subject",
+            "tag": "tag",
+            "question": "question"
+        },
+        "subjects": {
+            "questions": "Questions",
+            "cards": "Cards",
+            "add_hint": "Define a new area of expertise"
+        },
+        "tags": {
+            "col_name": "Name",
+            "col_count": "Associated Items",
+            "empty": "No tags found"
+        },
+        "modals": {
+            "portal": "Management Config",
+            "create_subject": "Create Subject",
+            "edit_subject": "Edit Subject",
+            "create_tag": "Create Tag",
+            "edit_tag": "Edit Tag",
+            "name_label": "Name",
+            "name_ph": "Enter unique name...",
+            "color_label": "Theme Color",
+            "btn_deploy": "Create Item",
+            "btn_save": "Save Changes",
+            "preview_title": "Visual Preview",
+            "preview_mode": "Preview Mode",
+            "new_asset": "New Item",
+            "propagate_hint": "Changes will be applied to all associated items upon saving."
+        },
+        "delete": {
+            "title": "Confirm Delete",
+            "desc": "Are you sure you want to permanently delete the {{type}} \"{{name}}\"? This action is recorded in logs and cannot be easily undone.",
+            "abort": "Cancel",
+            "confirm": "Confirm Delete"
+        },
+        "merge": {
+            "title": "Merge Assets",
+            "subtitle": "Consolidate duplicate {{type}}s into a target item",
+            "filter": "Filter {{type}}s...",
+            "source": "Source",
+            "target": "Target",
+            "pipeline": "Merge Flow",
+            "deleted_hint": "Will be removed",
+            "absorb_hint": "Will absorb data",
+            "select_source": "Select Source",
+            "select_target": "Select Target",
+            "critical_warning": "Important: The source item will be deleted. All associated items will be remapped immediately.",
+            "btn_initiate": "Start Merging"
+        },
+        "audit_tab": {
+            "empty": "No activity logs found",
+            "warning_title": "Audit Notice",
+            "warning": "Activity logs are immutable. Use revert functionality with caution as it impacts data consistency.",
+            "btn_revert": "Undo Operation",
+            "status_reverting": "Undoing...",
+            "target_label": "Target: ",
+            "actions": {
+                "delete": "Deletion",
+                "create": "Creation",
+                "update": "Modification",
+                "merge": "Merge",
+                "default": "Action"
+            }
+        }
+    },
+    "notes": {
+        "panel": {
+            "hints": "Hints",
+            "notes": "Tools",
+            "backlinks": "Backlinks",
+            "hints_title": "Hints System",
+            "hints_desc": "Intelligent scaffolding and contextual hints will appear here as you study.",
+            "refresh": "Refresh Engine",
+            "backlinks_tip": "Tip: Global notes that mention this question will be linked automatically under the \"Backlinks\" tab.",
+            "more_soon": "More Note Features Coming Soon",
+            "no_hints": "No hints available for this unit",
+            "all_hints_revealed": "All hints revealed",
+            "revealed_count": "{{count}} / {{total}} REVEALED",
+            "logic_scaffolding": "Logic Scaffolding",
+            "hint_cta_start": "Unlock the first layer of logical scaffolding",
+            "hint_cta_next": "Reveal another dimension of the problem",
+            "hint_shortcut": "Shortcut",
+            "hint_scaffoling_title": "The Path to synthesis"
+        },
+        "quick_jot": {
+            "title": "Quick Jot",
+            "placeholder": "Type notes here... (LaTeX & Markdown supported)",
+            "double_click": "Double-click to edit",
+            "pop_out": "Pop out",
+            "save_hint": "Esc to save",
+            "save_hint_mac": "Ctrl+Enter to save",
+            "to_save": "save",
+            "click_outside": "click outside to save",
+            "chars": "chars"
+        },
+        "floating": {
+            "title": "Floating Jot",
+            "tooltip_theme": "Style Theme",
+            "tooltip_pin_locked": "Pinned to current question (locked)",
+            "tooltip_pin_dynamic": "Following active question (dynamic)",
+            "tooltip_dock": "Dock back to panel",
+            "tooltip_dismiss": "Dismiss"
+        },
+        "backlinks": {
+            "fetching": "Fetching Connections",
+            "empty_title": "No Connections Found",
+            "empty_desc": "Cross-reference this question in a global notebook to establish a link.",
+            "linked_in": "Linked in {{count}} Note",
+            "linked_in_plural": "Linked in {{count}} Notes",
+            "untitled": "Untitled Note",
+            "context_snippet": "Contextual Evidence",
+            "type_notebook": "Notebook",
+            "type_observation": "Observation"
+        },
+        "tooltips": {
+            "hide_sidebar": "Hide Notes Sidebar",
+            "show_sidebar": "Show Notes Sidebar",
+            "open_floating": "Open Floating Note"
+        }
+    }
+}

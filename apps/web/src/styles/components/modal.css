@@ -1,0 +1,159 @@
+/* =========================================================
+   MODAL — Modal Dialog Components
+   ========================================================= */
+
+.sea .modal-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: var(--z-modal);
+    background: rgba(0, 0, 0, .55);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    display: grid;
+    place-items: center;
+    padding: 1rem;
+}
+
+.sea .modal {
+    width: min(860px, 100%);
+    max-height: min(88dvh, 900px);
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    will-change: transform, opacity, filter;
+    animation: modal-in var(--dur-3) var(--ease-spring) both;
+}
+
+.sea .modal-head {
+    padding: var(--pad-3) var(--pad-4);
+    border-bottom: 1px solid var(--glass-border-color);
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+.sea .modal-title {
+    font-weight: 950;
+    letter-spacing: -0.03em;
+    font-size: 1.2rem;
+}
+
+.sea .modal-subtitle {
+    margin-top: .25rem;
+    color: var(--muted-fg);
+    font-size: .92rem;
+}
+
+.sea .modal-body {
+    flex: 1;
+    overflow: auto;
+    padding: var(--pad-3) var(--pad-4);
+    scrollbar-gutter: stable;
+}
+
+@keyframes modal-in {
+    from {
+        opacity: 0;
+        transform: translateY(12px) scale(.985);
+        filter: blur(12px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+        filter: blur(0);
+    }
+}
+
+.sea .modal-glass::backdrop {
+    background: oklch(0% 0 0 / 0.6);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+}
+
+.sea .modal-glass .modal-box {
+    animation: modal-reveal 0.25s var(--ease-spring) both;
+}
+
+@keyframes modal-reveal {
+    from {
+        opacity: 0;
+        transform: scale(0.95) translateY(8px);
+        filter: blur(4px);
+    }
+
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+        filter: blur(0);
+    }
+}
+
+.sea details>summary {
+    list-style: none;
+}
+
+.sea details>summary::-webkit-details-marker {
+    display: none;
+}
+
+.sea details>summary .chev {
+    transition: transform var(--dur-2) var(--ease-smooth);
+}
+
+.sea details[open]>summary .chev {
+    transform: rotate(90deg);
+}
+
+/* Unsaved Changes Premium Modal */
+.sea .unsaved-modal-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 200;
+    background: oklch(0% 0 0 / 0.4);
+    backdrop-filter: blur(12px) saturate(1.5);
+    -webkit-backdrop-filter: blur(12px) saturate(1.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1.5rem;
+}
+
+.sea .unsaved-modal {
+    width: 100%;
+    max-width: 480px;
+    background: var(--color-base-100);
+    border: 1px solid var(--glass-border);
+    border-radius: 2rem;
+    padding: 2.5rem;
+    box-shadow:
+        0 25px 50px -12px rgba(0, 0, 0, 0.25),
+        0 0 0 1px var(--glass-highlight) inset;
+    position: relative;
+    overflow: hidden;
+}
+
+.sea .unsaved-modal::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(to right, var(--color-warning), var(--color-error));
+}
+
+.sea .unsaved-modal-chip {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.35rem 0.85rem;
+    background: oklch(from var(--color-primary) l c h / 0.08);
+    color: var(--color-primary);
+    border: 1px solid oklch(from var(--color-primary) l c h / 0.15);
+    border-radius: 0.75rem;
+    font-size: 10px;
+    font-weight: 900;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+}

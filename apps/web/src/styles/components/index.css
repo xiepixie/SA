@@ -1,0 +1,28 @@
+/* =========================================================
+   COMPONENTS INDEX — Component CSS Aggregation
+   Import all component-specific styles here
+   Note: Styles are NOT wrapped in @layer due to PostCSS import rules
+   ========================================================= */
+
+@import "./window-controls.css";
+@import "./glass.css";
+@import "./buttons.css";
+@import "./forms.css";
+@import "./shell.css";
+@import "./sidebar.css";
+@import "./tooltip.css";
+@import "./modal.css";
+@import "./toast.css";
+@import "./math.css";
+@import "./library.css";
+@import "./inspector.css";
+@import "./badge.css";
+@import "./import.css";
+@import "./feedback.css";
+@import "./error-page.css";
+@import "./loading.css";
+@import "./markdown.css";
+@import "./review-session.css";
+@import "./transitions.css";
+@import "./welcome.css";
+@import "./manage.css";

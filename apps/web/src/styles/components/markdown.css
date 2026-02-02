@@ -1,0 +1,1093 @@
+@layer base, components, utilities;
+
+@layer base {
+    [data-theme] {
+        color-scheme: light dark;
+        /* 💡 开启渲染器智能色彩方案，确保滚动条、表单等原生组件适配主题 */
+    }
+}
+
+@layer components {
+    /* =========================================================
+       CSS变量层 — 主题只需定义变量，组件层只消费
+       ========================================================= */
+
+    .markdown-body {
+        /* 排版节奏 */
+        --md-leading: 1.75;
+        --md-leading-compact: 1.45;
+        --md-p-space: 1.25rem;
+        --md-header-offset: 72px;
+
+        /* 阅读控制（Reading层） */
+        --md-max-width: 65ch;
+        /* 舒适的阅读宽度 */
+
+        line-height: var(--md-leading);
+        color: var(--color-base-content);
+        letter-spacing: normal;
+
+        /* 防止长链接/代码撑爆布局 */
+        overflow-wrap: break-word;
+        word-wrap: break-word;
+    }
+
+    /* =========================================================
+       LAYER 1: READING MODE (主区默认 - comfortable)
+       ========================================================= */
+
+    /* 阅读宽度控制 */
+    .markdown-body:not([data-density="compact"]) {
+        max-width: var(--md-max-width);
+    }
+
+    /* =========================================================
+       LAYER 2: SCANNING MODE (侧栏 - compact)
+       ========================================================= */
+
+    .markdown-body[data-density="compact"] {
+        line-height: var(--md-leading-compact);
+        max-width: none;
+    }
+
+    .markdown-body[data-density="compact"] :where(p) {
+        margin: 0 0 0.5rem;
+    }
+
+    .markdown-body[data-density="compact"] :where(ul, ol) {
+        margin: 0.5rem 0;
+        padding-left: 1.25rem;
+    }
+
+    .markdown-body[data-density="compact"] :where(li) {
+        margin: 0.25rem 0;
+    }
+
+    .markdown-body[data-density="compact"] :where(blockquote) {
+        margin: 0.75rem 0;
+        padding: 0.5rem 0.75rem;
+    }
+
+    .markdown-body[data-density="compact"] .md-table-wrap {
+        margin: 1rem 0;
+    }
+
+    .markdown-body[data-density="compact"] :where(table) {
+        font-size: 0.875rem;
+    }
+
+    .markdown-body[data-density="compact"] :where(th, td) {
+        padding: 8px 12px;
+    }
+
+    .markdown-body :where(h1, h2, h3, h4, h5, h6) {
+        margin: 2.5rem 0 1.25rem;
+        scroll-margin-top: calc(var(--md-header-offset) + 1.5rem);
+    }
+
+    .markdown-body[data-density="compact"] :where(h1, h2, h3, h4, h5, h6) {
+        margin: 1rem 0 0.5rem;
+    }
+
+    .markdown-body[data-density="compact"] :where(h1) {
+        margin-top: 0;
+    }
+
+    .markdown-body[data-density="compact"] :where(.math-block) {
+        margin: 0.5rem 0;
+        padding: 0.5rem 0.75rem;
+    }
+
+    .markdown-body[data-density="compact"] :where(hr) {
+        margin: 1.5rem 0;
+    }
+
+    .markdown-body[data-density="compact"] :where(hr)::after {
+        content: '';
+    }
+
+    /* =========================================================
+       HEADINGS & TEXT
+       ========================================================= */
+
+    .sea :where(.markdown-body h1, .markdown-body h2, .markdown-body h3, .markdown-body h4, .markdown-body h5, .markdown-body h6) {
+        color: var(--color-base-content);
+        font-family: var(--font-sans);
+        font-weight: 800;
+        line-height: 1.25;
+        letter-spacing: -0.02em;
+        margin: 2rem 0 1rem;
+        display: block;
+        scroll-margin-top: var(--md-header-offset);
+    }
+
+    .sea :where(.markdown-body h1) {
+        font-size: 2rem;
+        font-weight: 900;
+        margin-top: 0;
+    }
+
+    .sea :where(.markdown-body h2) {
+        font-size: 1.5rem;
+        border-bottom: 2px solid var(--glass-border-color);
+        padding-bottom: 0.5rem;
+    }
+
+    .markdown-body :where(p) {
+        margin: 0 0 var(--md-p-space);
+    }
+
+    .markdown-body :where(strong) {
+        font-weight: 800;
+        color: var(--color-base-content);
+    }
+
+    /* =========================================================
+       TABLES & GFM
+       ========================================================= */
+
+    .md-table-wrap {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        border-radius: 12px;
+        border: 1px solid var(--glass-border-color);
+        margin: 2rem 0;
+        background: var(--glass-bg-reading);
+        backdrop-filter: blur(var(--glass-blur));
+        -webkit-backdrop-filter: blur(var(--glass-blur));
+        box-shadow: var(--shadow-premium-sm);
+        transition: box-shadow var(--dur-2) var(--ease-smooth);
+    }
+
+    .md-table-wrap:hover {
+        box-shadow: var(--shadow-premium-md);
+    }
+
+    .md-table-wrap::-webkit-scrollbar {
+        height: 6px;
+    }
+
+    .md-table-wrap::-webkit-scrollbar-track {
+        background: transparent;
+    }
+
+    .md-table-wrap::-webkit-scrollbar-thumb {
+        background: oklch(from var(--color-base-content) l c h / 0.1);
+        border-radius: 99px;
+    }
+
+    .md-table-wrap::-webkit-scrollbar-thumb:hover {
+        background: oklch(from var(--color-base-content) l c h / 0.2);
+    }
+
+    .markdown-body :where(table) {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+        margin: 0;
+        font-size: 0.9375rem;
+    }
+
+    .markdown-body :where(th) {
+        background: oklch(from var(--color-base-200) l c h / 0.5);
+        color: var(--color-base-content);
+        font-weight: 800;
+        text-align: left;
+        padding: 12px 16px;
+        border-bottom: 2px solid var(--glass-border-strong);
+        white-space: nowrap;
+        letter-spacing: 0.02em;
+    }
+
+    .markdown-body :where(td) {
+        padding: 10px 16px;
+        border-bottom: 1px solid var(--glass-border-color);
+        /* ✅ FIX: Higher contrast for table cells */
+        color: oklch(from var(--color-base-content) l c h / 0.85);
+        transition: color var(--dur-1) var(--ease-smooth);
+        line-height: 1.5;
+    }
+
+    .markdown-body :where(tbody tr:last-child td) {
+        border-bottom: none;
+    }
+
+    /* Zebra Striping & Hover */
+    .markdown-body :where(tbody tr) {
+        transition: background var(--dur-1) var(--ease-smooth);
+    }
+
+    .markdown-body :where(tbody tr:nth-child(even)) {
+        background: oklch(from var(--color-base-content) l c h / 0.03);
+    }
+
+    .markdown-body :where(tbody tr:hover) {
+        background: oklch(from var(--color-primary) l c h / 0.08);
+    }
+
+    .markdown-body :where(tbody tr:hover td) {
+        color: var(--color-base-content);
+    }
+
+    /* ✅ FIX: Make table header math bold */
+    .markdown-body :where(th) .katex,
+    .markdown-body :where(th) .math-inline {
+        font-weight: 800;
+    }
+
+    .markdown-body :where(th) .katex .mord,
+    .markdown-body :where(th) .katex .mbin,
+    .markdown-body :where(th) .katex .mrel {
+        font-weight: 800;
+    }
+
+    /* Numerical & Special Alignment */
+    .markdown-body :where(td:has(code), td:has(.math-inline)) {
+        font-family: var(--font-mono);
+        font-size: 0.875rem;
+    }
+
+    /* Markdown alignment classes (if generated by the parser) */
+    .markdown-body :where(th[align="center"], td[align="center"]) {
+        text-align: center;
+    }
+
+    .markdown-body :where(th[align="right"], td[align="right"]) {
+        text-align: right;
+    }
+
+    .markdown-body {
+        counter-reset: theorem example definition equation proof;
+        line-height: var(--md-leading);
+    }
+
+    /* Reset counters on H1 to provide sectional numbering context */
+    .markdown-body h1 {
+        counter-reset: h2-counter theorem example definition equation proof;
+    }
+
+    /* =========================================================
+       SEMANTIC CALLOUTS (Premium Academic System)
+       
+       Design philosophy:
+       - Content must be readable at first glance (no hover required)
+       - Visual hierarchy through color intensity and left accent
+       - Subtle hover enhancement, not dramatic reveal
+       ========================================================= */
+
+    .md-callout {
+        --callout-opacity: 0.08;
+        --callout-border-opacity: 0.35;
+        --callout-content-opacity: 0.88;
+        margin: 2rem 0;
+        padding: 1.25rem 1.5rem;
+        border-radius: 16px;
+        border: 1px solid oklch(from var(--callout-accent) l c h / var(--callout-border-opacity));
+        background:
+            linear-gradient(135deg,
+                oklch(from var(--callout-accent) l c h / var(--callout-opacity)),
+                oklch(from var(--callout-accent) l c h / calc(var(--callout-opacity) * 0.3)));
+        position: relative;
+        overflow: hidden;
+        box-shadow:
+            0 2px 8px oklch(from var(--callout-accent) l c h / 0.06),
+            var(--shadow-premium-sm);
+        transition:
+            transform var(--dur-2) var(--ease-spring),
+            box-shadow var(--dur-2) var(--ease-smooth),
+            border-color var(--dur-2) var(--ease-smooth);
+    }
+
+    .md-callout:hover {
+        --callout-opacity: 0.12;
+        --callout-border-opacity: 0.5;
+        transform: translateY(-2px);
+        box-shadow:
+            0 4px 16px oklch(from var(--callout-accent) l c h / 0.1),
+            var(--shadow-premium-md);
+    }
+
+    .md-callout-title {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        font-weight: 800;
+        font-size: 0.9em;
+        letter-spacing: 0.03em;
+        text-transform: uppercase;
+        margin-bottom: 0.75rem;
+        color: var(--callout-accent);
+        transition: color var(--dur-2) var(--ease-smooth);
+    }
+
+    .md-callout-title svg {
+        width: 18px;
+        height: 18px;
+        flex-shrink: 0;
+        opacity: 0.9;
+    }
+
+    /* ✅ FIX: Content always readable, not just on hover */
+    .md-callout-content {
+        color: oklch(from var(--color-base-content) l c h / var(--callout-content-opacity));
+        line-height: 1.7;
+        font-size: 0.975em;
+        transition: color var(--dur-2) var(--ease-smooth);
+    }
+
+    .md-callout:hover .md-callout-content {
+        --callout-content-opacity: 1;
+    }
+
+    /* 🎨 REFINED COLOR VARIANTS (Enhanced Visibility) */
+
+    /* 1. Theory / Note / Info (Analytical Blue) */
+    .md-callout[data-type="theory"],
+    .md-callout[data-type="info"],
+    .md-callout[data-type="note"],
+    .md-callout[data-type="abstract"],
+    .md-callout[data-type="summary"],
+    .md-callout[data-type="tldr"],
+    .md-callout[data-type="faq"] {
+        --callout-accent: oklch(0.6 0.18 250);
+        --callout-opacity: 0.1;
+        border-left: 4px solid var(--callout-accent);
+    }
+
+    /* 2. Proof / Logic / Cite (Sophisticated Purple) */
+    .md-callout[data-type="proof"],
+    .md-callout[data-type="cite"] {
+        --callout-accent: oklch(0.58 0.22 290);
+        --callout-opacity: 0.08;
+        border-left: 4px solid var(--callout-accent);
+        font-family: var(--font-serif);
+    }
+
+    .md-callout[data-type="proof"] .md-callout-title,
+    .md-callout[data-type="cite"] .md-callout-title {
+        font-style: normal;
+        font-family: var(--font-sans);
+    }
+
+    .md-callout[data-type="proof"] .md-callout-content {
+        font-style: italic;
+    }
+
+    /* 3. Example / Tip / Solution (Vibrant Emerald) */
+    .md-callout[data-type="example"],
+    .md-callout[data-type="tip"],
+    .md-callout[data-type="hint"],
+    .md-callout[data-type="success"],
+    .md-callout[data-type="check"],
+    .md-callout[data-type="done"],
+    .md-callout[data-type="todo"] {
+        --callout-accent: oklch(0.62 0.2 155);
+        --callout-opacity: 0.1;
+        border-left: 4px solid var(--callout-accent);
+    }
+
+    /* 4. Warning / Help / Question (Warm Amber) */
+    .md-callout[data-type="warning"],
+    .md-callout[data-type="caution"],
+    .md-callout[data-type="important"],
+    .md-callout[data-type="help"],
+    .md-callout[data-type="question"] {
+        --callout-accent: oklch(0.72 0.18 75);
+        --callout-opacity: 0.12;
+        border-left: 4px solid var(--callout-accent);
+    }
+
+    /* 5. Danger / Critical / Failure (Rose Red) */
+    .md-callout[data-type="danger"],
+    .md-callout[data-type="failure"],
+    .md-callout[data-type="fail"],
+    .md-callout[data-type="missing"],
+    .md-callout[data-type="error"],
+    .md-callout[data-type="bug"] {
+        --callout-accent: oklch(0.58 0.22 25);
+        --callout-opacity: 0.1;
+        border-left: 4px solid var(--callout-accent);
+    }
+
+    /* ✨ AUTOMATIC NUMBERING (Academic Hierarchy) */
+
+    .md-callout[data-type="theory"] {
+        counter-increment: theorem;
+    }
+
+    .md-callout[data-type="theory"] .md-callout-title::after {
+        content: " " counter(theorem);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 1.4em;
+        height: 1.4em;
+        padding: 0 0.4em;
+        margin-left: 0.5em;
+        font-size: 0.75em;
+        font-weight: 700;
+        font-family: var(--font-mono);
+        background: oklch(from var(--callout-accent) l c h / 0.15);
+        border-radius: 6px;
+        letter-spacing: 0;
+        text-transform: none;
+    }
+
+    .md-callout[data-type="example"] {
+        counter-increment: example;
+    }
+
+    .md-callout[data-type="example"] .md-callout-title::after {
+        content: " " counter(example);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 1.4em;
+        height: 1.4em;
+        padding: 0 0.4em;
+        margin-left: 0.5em;
+        font-size: 0.75em;
+        font-weight: 700;
+        font-family: var(--font-mono);
+        background: oklch(from var(--callout-accent) l c h / 0.15);
+        border-radius: 6px;
+        letter-spacing: 0;
+        text-transform: none;
+    }
+
+    .md-callout[data-type="proof"] {
+        counter-increment: proof;
+    }
+
+    .md-callout[data-type="proof"] .md-callout-title::after {
+        content: " " counter(proof);
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 1.4em;
+        height: 1.4em;
+        padding: 0 0.4em;
+        margin-left: 0.5em;
+        font-size: 0.75em;
+        font-weight: 700;
+        font-family: var(--font-mono);
+        background: oklch(from var(--callout-accent) l c h / 0.15);
+        border-radius: 6px;
+        letter-spacing: 0;
+        text-transform: none;
+    }
+
+    /* =========================================================
+       LAYER 3: INTERACTION — Anchor Links
+       ========================================================= */
+
+    .anchor-link-icon {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 32px;
+        height: 32px;
+        color: var(--color-primary);
+        background: oklch(from var(--color-primary) l c h / 0.1);
+        border-radius: 8px;
+        opacity: 0;
+        transform: translateX(-10px);
+        transition: all var(--dur-2) var(--ease-spring);
+        margin-left: 0.5rem;
+    }
+
+    .markdown-body :where(h1, h2, h3, h4, h5, h6):hover .anchor-link-icon {
+        opacity: 1;
+        transform: translateX(0);
+    }
+
+    .anchor-link-icon:hover {
+        background: oklch(from var(--color-primary) l c h / 0.2);
+        color: var(--color-primary);
+        box-shadow: 0 4px 12px oklch(from var(--color-primary) l c h / 0.15);
+    }
+
+    /* =========================================================
+       ACADEMIC FEATURES: SIDENOTES & HIGHLIGHTS
+       ========================================================= */
+
+    /* Sidenote: Desktop only callout for auxiliary info */
+    @media (min-width: 1400px) {
+        .md-sidenote {
+            position: absolute;
+            left: calc(100% + 2rem);
+            width: 200px;
+            font-size: 0.85rem;
+            color: var(--dim-fg);
+            line-height: 1.5;
+            border-left: 2px solid var(--glass-border-color);
+            padding-left: 1rem;
+            transition: color var(--dur-2) ease;
+        }
+
+        .md-sidenote:hover {
+            color: var(--color-base-content);
+        }
+    }
+
+    /* Support for mobile fallback */
+    @media (max-width: 1399px) {
+        .md-sidenote {
+            display: block;
+            margin: 1rem 2rem;
+            font-size: 0.9rem;
+            color: var(--muted-fg);
+            padding: 0.75rem;
+            background: oklch(from var(--color-base-content) l c h / 0.02);
+            border-radius: 8px;
+        }
+    }
+
+    /* Variable Linkage / Highlighting */
+    .math-highlight {
+        background: oklch(from var(--color-warning) l c h / 0.2);
+        box-shadow: 0 0 8px oklch(from var(--color-warning) l c h / 0.3);
+        border-radius: 3px;
+        transition: all var(--dur-2) ease;
+    }
+
+    /* Interactive "Spotlight" mode hint */
+    .markdown-body[data-spotlight="active"] :not(.math-highlight) {
+        opacity: 0.4;
+        filter: grayscale(0.5);
+    }
+
+    /* 主题变量层 - 补齐IDE行级变量 */
+    [data-theme="liquid-light"] {
+        /* ✅ 深度优化：高亮对比度设计 */
+        --code-bg: #fcfcfd;
+        --code-fg: #1e293b;
+        --code-border: rgba(0, 0, 0, 0.12);
+        --code-shadow: 0 4px 12px rgba(0, 0, 0, 0.05), 0 1px 2px rgba(0, 0, 0, 0.05);
+        --code-header-bg: #f3f4f6;
+        --code-header-border: rgba(0, 0, 0, 0.08);
+        --code-lang-fg: #475569;
+        /* 行交互：物理反馈感 */
+        --code-line-number: #94a3b8;
+        --code-line-number-active: #0891b2;
+        --code-line-hover: #f1f5f9;
+        --code-line-selected: #e0f2fe;
+        --code-line-accent: #0891b2;
+        --code-line-target: #fef9c3;
+        --code-line-copied: #dcfce7;
+        --code-copy-bg: rgba(8, 145, 178, 0.1);
+        --code-copy-fg: #0891b2;
+        --code-copy-hover: rgba(8, 145, 178, 0.15);
+        --code-selection-bg: #bae6fd;
+        /* Token Colors - 语法高亮核心 */
+        --token-keyword: #e11d48;
+        --token-function: #2563eb;
+        --token-string: #16a34a;
+        --token-comment: #94a3b8;
+        --token-number: #d97706;
+    }
+
+    [data-theme="warm-paper"] {
+        /* ✅ 纸张感调优：高饱和度交互 */
+        --code-bg: #fdfaf3;
+        --code-fg: #292524;
+        --code-border: #e7e5e4;
+        --code-shadow: 0 4px 6px -1px rgba(120, 113, 108, 0.05);
+        --code-header-bg: #f5f2eb;
+        --code-header-border: #d6d3d1;
+        --code-lang-fg: #78716c;
+        /* 行交互：琥珀色系 */
+        --code-line-number: #a8a29e;
+        --code-line-number-active: #92400e;
+        --code-line-hover: #f5f2eb;
+        --code-line-selected: #fef3c780;
+        --code-line-accent: #b45309;
+        --code-line-target: #fef3c7;
+        --code-line-copied: #ecfdf5;
+        --code-copy-bg: rgba(180, 83, 9, 0.1);
+        --code-copy-fg: #b45309;
+        --code-copy-hover: rgba(180, 83, 9, 0.18);
+        --code-selection-bg: #fde68a;
+        /* Token Colors */
+        --token-keyword: #be123c;
+        --token-function: #1d4ed8;
+        --token-string: #15803d;
+        --token-comment: #a8a29e;
+        --token-number: #b45309;
+    }
+
+    [data-theme="liquid-dark"] {
+        --code-bg: #0f172a;
+        --code-fg: #e2e8f0;
+        --code-border: rgba(255, 255, 255, 0.06);
+        --code-shadow: 0 10px 40px -12px rgba(0, 0, 0, 0.5);
+        --code-header-bg: #1e293b;
+        --code-header-border: rgba(255, 255, 255, 0.1);
+        --code-lang-fg: #94a3b8;
+        /* 行交互变量 */
+        --code-line-number: #64748b;
+        --code-line-number-active: #38bdf8;
+        --code-line-hover: rgba(56, 189, 248, 0.05);
+        --code-line-selected: rgba(56, 189, 248, 0.12);
+        --code-line-accent: #38bdf8;
+        --code-line-target: rgba(234, 179, 8, 0.2);
+        --code-line-copied: rgba(34, 197, 94, 0.15);
+        --code-copy-bg: rgba(56, 189, 248, 0.15);
+        --code-copy-fg: #38bdf8;
+        --code-copy-hover: rgba(56, 189, 248, 0.25);
+        --code-selection-bg: rgba(56, 189, 248, 0.3);
+        /* Token Colors */
+        --token-keyword: #f472b6;
+        --token-function: #38bdf8;
+        --token-string: #4ade80;
+        --token-comment: #64748b;
+        --token-number: #fbbf24;
+    }
+
+    [data-theme="midnight-oled"] {
+        --code-bg: #000000;
+        --code-fg: #f1f5f9;
+        --code-border: rgba(255, 255, 255, 0.12);
+        --code-shadow: 0 0 0 1px rgba(255, 255, 255, 0.08);
+        --code-header-bg: #0a0a0a;
+        --code-header-border: rgba(255, 255, 255, 0.15);
+        --code-lang-fg: #94a3b8;
+        /* 行交互变量 */
+        --code-line-number: #64748b;
+        --code-line-number-active: #38bdf8;
+        --code-line-hover: rgba(255, 255, 255, 0.08);
+        --code-line-selected: rgba(56, 189, 248, 0.15);
+        --code-line-accent: #38bdf8;
+        --code-line-target: rgba(234, 179, 8, 0.2);
+        --code-line-copied: rgba(34, 197, 94, 0.2);
+        --code-copy-bg: rgba(56, 189, 248, 0.2);
+        --code-copy-fg: #38bdf8;
+        --code-copy-hover: rgba(56, 189, 248, 0.32);
+        --code-selection-bg: rgba(56, 189, 248, 0.35);
+        /* Token Colors */
+        --token-keyword: #f472b6;
+        --token-function: #38bdf8;
+        --token-string: #4ade80;
+        --token-comment: #64748b;
+        --token-number: #fbbf24;
+    }
+
+    /* 组件样式层 */
+    .code-fence-container {
+        background: var(--code-bg);
+        border: 1px solid var(--code-border);
+        border-radius: 14px;
+        box-shadow:
+            0 4px 20px -5px rgba(0, 0, 0, 0.08),
+            0 1px 3px rgba(0, 0, 0, 0.05);
+        margin: 1.5rem 0;
+        overflow: hidden;
+        /* 固定外层不滚动 */
+        transition: transform 0.2s var(--ease-spring), box-shadow 0.2s ease;
+        position: relative;
+        contain: layout paint;
+        --code-gutter: 3.5rem;
+        /* ✅ 不设 max-height，让内部代码区域处理滚动 */
+    }
+
+    .code-fence-container:hover {
+        box-shadow:
+            0 8px 30px -5px rgba(0, 0, 0, 0.12),
+            0 2px 6px rgba(0, 0, 0, 0.06);
+    }
+
+    .code-fence-container.is-copied {
+        animation: code-copied-flash 0.4s ease-out;
+    }
+
+    @keyframes code-copied-flash {
+        0% {
+            transform: scale(1);
+        }
+
+        50% {
+            transform: scale(1.02);
+            border-color: #22c55e;
+            box-shadow: 0 0 20px rgba(34, 197, 94, 0.2);
+        }
+
+        100% {
+            transform: scale(1);
+        }
+    }
+
+    @supports not (overflow: clip) {
+        .code-fence-container {
+            overflow: hidden;
+        }
+    }
+
+    .code-fence-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 10px 16px;
+        background: var(--code-header-bg);
+        border-bottom: 1px solid var(--code-header-border);
+        user-select: none;
+        /* ✅ Sticky header 在代码区内部滚动时生效 */
+        position: sticky;
+        top: 0;
+        z-index: 10;
+    }
+
+    /* 🚨 关键修复：强制重置 DaisyUI 默认 dark 样式 🚨 */
+    .markdown-body .mockup-code {
+        background: transparent !important;
+        color: var(--code-fg) !important;
+    }
+
+    .markdown-body .mockup-code::before {
+        display: none !important;
+    }
+
+    /* IDE级单行微交互系统 */
+    .code-fence.mockup-code {
+        overflow-x: auto;
+        overflow-y: auto;
+        /* ✅ 智能高度限制：min() 确保小屏幕不会过高，大屏幕有更多空间 */
+        max-height: min(80vh, 800px);
+        /* ✅ 启用内部滚动，sticky header 生效 */
+        scrollbar-gutter: stable;
+        /* ✅ FIX: 增加底部 padding 确保最后一行不被截断 */
+        padding: 12px 0 24px 0;
+        background: transparent !important;
+    }
+
+    /* ✅ 长代码块：超过30行时显示渐变遮罩提示可滚动 */
+    .code-fence.mockup-code::after {
+        content: "";
+        position: sticky;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 40px;
+        background: linear-gradient(to top, var(--code-bg, oklch(from var(--color-base-200) l c h / 0.95)) 0%, transparent 100%);
+        pointer-events: none;
+        opacity: 0;
+        transition: opacity 0.2s ease;
+    }
+
+    /* 当代码块可滚动且未滚动到底部时显示渐变 */
+    .code-fence.mockup-code:not(:where(:hover, :focus-within))::after {
+        opacity: 0;
+    }
+
+    .code-fence.mockup-code:where(:hover, :focus-within)::after {
+        opacity: 1;
+    }
+
+    /* 滚动到底部时隐藏渐变（通过 JS 添加 .scrolled-bottom 类控制） */
+    .code-fence.mockup-code.scrolled-bottom::after {
+        opacity: 0 !important;
+    }
+
+    /* 让"行"具备可交互的稳定触感 */
+    .code-fence.mockup-code pre {
+        position: relative;
+        margin: 0;
+        padding: 0 16px 0 0;
+        /* 右侧留白，左侧由 gutter 处理 */
+        padding-left: var(--code-gutter);
+        background: transparent;
+        cursor: text;
+        scroll-margin-top: 100px;
+        transition: background 120ms ease;
+        /* ✅ FIX: 确保空行有最小高度，防止行号重叠 */
+        min-height: 1.5em;
+        line-height: 1.5;
+        /* ✅ 禁用文本选择，避免与 IDE 行选择冲突 */
+        user-select: none;
+        -webkit-user-select: none;
+    }
+
+    /* ✅ FIX: 空行内容确保有高度 */
+    .code-fence.mockup-code pre code:empty::before {
+        content: '\00a0';
+        /* Non-breaking space */
+    }
+
+    /* 代码内容允许选择（仅限 code 元素） */
+    .mockup-code pre code {
+        color: var(--code-fg) !important;
+        font-family: inherit;
+        user-select: text;
+        -webkit-user-select: text;
+    }
+
+    /* gutter 行号：绝对定位避免布局干扰 */
+    .code-fence.mockup-code pre::before {
+        content: attr(data-prefix);
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: calc(var(--code-gutter) - 0.75rem);
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        padding-right: 0.5rem;
+
+        color: var(--code-line-number);
+        opacity: 0.5;
+        cursor: pointer;
+        transition: opacity 120ms ease, color 120ms ease;
+    }
+
+    /* Hover：只改背景/不改布局（避免抖动） */
+    .code-fence.mockup-code pre:hover {
+        background: var(--code-line-hover);
+    }
+
+    .code-fence.mockup-code pre:hover::before {
+        opacity: 0.9;
+        color: var(--code-line-number-active);
+    }
+
+    /* Active（当前行）：光标所在行，比选中态稍弱 */
+    .code-fence.mockup-code pre.is-active {
+        background: color-mix(in oklch, var(--code-line-hover) 80%, var(--code-line-selected));
+        box-shadow: inset 2px 0 0 var(--code-line-accent);
+    }
+
+    /* Focus-visible: 键盘用户专用定位 */
+    .code-fence.mockup-code pre:focus-visible {
+        outline: none;
+        background: var(--code-line-hover);
+        box-shadow: inset 0 0 0 2px var(--color-primary);
+        z-index: 5;
+    }
+
+    /* Selected：持久选中 + 简洁背景 */
+    .code-fence.mockup-code pre.is-selected,
+    .code-fence.mockup-code pre[aria-selected="true"] {
+        background: var(--code-line-selected) !important;
+    }
+
+    .code-fence.mockup-code pre.is-selected::before,
+    .code-fence.mockup-code pre[aria-selected="true"]::before {
+        opacity: 1;
+        color: var(--code-line-number-active) !important;
+        font-weight: 700;
+    }
+
+    /* Accent bar：装饰性的 IDE 灵魂蓝条 */
+    .code-fence.mockup-code pre::after {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: 3px;
+        border-radius: 0 2px 2px 0;
+        background: var(--code-line-accent);
+        opacity: 0;
+        transform: scaleY(0.4);
+        transition:
+            opacity 180ms ease,
+            transform 220ms var(--ease-spring),
+            box-shadow 180ms ease;
+        pointer-events: none;
+    }
+
+    /* 选中或 Target 时激活蓝条 */
+    .code-fence.mockup-code pre.is-selected::after,
+    .code-fence.mockup-code pre[aria-selected="true"]::after,
+    .code-fence.mockup-code pre:target::after {
+        opacity: 1;
+        transform: scaleY(1);
+    }
+
+    /* Target：深链定位（短暂高亮后淡出） */
+    .code-fence.mockup-code pre:target {
+        background: var(--code-line-target) !important;
+        animation: target-flash 1.8s ease-out-back;
+    }
+
+    @keyframes target-flash {
+
+        0%,
+        20% {
+            background: var(--code-line-target);
+        }
+
+        100% {
+            background: transparent;
+        }
+    }
+
+    /* Copied：单行复制反馈（瞬时） */
+    .code-fence.mockup-code pre.is-copied {
+        background: var(--code-line-copied) !important;
+        transition: none;
+    }
+
+    /* ✅ FIX: 允许代码内容选中高亮（包括高亮的 span 元素） */
+    .code-fence-container code::selection,
+    .code-fence-container code *::selection {
+        background: var(--code-selection-bg);
+    }
+
+    /* Header Controls */
+    .code-header-left {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+
+    .code-dots {
+        display: flex;
+        gap: var(--win-dot-gap);
+        align-items: center;
+    }
+
+    .code-dot {
+        width: var(--win-dot-size);
+        height: var(--win-dot-size);
+        border-radius: 50%;
+        box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.1),
+            0 1px 0 rgba(255, 255, 255, 0.1);
+    }
+
+    .code-dot-red {
+        background: var(--win-dot-red);
+    }
+
+    .code-dot-amber {
+        background: var(--win-dot-amber);
+    }
+
+    .code-dot-green {
+        background: var(--win-dot-green);
+    }
+
+    .code-lang-chip {
+        color: var(--code-lang-fg);
+        font-size: 11px;
+        font-weight: 800;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        opacity: 0.8;
+    }
+
+    /* ✅ 自定义标题样式（如文件名） */
+    .code-title {
+        color: var(--code-fg);
+        font-size: 12px;
+        font-weight: 600;
+        letter-spacing: 0;
+        opacity: 0.9;
+        font-family: inherit;
+    }
+
+    .code-copy-btn {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        padding: 4px 10px;
+        border-radius: 6px;
+        background: var(--code-copy-bg);
+        color: var(--code-copy-fg);
+        font-size: 11px;
+        font-weight: 700;
+        transition: all 0.2s ease;
+        min-width: 60px;
+        justify-content: center;
+    }
+
+    .code-copy-btn:hover {
+        background: var(--code-copy-hover, var(--code-copy-bg));
+        filter: brightness(1.05);
+    }
+
+    .code-copy-btn:focus-visible {
+        outline: 2px solid var(--color-primary);
+        outline-offset: 2px;
+    }
+
+    /* Syntax Highlighting Token Mapping */
+    .mockup-code .token.keyword {
+        color: var(--token-keyword);
+        font-weight: 700;
+    }
+
+    .mockup-code .token.function {
+        color: var(--token-function);
+    }
+
+    .mockup-code .token.string {
+        color: var(--token-string);
+    }
+
+    .mockup-code .token.comment {
+        color: var(--token-comment);
+        font-style: italic;
+    }
+
+    .mockup-code .token.number {
+        color: var(--token-number);
+    }
+
+    /* 触屏交互优化 */
+    @media (hover: none) {
+        .code-fence.mockup-code pre:hover {
+            background: transparent;
+        }
+    }
+
+    /* Reduced Motion */
+    @media (prefers-reduced-motion: reduce) {
+
+        .code-fence.mockup-code pre::after,
+        .code-fence-container,
+        .code-fence.mockup-code pre {
+            transition: none !important;
+            animation: none !important;
+        }
+
+        .code-fence.mockup-code pre::after {
+            transform: scaleY(1) !important;
+        }
+    }
+
+    /* =========================================================
+       JOT SPECIFIC OVERRIDES
+       ========================================================= */
+    .jot-markdown:where(.markdown-body) {
+        --md-p-space: 0.75rem;
+    }
+
+    .jot-markdown :where(h1, h2, h3, h4, h5, h6) {
+        margin: 1.25rem 0 0.5rem !important;
+        line-height: 1.3 !important;
+        letter-spacing: -0.01em !important;
+    }
+
+    .jot-markdown :where(h1) {
+        font-size: 1.25rem !important;
+        font-weight: 800 !important;
+        border-bottom: 2px solid var(--glass-border-color) !important;
+        padding-bottom: 0.5rem !important;
+    }
+
+    .jot-markdown :where(h2) {
+        font-size: 1.1rem !important;
+        border-bottom: none !important;
+        padding-bottom: 0 !important;
+        font-weight: 700 !important;
+    }
+
+    .jot-markdown :where(h3) {
+        font-size: 1rem !important;
+    }
+
+    .jot-markdown :where(p, li) {
+        font-size: 0.9375rem;
+        color: var(--color-base-content);
+    }
+}

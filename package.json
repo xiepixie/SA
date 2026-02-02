@@ -1,0 +1,27 @@
+{
+    "name": "smart-archive-monorepo",
+    "version": "1.0.0",
+    "private": true,
+    "workspaces": [
+        "apps/*",
+        "packages/*"
+    ],
+    "scripts": {
+        "dev:server": "bun run --watch --env-file=apps/server/.env apps/server/src/index.ts",
+        "dev:web": "bun --cwd apps/web dev",
+        "build:web": "bun --cwd apps/web build",
+        "lint:web": "bun --cwd apps/web lint",
+        "build:fsrs": "bun --cwd packages/fsrs-engine run build",
+        "build:markdown": "bun --cwd packages/markdown-parser run build",
+        "gen:types": "bun --cwd packages/database run gen:types",
+        "install:all": "bun install"
+    },
+    "dependencies": {
+        "@codemirror/autocomplete": "^6.20.0",
+        "@codemirror/commands": "^6.10.1",
+        "@codemirror/lang-markdown": "^6.5.0",
+        "@codemirror/language": "^6.12.1",
+        "@codemirror/state": "^6.5.4",
+        "@codemirror/view": "^6.39.11"
+    }
+}

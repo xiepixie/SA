@@ -1,0 +1,75 @@
+/* =========================================================
+   BUTTONS — Premium Glass & Liquid Action Components
+   ========================================================= */
+
+.sea .btn-premium {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 1.25rem;
+    font-weight: 900;
+    transition: all var(--dur-2) var(--ease-spring);
+    cursor: pointer;
+    overflow: hidden;
+    border: 1px solid var(--glass-border);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    background: oklch(from var(--color-base-content) l c h / 0.05);
+    color: var(--color-base-content);
+    user-select: none;
+    gap: 0.75rem;
+}
+
+.sea .btn-premium:hover {
+    transform: translateY(-2px) scale(1.02);
+    border-color: var(--glass-border-hover);
+    background: oklch(from var(--color-base-content) l c h / 0.08);
+    box-shadow: var(--shadow-premium-lg);
+}
+
+.sea .btn-premium:active {
+    transform: translateY(0) scale(0.98);
+}
+
+/* Primary Variant */
+.sea .btn-premium.primary {
+    background: var(--color-primary);
+    color: var(--color-primary-content);
+    border: none;
+    box-shadow: 0 8px 24px oklch(from var(--color-primary) l c h / 0.2);
+}
+
+.sea .btn-premium.primary:hover {
+    background: oklch(from var(--color-primary) calc(l * 1.05) c h);
+    box-shadow: 0 12px 32px oklch(from var(--color-primary) l c h / 0.3);
+}
+
+/* Liquid Shimmer Effect */
+.sea .btn-premium::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+        120deg,
+        transparent 30%,
+        oklch(100% 0 0 / 0.15) 38%,
+        oklch(100% 0 0 / 0.15) 40%,
+        transparent 48%
+    );
+    transform: translateX(-100%);
+    transition: none;
+    pointer-events: none;
+}
+
+.sea .btn-premium:hover::after {
+    transform: translateX(100%);
+    transition: transform 0.65s var(--ease-emphasized);
+}
+
+/* Variant: Large Icon (Special for Upload) */
+.sea .btn-premium.xl {
+    padding: 1.5rem 2.5rem;
+    border-radius: 2rem;
+    font-size: 1.1rem;
+}

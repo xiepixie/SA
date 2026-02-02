@@ -1,0 +1,25 @@
+{
+  "name": "@v2/server",
+  "module": "src/index.ts",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "dev": "bun --watch src/index.ts",
+    "start": "bun src/index.ts"
+  },
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  },
+  "dependencies": {
+    "@elysiajs/cors": "^1.4.0",
+    "@elysiajs/openapi": "^1.4.12",
+    "@supabase/supabase-js": "^2.89.0",
+    "@v2/database": "workspace:*",
+    "@v2/fsrs-engine": "workspace:*",
+    "@v2/shared": "workspace:*",
+    "elysia": "^1.4.19"
+  }
+}

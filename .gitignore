@@ -1,0 +1,48 @@
+# Dependencies
+node_modules/
+
+# Build outputs (Web/JS)
+dist/
+out/
+build/
+*.tgz
+
+# Build outputs (Rust)
+target/
+
+# Environment Variables
+.env
+.env.*
+!.env.example
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Caches & Temp
+.cache/
+*.tsbuildinfo
+.eslintcache
+
+# IDEs and Editors
+.idea/
+.vscode/
+*.swp
+*.swo
+*.swn
+.DS_Store
+Thumbs.db
+
+# AI Agent Context
+.agent/
+.agents/
+.claude/
+.gemini/
+
+# Supabase
+supabase/.branches
+supabase/.temp

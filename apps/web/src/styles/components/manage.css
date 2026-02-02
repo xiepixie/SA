@@ -1,0 +1,164 @@
+/* =========================================================
+   MANAGE PAGE STYLES — Asset Management UI
+   Concepts: Glassmorphism, Sophisticated Timelines, Premium Controls
+   ========================================================= */
+
+.manage-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem;
+}
+
+.manage-card {
+    position: relative;
+    background: oklch(from var(--color-base-100) l c h / 0.6);
+    backdrop-filter: blur(12px);
+    border: 1px solid oklch(from var(--color-base-content) l c h / 0.08);
+    border-radius: 1.25rem;
+    padding: 1.5rem;
+    transition: all var(--dur-2) var(--ease-spring);
+    overflow: hidden;
+}
+
+.manage-card:hover {
+    transform: translateY(-4px);
+    border-color: oklch(from var(--color-primary) l c h / 0.3);
+    box-shadow: var(--shadow-premium-lg);
+}
+
+.manage-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: var(--card-accent, var(--color-primary));
+    opacity: 0.6;
+}
+
+.manage-card-icon {
+    width: 3.5rem;
+    height: 3.5rem;
+    border-radius: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--card-accent-soft, oklch(from var(--color-primary) l c h / 0.1));
+    color: var(--card-accent, var(--color-primary));
+    margin-bottom: 1.25rem;
+    transition: transform var(--dur-2) var(--ease-spring);
+}
+
+.manage-card:hover .manage-card-icon {
+    transform: scale(1.1) rotate(5deg);
+}
+
+.manage-stat-chip {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.25rem 0.75rem;
+    background: oklch(from var(--color-base-content) l c h / 0.04);
+    border-radius: 2rem;
+    border: 1px solid oklch(from var(--color-base-content) l c h / 0.05);
+}
+
+/* Timeline / History Styles */
+.audit-timeline {
+    position: relative;
+    padding-left: 2rem;
+}
+
+.audit-timeline::before {
+    content: '';
+    position: absolute;
+    left: 0.5rem;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: oklch(from var(--color-base-content) l c h / 0.05);
+}
+
+.audit-item {
+    position: relative;
+    padding-bottom: 2rem;
+}
+
+.audit-dot {
+    position: absolute;
+    left: -2rem;
+    top: 0;
+    width: 1.25rem;
+    height: 1.25rem;
+    border-radius: 1rem;
+    background: var(--color-base-100);
+    border: 3px solid var(--color-primary);
+    box-shadow: 0 0 0 4px oklch(from var(--color-primary) l c h / 0.1);
+    z-index: 1;
+}
+
+.audit-item:last-child {
+    padding-bottom: 0;
+}
+
+/* Modal Enhancements */
+.manage-modal-glass {
+    background: oklch(from var(--color-base-100) l c h / 0.85);
+    backdrop-filter: blur(24px) saturate(180%);
+    border: 1px solid oklch(100% 0 0 / 0.12);
+    box-shadow: var(--shadow-premium-xl);
+}
+
+.color-swatch {
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all var(--dur-1) var(--ease-smooth);
+    border: 3px solid transparent;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.color-swatch:hover {
+    transform: scale(1.15);
+}
+
+.color-swatch.active {
+    border-color: var(--color-base-100);
+    box-shadow: 0 0 0 2px var(--color-primary);
+    transform: scale(1.1);
+}
+
+/* Preview Component */
+.manage-preview {
+    background: oklch(from var(--color-base-300) l c h / 0.3);
+    border-radius: 1.5rem;
+    padding: 2rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 240px;
+}
+
+.manage-table-row {
+    transition: background-color var(--dur-1) var(--ease-smooth);
+}
+
+.manage-table-row:hover {
+    background-color: oklch(from var(--color-base-content) l c h / 0.03);
+}
+
+.search-pill {
+    background: oklch(from var(--color-base-content) l c h / 0.03);
+    border: 1px solid oklch(from var(--color-base-content) l c h / 0.08);
+    transition: all var(--dur-2) var(--ease-smooth);
+}
+
+.search-pill:focus-within {
+    background: var(--color-base-100);
+    border-color: var(--color-primary);
+    box-shadow: var(--focus-ring);
+}

@@ -1,0 +1,36 @@
+{
+    "name": "@v2/markdown-parser",
+    "version": "0.2.0",
+    "description": "Markdown parser with math syntax support, compiled to WASM, with React renderer",
+    "main": "index.ts",
+    "types": "index.ts",
+    "exports": {
+        ".": "./index.ts",
+        "./pkg/markdown_parser": "./pkg/markdown_parser.js"
+    },
+    "files": [
+        "pkg",
+        "src",
+        "index.ts"
+    ],
+    "scripts": {
+        "build": "wasm-pack build --target web --out-dir pkg",
+        "build:dev": "wasm-pack build --dev --target web --out-dir pkg",
+        "clean": "rimraf pkg"
+    },
+    "peerDependencies": {
+        "react": ">=18.0.0",
+        "react-dom": ">=18.0.0",
+        "katex": ">=0.16.0",
+        "morphdom": ">=2.7.0"
+    },
+    "keywords": [
+        "markdown",
+        "parser",
+        "wasm",
+        "math",
+        "katex",
+        "react"
+    ],
+    "license": "MIT"
+}

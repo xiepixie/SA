@@ -1,0 +1,415 @@
+/* =========================================================
+   SIDEBAR — Navigation Sidebar Component
+   
+   Layout: Uses flexbox for nav-item alignment (not grid)
+   Containment: Applied to scroll container, not outer shell
+   ========================================================= */
+
+/* ========== MAIN SIDEBAR SHELL ========== */
+/* Desktop sidebar needs higher z-index to ensure tooltips aren't clipped */
+.sea .sidebar {
+    /* ... tokens ... */
+    --sb-item-fg: color-mix(in srgb, var(--color-base-content), transparent 30%);
+    --sb-item-fg-hover: var(--color-base-content);
+    --sb-item-fg-active: var(--color-primary);
+    --sb-item-bg-hover: color-mix(in srgb, var(--color-base-content), transparent 95%);
+    --sb-item-bg-active: color-mix(in srgb, var(--color-primary), transparent 90%);
+    --sb-item-indicator: var(--color-primary);
+    --sb-focus-ring: var(--color-primary);
+
+    height: 100%;
+    width: var(--sidebar-width);
+    /* min-width: var(--sidebar-width); - removed to allow grid 'auto' to work */
+    display: flex;
+    flex-direction: column;
+    background-color: var(--glass-bg);
+    backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-sat));
+    -webkit-backdrop-filter: blur(var(--glass-blur)) saturate(var(--glass-sat));
+    border-right: 1px solid var(--glass-border-color);
+    overflow: visible;
+    position: relative;
+    z-index: 10;
+
+    /* WIDTH Transition: Only driver for layout */
+    transition: width var(--sb-dur) var(--sb-ease);
+    /* Expansion: Delay width slightly so content can prepare */
+    transition-delay: 80ms;
+}
+
+.sea .sidebar.collapsed {
+    width: var(--sidebar-width-collapsed);
+    /* Collapse: Width changes immediately */
+    transition-delay: 0ms;
+}
+
+/* Disable transitions when restoring or reduced motion */
+.sea .sidebar.no-transitions,
+.sea .sidebar.no-transitions * {
+    transition: none !important;
+    animation: none !important;
+}
+
+/* ========== HEADER ========== */
+.sea .sidebar-header {
+    padding: var(--pad-3);
+    border-bottom: 1px solid var(--glass-border-color);
+    flex-shrink: 0;
+    position: relative;
+    z-index: 1;
+    background-color: inherit;
+}
+
+/* Collapsed header centering */
+.sea .sidebar.collapsed .sidebar-header {
+    padding: var(--pad-3) 0;
+    display: flex;
+    justify-content: center;
+}
+
+/* ========== SCROLL CONTAINER ========== */
+.sea .sidebar-content {
+    flex: 1;
+    overflow: visible;
+    position: relative;
+    z-index: 2;
+}
+
+/* Collapsed content centering */
+.sea .sidebar.collapsed .sidebar-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-left: 0;
+    padding-right: 0;
+}
+
+/* Inner scroll wrapper for nav items */
+.sea .sidebar-content-inner {
+    height: 100%;
+    overflow-y: auto;
+    overflow-x: hidden;
+    padding-right: 4px;
+}
+
+/* ========== NAV ITEM ========== */
+.sea .nav-item {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 0.75rem;
+    position: relative;
+    color: var(--sb-item-fg);
+    transition:
+        background-color var(--dur-2) var(--ease-smooth),
+        color var(--dur-2) var(--ease-smooth),
+        box-shadow var(--dur-2) var(--ease-smooth);
+    /* Prevent content from affecting centering when collapsed */
+    min-width: 0;
+}
+
+/* Hover State */
+.sea .nav-item:hover {
+    color: var(--sb-item-fg-hover);
+    background-color: var(--sb-item-bg-hover);
+}
+
+/* Icon Micro-interaction (Hover) */
+.sea .nav-item .nav-icon {
+    transition: transform 0.2s var(--ease-spring);
+}
+
+.sea .nav-item:hover .nav-icon {
+    transform: scale(1.1);
+    filter: brightness(1.1);
+}
+
+/* Active State */
+.sea .nav-item.active {
+    font-weight: 600;
+    color: var(--sb-item-fg-active);
+    background-color: var(--sb-item-bg-active);
+}
+
+/* Active Indicator (Expanded) - Left Bar + Background */
+.sea .nav-item.active::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 20%;
+    bottom: 20%;
+    width: 3px;
+    background-color: var(--sb-item-indicator);
+    border-radius: 0 4px 4px 0;
+    opacity: 1;
+    box-shadow: 2px 0 8px color-mix(in srgb, var(--sb-item-indicator), transparent 70%);
+}
+
+/* Active Indicator (Collapsed) - Remove Left Bar, Add Glow/Dot */
+.sea .sidebar.collapsed .nav-item.active::before {
+    display: none;
+}
+
+/* Collapsed state overrides */
+.sea .sidebar.collapsed .nav-item {
+    justify-content: center !important;
+    gap: 0;
+    /* Collapsed active style: Rounded rect + glow */
+    border-radius: 12px;
+    /* Smooth rounded square */
+}
+
+/* Collapsed Active State Specifics: Definite Capsule */
+.sea .sidebar.collapsed .nav-item.active {
+    background-color: var(--sb-item-bg-active);
+    box-shadow:
+        0 0 0 1px color-mix(in srgb, var(--sb-item-indicator), transparent 80%),
+        0 4px 12px -2px color-mix(in srgb, var(--sb-item-indicator), transparent 75%);
+    /* Use a capsule shape to distinguish from regular squares */
+    border-radius: 14px;
+}
+
+/* Focus visible - ensure ring is not clipped */
+.sea .nav-item:focus-visible {
+    outline: none;
+    box-shadow: inset 0 0 0 2px var(--sb-focus-ring);
+}
+
+/* ========== NAV LABEL ========== */
+.sea .nav-label {
+    opacity: 1;
+    transform: translateX(0);
+    flex: 1;
+    min-width: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    transition:
+        opacity var(--sb-dur-fast) var(--sb-ease),
+        transform var(--sb-dur-fast) var(--sb-ease),
+        flex var(--sb-dur-fast) var(--sb-ease);
+}
+
+.sea .sidebar.collapsed .nav-label {
+    opacity: 0;
+    transform: translateX(-10px);
+    pointer-events: none;
+    /* ENSURE zero space participation in flex layout */
+    flex: 0 0 0;
+    transition-duration: calc(var(--sb-dur-fast) * 0.8);
+}
+
+/* ========== NAV TITLE (Section Headers) ========== */
+.sea .nav-title {
+    opacity: 1;
+    height: auto;
+    margin-bottom: 0.5rem;
+    transition:
+        opacity var(--sb-dur-fast) var(--sb-ease),
+        transform var(--sb-dur-fast) var(--sb-ease),
+        height var(--sb-dur-fast) var(--sb-ease);
+    overflow: hidden;
+}
+
+.sea .sidebar.collapsed .nav-title {
+    opacity: 0;
+    height: 0;
+    margin-bottom: 0;
+    transform: translateX(-10px);
+    pointer-events: none;
+}
+
+/* ========== NAV BADGE ========== */
+.sea .nav-badge {
+    opacity: 1;
+    transform: scale(1);
+    transition:
+        opacity var(--sb-dur-fast) var(--sb-ease-soft) 180ms,
+        transform var(--sb-dur-fast) var(--sb-ease-soft);
+}
+
+.sea .sidebar.collapsed .nav-badge {
+    opacity: 0;
+    transform: scale(0.8);
+    position: absolute;
+    transition-delay: 0ms;
+    display: none;
+}
+
+/* ========== USER INFO ========== */
+.sea .user-info {
+    transition:
+        opacity var(--sb-dur-fast) var(--sb-ease),
+        transform var(--sb-dur-fast) var(--sb-ease),
+        flex var(--sb-dur-fast) var(--sb-ease);
+}
+
+.sea .sidebar.collapsed .user-info {
+    opacity: 0;
+    transform: translateX(-10px);
+    pointer-events: none;
+    /* ENSURE zero space participation */
+    flex: 0 0 0;
+    transition-duration: calc(var(--sb-dur-fast) * 0.8);
+}
+
+/* ========== FOOTER ========== */
+.sea .sidebar-footer {
+    flex-shrink: 0;
+    position: relative;
+    z-index: 1;
+    background-color: inherit;
+    border-top: 1px solid var(--glass-border-color);
+}
+
+/* Collapsed footer centering */
+.sea .sidebar.collapsed .sidebar-footer {
+    padding-left: 0;
+    padding-right: 0;
+    justify-content: center;
+}
+
+/* ========== MOBILE SIDEBAR ========== */
+@media (max-width: 768px) {
+    .sea .sidebar {
+        position: fixed;
+        inset: 0;
+        right: auto;
+        z-index: var(--z-modal);
+        width: 85vw;
+        max-width: 320px;
+        min-width: auto;
+        transform: translateX(-100%);
+        transition: transform 0.35s var(--ease-smooth);
+        border-radius: 0 1.5rem 1.5rem 0;
+        border-right: none;
+        box-shadow: none;
+    }
+
+    .sea .sidebar.open {
+        transform: translateX(0);
+        box-shadow:
+            20px 0 60px rgba(0, 0, 0, 0.4),
+            0 0 0 100vmax rgba(0, 0, 0, 0.01);
+    }
+
+    /* Drawer animation - respects reduced motion */
+    .sea .sidebar.open:not(.no-transitions) {
+        animation: drawer-in var(--dur-3) var(--ease-spring) both;
+    }
+
+    @keyframes drawer-in {
+        from {
+            transform: translateX(-100%);
+            filter: blur(8px);
+            opacity: 0.8;
+        }
+
+        to {
+            transform: translateX(0);
+            filter: blur(0);
+            opacity: 1;
+        }
+    }
+}
+
+/* ========== MOTION PERFORMANCE OVERRIDES ========== */
+/* Degrade heavy effects during sidebar motion to maintain FPS */
+html.is-sidebar-moving .sea .sidebar {
+    box-shadow: none !important;
+}
+
+html.is-sidebar-moving .sea .nav-item {
+    filter: none !important;
+    transition: none !important;
+}
+
+/* Fix "Ink Overflow" - ensure outlines and shadows aren't clipped by layout containers */
+.sea .sidebar-content {
+    /* Allow active glow/indicator to bleed slightly if needed, but keep scroll functional */
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+/* ========== OVERLAY ========== */
+.sea .sidebar-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: calc(var(--z-modal) - 1);
+    background: oklch(0% 0 0 / 0.5);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    animation: overlay-fade-in 0.25s var(--ease-smooth) both;
+}
+
+@keyframes overlay-fade-in {
+    from {
+        opacity: 0;
+        backdrop-filter: blur(0);
+    }
+
+    to {
+        opacity: 1;
+        backdrop-filter: blur(4px);
+    }
+}
+
+/* ========== REDUCED MOTION ========== */
+@media (prefers-reduced-motion: reduce) {
+
+    .sea .sidebar,
+    .sea .sidebar *,
+    .sea .sidebar-overlay {
+        transition: none !important;
+        animation: none !important;
+    }
+
+    /* Disable hover scale on icons */
+    .sea .nav-item:hover .nav-icon {
+        transform: none;
+    }
+
+    /* Disable blur on overlay to reduce load */
+    .sea .sidebar-overlay {
+        backdrop-filter: none;
+        background: oklch(0% 0 0 / 0.7);
+        /* Slightly darker since no blur */
+    }
+
+    /* Simple fallback for drawer */
+    @keyframes drawer-in {
+        from {
+            transform: translateX(-100%);
+        }
+
+        to {
+            transform: translateX(0);
+        }
+    }
+
+    @keyframes overlay-fade-in {
+        from {
+            opacity: 0;
+        }
+
+        to {
+            opacity: 1;
+        }
+    }
+}
+
+/* ========== HIGH CONTRAST MODE ========== */
+@media (prefers-contrast: more) {
+    .sea .sidebar {
+        border-right-color: var(--glass-border-strong);
+    }
+
+    .sea .nav-item:focus-visible {
+        box-shadow: inset 0 0 0 4px var(--sb-item-active-fg);
+    }
+
+    .sea .nav-item.active {
+        background-color: var(--color-primary);
+        color: var(--color-primary-content);
+        /* Ensure indicator is visible or redundant in high contrast */
+        border: 2px solid currentColor;
+    }
+}

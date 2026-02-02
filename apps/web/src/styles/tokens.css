@@ -1,0 +1,157 @@
+/* =========================================================
+   DESIGN TOKENS — Global Semantic Assets
+   Motion, spacing, z-index, focus ring, glass physics
+   Almost never changes - foundational design primitives
+   ========================================================= */
+
+:root {
+    /* ========== MOTION TOKENS ========== */
+    --ease-spring: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    --ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+    --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+
+    /* Animation Durations */
+    --dur-1: 120ms;
+    --dur-2: 180ms;
+    --dur-3: 260ms;
+
+    /* Sidebar Motion Tokens */
+    --sb-ease: cubic-bezier(.2, .8, .2, 1);
+    --sb-ease-soft: var(--ease-smooth);
+    --sb-dur: 280ms;
+    --sb-dur-fast: 160ms;
+    --sb-stagger: 18ms;
+
+    --glass-transition:
+        transform var(--dur-2) var(--ease-spring),
+        box-shadow var(--dur-2) var(--ease-smooth),
+        border-color var(--dur-2) var(--ease-smooth),
+        background-color var(--dur-2) var(--ease-smooth),
+        filter var(--dur-2) var(--ease-smooth);
+
+    /* ========== PREMIUM SHADOWS (Multi-layered) ========== */
+    --shadow-premium-sm:
+        0 2px 4px 0 oklch(0% 0 0 / 0.05),
+        0 1px 2px -1px oklch(0% 0 0 / 0.1);
+
+    --shadow-premium-md:
+        0 4px 6px -1px oklch(0% 0 0 / 0.05),
+        0 10px 15px -3px oklch(0% 0 0 / 0.1);
+
+    --shadow-premium-lg:
+        0 10px 25px -5px oklch(0% 0 0 / 0.05),
+        0 20px 48px -12px oklch(0% 0 0 / 0.15),
+        0 0 0 1px oklch(0% 0 0 / 0.02);
+
+    --shadow-premium-xl:
+        0 20px 40px -15px oklch(0% 0 0 / 0.1),
+        0 35px 80px -20px oklch(0% 0 0 / 0.25),
+        0 0 0 1px oklch(100% 0 0 / 0.05) inset;
+
+    /* ========== INTERACTION PHYSICS ========== */
+    --press-y: 1px;
+    --press-scale: 0.99;
+    --hover-raise: -2px;
+    --hover-raise-sm: -1px;
+    --hover-glow: 0 0 0 1px var(--glass-border-hover) inset;
+    --press-raise: 0px;
+
+    /* ========== DENSITY / SPACING ========== */
+    --tap-h: 44px;
+    --row-h: 40px;
+    --pad-1: 0.5rem;
+    --pad-2: 0.75rem;
+    --pad-3: 1rem;
+    --pad-4: 1.25rem;
+
+    /* ========== Z-INDEX LAYERS ========== */
+    --z-overlay: 40;
+    --z-modal: 50;
+    --z-toast: 60;
+    --z-actionbar: 20;
+
+    /* ========== FOCUS RING ========== */
+    --focus-ring: 0 0 0 3px oklch(from var(--color-accent) l c h / 0.45);
+    --focus-ring-strong: 0 0 0 4px oklch(from var(--color-accent) l c h / 0.65);
+
+    /* ========== TYPOGRAPHY ========== */
+    --font-sans: "Inter", "Manrope", "Outfit", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "HarmonyOS Sans SC", "Noto Sans SC", system-ui, sans-serif;
+    --font-mono: "JetBrains Mono", "Cascadia Code", "Fira Code", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+
+    /* ========== STATE SEMANTICS ========== */
+    /* Review semantics */
+    --state-due-bg: oklch(from var(--color-warning) l c h / 0.14);
+    --state-overdue-bg: oklch(from var(--color-secondary) l c h / 0.14);
+    --state-new-bg: oklch(from var(--color-success) l c h / 0.12);
+    --state-sync-bg: oklch(from var(--color-info) l c h / 0.12);
+
+    /* Import semantics */
+    --job-queued-bg: oklch(from var(--color-accent) l c h / 0.10);
+    --job-running-bg: oklch(from var(--color-info) l c h / 0.12);
+    --job-partial-bg: oklch(from var(--color-warning) l c h / 0.12);
+    --job-failed-bg: oklch(from var(--color-error) l c h / 0.12);
+    --job-done-bg: oklch(from var(--color-success) l c h / 0.12);
+
+    /* Library semantics */
+    --chip-bg: oklch(from var(--color-base-content) l c h / 0.06);
+    --chip-bg-hover: oklch(from var(--color-primary) l c h / 0.10);
+    --muted-fg: oklch(from var(--color-base-content) l c h / 0.65);
+    --dim-fg: oklch(from var(--color-base-content) l c h / 0.45);
+
+    /* ========== MOTION SCALE (Page Transitions) ========== */
+    --motion-distance: 14px;
+    --motion-distance-sm: 8px;
+    --motion-scale-in: .985;
+    --motion-scale-out: .995;
+
+    /* Route transition timing */
+    --route-in: var(--dur-3);
+    --route-out: var(--dur-2);
+    --route-ease: var(--ease-smooth);
+    --route-ease-pop: var(--ease-spring);
+
+    /* Theme switching timing */
+    --theme-dur: 280ms;
+    --theme-ease: cubic-bezier(.2, .8, .2, 1);
+
+    /* Overlay for theme crossfade */
+    --theme-overlay: oklch(from var(--color-base-100) l c h / 0.65);
+
+    /* Accent mixing helpers */
+    --accent-soft: oklch(from var(--color-primary) l c h / 0.10);
+    --accent-soft-2: oklch(from var(--color-accent) l c h / 0.10);
+
+    /* ========== WINDOW DECORATION TOKENS ========== */
+    --win-dot-size: 10px;
+    --win-dot-gap: 8px;
+    --win-dot-red: #ff5f56;
+    --win-dot-amber: #ffbd2e;
+    --win-dot-green: #27c93f;
+}
+
+/* Navigation transition tokens */
+:root,
+.sea {
+    --nav-width: var(--sidebar-width);
+    --nav-transition: var(--dur-3) var(--ease-smooth);
+    --theme-transition: 0.45s var(--ease-smooth);
+}
+
+/* ========== DENSITY VARIANTS ========== */
+[data-density="compact"] {
+    --tap-h: 40px;
+    --row-h: 36px;
+    --pad-3: 0.85rem;
+    --pad-4: 1.05rem;
+}
+
+/* ========== REDUCED MOTION TOKENS ========== */
+@media (prefers-reduced-motion: reduce) {
+    :root {
+        --route-in: 1ms;
+        --route-out: 1ms;
+        --theme-dur: 1ms;
+        --motion-distance: 0px;
+        --motion-distance-sm: 0px;
+    }
+}

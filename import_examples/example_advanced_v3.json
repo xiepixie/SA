@@ -1,0 +1,68 @@
+[
+    {
+        "title": "React Hooks 的使用规则是什么？",
+        "content": "请详细描述 React Hooks 的两条核心规则。",
+        "question_type": "short_answer",
+        "difficulty": "medium",
+        "correct_answer": {
+            "type": "short_answer",
+            "answers": [
+                "只在顶层调用 Hook",
+                "只在 React 函数中调用 Hook"
+            ]
+        },
+        "metadata": {
+            "source": "React Docs",
+            "version": "18.0"
+        },
+        "tag_names": [
+            "React",
+            "Hooks",
+            "Frontend"
+        ],
+        "subject_name": "前端开发"
+    },
+    {
+        "title": "下列哪些是 HTTP 方法？",
+        "question_type": "choice",
+        "difficulty": "easy",
+        "correct_answer": {
+            "type": "choice",
+            "choice_ids": [
+                "get",
+                "post",
+                "put"
+            ]
+        },
+        "hints": {
+            "choices": [
+                {
+                    "id": "get",
+                    "text": "GET"
+                },
+                {
+                    "id": "post",
+                    "text": "POST"
+                },
+                {
+                    "id": "put",
+                    "text": "PUT"
+                },
+                {
+                    "id": "tcp",
+                    "text": "TCP"
+                }
+            ],
+            "optionAnalysis": {
+                "tcp": {
+                    "why": "TCP 是传输层协议，不是 HTTP 方法"
+                }
+            }
+        },
+        "tag_names": [
+            "Network",
+            "HTTP"
+        ],
+        "subject_name": "计算机网络"
+    }
+]

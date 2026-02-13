@@ -233,19 +233,11 @@ class MathRenderHub {
     private sweepHandle: number | null = null;
     private refCount = 0;
 
-    // ✅ P0 优化：缓存视口尺寸，避免频繁 reflow
-    private viewportHeight = typeof window !== 'undefined' ? window.innerHeight : 800;
-
     constructor() {
         if (typeof window === 'undefined') {
             this.observer = {} as any;
             return;
         }
-
-        // 监听视口变化
-        window.addEventListener('resize', () => {
-            this.viewportHeight = window.innerHeight;
-        }, { passive: true });
 
         this.observer = new IntersectionObserver((entries) => {
             const toRender: HTMLElement[] = [];
@@ -278,19 +270,11 @@ class MathRenderHub {
         return score;
     }
 
-    // ✅ P0 优化：计算元素到视口的距离（用于优先级排序）
-    private getViewportDistance(el: HTMLElement): number {
-        const rect = el.getBoundingClientRect();
-        const viewportCenter = this.viewportHeight / 2;
-        const elCenter = rect.top + rect.height / 2;
-        return Math.abs(elCenter - viewportCenter);
-    }
 
     private renderBatch(items: HTMLElement[]) {
-        // ✅ P0 优化：按距离视口中心排序，优先渲染用户最可能看到的
-        const sorted = items
-            .filter(el => document.contains(el))
-            .sort((a, b) => this.getViewportDistance(a) - this.getViewportDistance(b));
+        // ✅ FIX: Removed layout-forcing getViewportDistance call. 
+        // Intersecting elements are already visible/near-visible.
+        const sorted = items.filter(el => document.contains(el));
 
         sorted.forEach(el => {
             if (!el.dataset.renderedKey) renderMathElement(el);
@@ -326,13 +310,12 @@ class MathRenderHub {
             return;
         }
 
-        // ✅ P0 优化：按复杂度+距离综合排序
-        // 简单的先渲染（快速给用户反馈），同时考虑视口距离
+        // ✅ Optimized: Complexity-only sorting (text-based, NO reflow)
         const scored = items
-            .filter(el => document.contains(el) && !el.dataset.renderedKey)
+            .filter((el): el is HTMLElement => document.contains(el) && !el.dataset.renderedKey)
             .map(el => ({
                 el,
-                priority: this.estimateComplexity(el) + this.getViewportDistance(el) * 0.5
+                priority: this.estimateComplexity(el)
             }))
             .sort((a, b) => a.priority - b.priority);
 

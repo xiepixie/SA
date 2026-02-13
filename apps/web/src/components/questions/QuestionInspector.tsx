@@ -1,4 +1,5 @@
 import React, { useCallback } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 import {
     Brain, X, CheckCircle2, BarChart3, Edit3,
     Layout, Activity, Layers,
@@ -240,11 +241,16 @@ export function QuestionInspector({
 
     return (
         <aside
-            className={`inspector glass-surface border-l border-base-content/5 flex flex-col h-full bg-base-content/[0.01] transition-all overflow-hidden ${isDragging ? 'transition-none' : 'duration-200 ease-out'} ${(isVisible && (activeQuestion || isBulkMode)) ? 'translate-x-0 opacity-100' : 'w-0 translate-x-full opacity-0 pointer-events-none'}`}
+            className={cn(
+                "inspector glass-surface border-l border-base-content/5 flex flex-col h-full bg-base-content/[0.01] w-full overflow-hidden",
+                // Only apply transition when resizing via drag handle  
+                isDragging ? "transition-none" : "transition-none",
+                // Visibility is fully controlled by the parent container's transform  
+                (isVisible && (activeQuestion || isBulkMode)) ? '' : 'pointer-events-none'
+            )}
             style={{
-                width: (isVisible && (activeQuestion || isBulkMode)) ? (isDragging ? `${width}px` : '100%') : '0px',
+                width: isDragging ? `${width}px` : '100%',
                 flexShrink: 0,
-                minWidth: (isVisible && (activeQuestion || isBulkMode) && !isDragging) ? '320px' : '0px'
             }}
             onKeyDown={(e) => {
                 if ((e.ctrlKey || e.metaKey) && e.key === 'Enter' && mode === 'edit') {
@@ -622,438 +628,449 @@ export function QuestionInspector({
                     </div>
 
                     {/* Content: Scrollable */}
-                    <div className="flex-1 min-h-0 overflow-y-auto px-6 py-5 space-y-6 custom-scrollbar scroll-smooth overscroll-contain">
+                    <div className="flex-1 min-h-0 overflow-y-auto px-6 py-5 custom-scrollbar scroll-smooth overscroll-contain">
+                        <AnimatePresence mode="wait" initial={false}>
+                            <motion.div
+                                key={stableQuestion.id}
+                                initial={{ opacity: 0, y: 4 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                exit={{ opacity: 0, y: -4 }}
+                                transition={{ duration: 0.15, ease: 'easeOut' }}
+                                className="h-full space-y-6"
+                            >
 
-                        {/* --- PREVIEW MODE --- */}
-                        {mode === 'preview' && (
-                            <div className="animate-in fade-in slide-in-from-bottom-2 duration-300 space-y-12 py-4">
-                                {/* Interactive Preview - Clean & Shared logic */}
-                                <section className="reveal-smooth">
-                                    <div className="min-h-[200px]">
-                                        <QuestionRenderer
-                                            question={stableQuestion}
-                                            userAnswer={userAnswer}
-                                            setUserAnswer={setUserAnswer}
-                                            isRevealed={previewRevealed}
-                                            onReveal={() => setPreviewRevealed(true)}
-                                            disableAutoFocus={true}
-                                        />
-                                    </div>
-                                </section>
-
-                                {/* Footer Tags */}
-                                <section className="space-y-4 pt-4 border-t border-base-content/5 opacity-60 hover:opacity-100 transition-opacity">
-                                    <div className="flex flex-wrap gap-2">
-                                        {stableQuestion.tags.map((tag, idx) => (
-                                            <EntityBadge
-                                                key={tag.id || `view-${tag.name}-${idx}`}
-                                                name={tag.name}
-                                                color={tag.color}
-                                                showHash
-                                                size="md"
-                                            />
-                                        ))}
-                                    </div>
-                                </section>
-                            </div>
-                        )}
-
-                        {/* --- EDIT MODE --- */}
-                        {mode === 'edit' && (
-                            <div className="space-y-8 animate-in fade-in slide-in-from-bottom-2 duration-300 pb-24">
-                                <section className="space-y-10">
-                                    <div className="space-y-8">
-                                        <SectionHeader
-                                            icon={<Layers />}
-                                            title={t('library.inspector.edit.label_type', 'Classification')}
-                                            value={`${t(`common.type.${draft.question_type || 'choice'}`)} · ${t(`common.difficulty.${draft.difficulty || 'medium'}`)}`}
-                                        />
-                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pb-2">
-                                            <FieldGroup label={t('library.filters.question_type', 'Type')} id="inspector-type-select">
-                                                <div className="flex p-1 bg-base-content/5 rounded-xl gap-0.5 border border-base-content/5">
-                                                    {['choice', 'fill_blank', 'short_answer'].map(type => (
-                                                        <button
-                                                            key={type}
-                                                            id={`inspector-type-${type}`}
-                                                            onClick={() => setDraft(d => ({ ...d, question_type: type as any }))}
-                                                            className={cn(
-                                                                "flex-1 py-1.5 text-[8px] font-black uppercase rounded-lg transition-all",
-                                                                draft.question_type === type ? "bg-base-100 shadow-sm text-primary" : "opacity-40 hover:opacity-100"
-                                                            )}
-                                                        >
-                                                            {t(`common.type.${type}`)}
-                                                        </button>
-                                                    ))}
-                                                </div>
-                                            </FieldGroup>
-                                            <FieldGroup label={t('library.card.difficulty.title', 'Difficulty')} id="inspector-diff-select">
-                                                <div className="flex p-1 bg-base-content/5 rounded-xl gap-0.5 border border-base-content/5">
-                                                    {['easy', 'medium', 'hard'].map(level => (
-                                                        <button
-                                                            key={level}
-                                                            id={`inspector-diff-${level}`}
-                                                            onClick={() => setDraft(d => ({ ...d, difficulty: level as any }))}
-                                                            className={cn(
-                                                                "flex-1 py-1.5 text-[8px] font-black uppercase rounded-lg transition-all",
-                                                                draft.difficulty === level ? "bg-base-100 shadow-sm text-primary" : "opacity-40 hover:opacity-100"
-                                                            )}
-                                                        >
-                                                            {t(`common.difficulty.${level}`)}
-                                                        </button>
-                                                    ))}
-                                                </div>
-                                            </FieldGroup>
-                                        </div>
-
-                                        <ChoicesEditor
-                                            instanceId={`insp-${stableQuestion?.id || 'new'}`}
-                                            hints={draft.hints as any}
-                                            correctAnswer={draft.correct_answer as any}
-                                            explanation={draft.explanation}
-                                            questionType={draft.question_type || 'choice'}
-                                            onHintsChange={(hints) => setDraft(d => ({ ...d, hints }))}
-                                            onCorrectAnswerChange={(answer) => setDraft(d => ({ ...d, correct_answer: answer }))}
-                                            onExplanationChange={(explanation) => setDraft(d => ({ ...d, explanation }))}
-                                        />
-
-                                        <FieldGroup
-                                            label={t('library.inspector.edit.label_mistake', 'Option Analysis')}
-                                            id="inspector-wrong-answer"
-                                        >
-                                            <textarea
-                                                id="inspector-wrong-answer"
-                                                name="wrong_answer"
-                                                value={draft.wrong_answer || ''}
-                                                onChange={(e) => setDraft(d => ({ ...d, wrong_answer: e.target.value }))}
-                                                rows={2}
-                                                className="w-full p-3 bg-error/5 border border-error/10 rounded-xl text-sm focus:border-error/40 focus:bg-base-100 outline-none transition-all placeholder:text-error/20 resize-none shadow-sm"
-                                                placeholder={t('library.inspector.edit.ph_wrong', 'Record your mistake here...')}
-                                            />
-                                        </FieldGroup>
-
-                                        <div className="space-y-4">
-                                            <SectionHeader
-                                                icon={<FileText />}
-                                                title={t('library.inspector.edit.label_content', 'Question Content')}
-                                                value={`${(draft.content || '').length} chars`}
-                                                actions={
-                                                    <button
-                                                        type="button"
-                                                        onClick={() => setIsLivePreview(!isLivePreview)}
-                                                        className={`h-7 px-3 rounded-lg text-[9px] font-black uppercase tracking-wider transition-all border shadow-sm flex items-center gap-2 ${isLivePreview ? 'bg-primary border-primary text-white' : 'bg-base-content/5 border-base-content/10'}`}
-                                                    >
-                                                        {isLivePreview ? <Edit3 size={12} /> : <Layout size={12} />}
-                                                        {isLivePreview ? t('library.inspector.edit.edit_source', 'Edit') : t('library.inspector.edit.live_preview', 'Preview')}
-                                                    </button>
-                                                }
-                                            />
-                                            {isLivePreview ? (
-                                                <div className="w-full min-h-[192px] p-4 bg-base-content/[0.01] border border-base-content/5 rounded-xl text-sm overflow-y-auto max-h-[400px]">
-                                                    <MarkdownRenderer content={deferredPreviewContent} />
-                                                </div>
-                                            ) : (
-                                                <textarea
-                                                    id="inspector-content"
-                                                    name="content"
-                                                    value={draft.content || ''}
-                                                    onChange={(e) => setDraft(d => ({ ...d, content: e.target.value }))}
-                                                    className="w-full h-48 p-4 bg-base-200/50 border border-base-content/10 rounded-xl font-mono text-sm focus:border-primary/40 focus:bg-base-100 outline-none transition-all resize-none shadow-inner"
-                                                    placeholder={t('library.inspector.edit.ph_md')}
+                                {/* --- PREVIEW MODE --- */}
+                                {mode === 'preview' && (
+                                    <div className="animate-in fade-in slide-in-from-bottom-2 duration-300 space-y-12 py-4">
+                                        {/* Interactive Preview - Clean & Shared logic */}
+                                        <section className="reveal-smooth">
+                                            <div className="min-h-[200px]">
+                                                <QuestionRenderer
+                                                    question={stableQuestion}
+                                                    userAnswer={userAnswer}
+                                                    setUserAnswer={setUserAnswer}
+                                                    isRevealed={previewRevealed}
+                                                    onReveal={() => setPreviewRevealed(true)}
+                                                    disableAutoFocus={true}
                                                 />
-                                            )}
-                                        </div>
+                                            </div>
+                                        </section>
 
-                                        <div className="space-y-4 pt-4 border-t border-base-content/5">
-                                            <SectionHeader
-                                                icon={<Search />}
-                                                title={t('library.inspector.edit.label_tags', 'Metadata')}
-                                                value={(draft.tags?.length || 0).toString()}
-                                            />
-                                            {/* Current Tags - Flattened */}
+                                        {/* Footer Tags */}
+                                        <section className="space-y-4 pt-4 border-t border-base-content/5 opacity-60 hover:opacity-100 transition-opacity">
                                             <div className="flex flex-wrap gap-2">
-                                                {draft.tags?.map((tag, idx) => (
+                                                {stableQuestion.tags.map((tag, idx) => (
                                                     <EntityBadge
-                                                        key={tag.id || `edit-${tag.name}-${idx}`}
+                                                        key={tag.id || `view-${tag.name}-${idx}`}
                                                         name={tag.name}
                                                         color={tag.color}
                                                         showHash
                                                         size="md"
-                                                        className="group/tag"
-                                                    >
-                                                        <button
-                                                            onClick={(e) => {
-                                                                e.stopPropagation();
-                                                                setDraft(d => ({ ...d, tags: (d.tags || []).filter(t => t.name !== tag.name) }));
-                                                            }}
-                                                            className="opacity-40 hover:opacity-100 hover:text-error transition-all ml-1"
-                                                        >
-                                                            <X size={10} />
-                                                        </button>
-                                                    </EntityBadge>
-                                                ))}
-                                                {/* Add Tag Input */}
-                                                <div className="flex items-center gap-2 px-3 py-1.5 border border-dashed border-base-content/10 rounded-xl focus-within:border-primary/40 transition-colors">
-                                                    <Search size={10} className="opacity-20" />
-                                                    <label htmlFor={`inspector-add-tag-${stableQuestion?.id || 'new'}`} className="sr-only">{t('library.inspector.edit.ph_add_tag', '+ Add Tag...')}</label>
-                                                    <input
-                                                        id={`inspector-add-tag-${stableQuestion?.id || 'new'}`}
-                                                        name="add_tag_input"
-                                                        type="text"
-                                                        placeholder={t('library.inspector.edit.ph_add_tag', '+ Add Tag...')}
-                                                        className="bg-transparent border-none outline-none text-[10px] font-black uppercase tracking-widest text-primary placeholder:text-base-content/20 w-24"
-                                                        onKeyDown={(e) => {
-                                                            if (e.key === 'Enter') {
-                                                                const val = (e.target as HTMLInputElement).value.trim();
-                                                                if (val && !draft.tags?.some(t => t.name === val)) {
-                                                                    setDraft(d => ({ ...d, tags: [...(d.tags || []), { id: '', name: val }] }));
-                                                                    (e.target as HTMLInputElement).value = '';
-                                                                }
-                                                                e.preventDefault();
-                                                            }
-                                                        }}
                                                     />
-                                                </div>
+                                                ))}
                                             </div>
-                                            {/* Quick Tag Suggestions */}
-                                            <div className="flex flex-wrap gap-2">
-                                                {(availableTags.length > 0 ? availableTags : [{ name: 'Exam' }, { name: 'Important' }, { name: 'Review' }, { name: 'Math' }, { name: 'Physics' }, { name: 'History' }])
-                                                    .filter(tag => !draft.tags?.some(t => t.name === tag.name))
-                                                    .slice(0, 8)
-                                                    .map(tag => (
-                                                        <button
-                                                            key={tag.name}
-                                                            onClick={() => setDraft(d => ({ ...d, tags: [...(d.tags || []), { id: '', name: tag.name }] }))}
-                                                            className="px-2.5 py-1 rounded-lg border border-base-content/5 text-[8px] font-bold uppercase opacity-30 hover:opacity-100 hover:bg-primary/10 hover:text-primary hover:border-primary/20 transition-all flex items-center gap-1"
-                                                        >
-                                                            <Plus size={8} /> {tag.name}
-                                                        </button>
-                                                    ))}
-                                            </div>
-                                        </div>
+                                        </section>
                                     </div>
+                                )}
 
-                                    {/* --- Advanced: Hints & Metadata (Collapsible) --- */}
-                                    <details className="group/details">
-                                        <summary className="text-[10px] font-black opacity-30 uppercase tracking-widest ml-1 flex items-center gap-2 cursor-pointer hover:opacity-60 transition-opacity mb-3 list-none">
-                                            <Activity size={10} /> {t('library.inspector.edit.advanced', 'Advanced Metadata')}
-                                            <ChevronRight size={12} className="transition-transform group-open/details:rotate-90" />
-                                        </summary>
-                                        <div className="space-y-4 animate-in fade-in slide-in-from-top-2 duration-200">
-                                            <FieldGroup
-                                                label={t('library.inspector.edit.label_meta', 'Metadata (JSON)')}
-                                                id="inspector-metadata"
-                                            >
-                                                <textarea
-                                                    id="inspector-metadata"
-                                                    name="metadata"
-                                                    value={
-                                                        draft.metadata && typeof draft.metadata === 'object' && Object.keys(draft.metadata).length > 0
-                                                            ? JSON.stringify(draft.metadata, null, 2)
-                                                            : (typeof draft.metadata === 'string' ? draft.metadata : '')
-                                                    }
-                                                    onChange={(e) => {
-                                                        const val = e.target.value;
-                                                        try {
-                                                            setDraft(d => ({ ...d, metadata: JSON.parse(val) }));
-                                                        } catch {
-                                                            setDraft(d => ({ ...d, metadata: val }));
-                                                        }
-                                                    }}
-                                                    rows={6}
-                                                    className="w-full p-3 bg-base-200/30 border border-base-content/5 rounded-xl font-mono text-xs focus:border-primary/20 outline-none transition-all resize-none"
-                                                    placeholder='{"source": "...", "chapter": "..."}'
+                                {/* --- EDIT MODE --- */}
+                                {mode === 'edit' && (
+                                    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-2 duration-300 pb-24">
+                                        <section className="space-y-10">
+                                            <div className="space-y-8">
+                                                <SectionHeader
+                                                    icon={<Layers />}
+                                                    title={t('library.inspector.edit.label_type', 'Classification')}
+                                                    value={`${t(`common.type.${draft.question_type || 'choice'}`)} · ${t(`common.difficulty.${draft.difficulty || 'medium'}`)}`}
                                                 />
-                                            </FieldGroup>
-                                        </div>
-                                    </details>
-                                </section>
-                            </div>
-                        )}
+                                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pb-2">
+                                                    <FieldGroup label={t('library.filters.question_type', 'Type')} id="inspector-type-select">
+                                                        <div className="flex p-1 bg-base-content/5 rounded-xl gap-0.5 border border-base-content/5">
+                                                            {['choice', 'fill_blank', 'short_answer'].map(type => (
+                                                                <button
+                                                                    key={type}
+                                                                    id={`inspector-type-${type}`}
+                                                                    onClick={() => setDraft(d => ({ ...d, question_type: type as any }))}
+                                                                    className={cn(
+                                                                        "flex-1 py-1.5 text-[8px] font-black uppercase rounded-lg transition-all",
+                                                                        draft.question_type === type ? "bg-base-100 shadow-sm text-primary" : "opacity-40 hover:opacity-100"
+                                                                    )}
+                                                                >
+                                                                    {t(`common.type.${type}`)}
+                                                                </button>
+                                                            ))}
+                                                        </div>
+                                                    </FieldGroup>
+                                                    <FieldGroup label={t('library.card.difficulty.title', 'Difficulty')} id="inspector-diff-select">
+                                                        <div className="flex p-1 bg-base-content/5 rounded-xl gap-0.5 border border-base-content/5">
+                                                            {['easy', 'medium', 'hard'].map(level => (
+                                                                <button
+                                                                    key={level}
+                                                                    id={`inspector-diff-${level}`}
+                                                                    onClick={() => setDraft(d => ({ ...d, difficulty: level as any }))}
+                                                                    className={cn(
+                                                                        "flex-1 py-1.5 text-[8px] font-black uppercase rounded-lg transition-all",
+                                                                        draft.difficulty === level ? "bg-base-100 shadow-sm text-primary" : "opacity-40 hover:opacity-100"
+                                                                    )}
+                                                                >
+                                                                    {t(`common.difficulty.${level}`)}
+                                                                </button>
+                                                            ))}
+                                                        </div>
+                                                    </FieldGroup>
+                                                </div>
 
-                        {/* --- META MODE --- */}
-                        {mode === 'meta' && stableQuestion && (
-                            <div className="space-y-8 animate-in fade-in duration-300">
-                                <section className="grid grid-cols-2 gap-4">
-                                    <div className="se-glass-panel p-6 bg-primary/5 border-primary/10 relative overflow-hidden rounded-3xl border">
-                                        <div className="absolute top-0 right-0 p-4 opacity-5 pointer-events-none">
-                                            <Brain size={120} />
-                                        </div>
-                                        <h4 className="text-[10px] font-black uppercase tracking-[0.2em] mb-8 text-primary opacity-60">
-                                            {t('library.inspector.meta.title')}
-                                        </h4>
+                                                <ChoicesEditor
+                                                    instanceId={`insp-${stableQuestion?.id || 'new'}`}
+                                                    hints={draft.hints as any}
+                                                    correctAnswer={draft.correct_answer as any}
+                                                    explanation={draft.explanation}
+                                                    questionType={draft.question_type || 'choice'}
+                                                    onHintsChange={(hints) => setDraft(d => ({ ...d, hints }))}
+                                                    onCorrectAnswerChange={(answer) => setDraft(d => ({ ...d, correct_answer: answer }))}
+                                                    onExplanationChange={(explanation) => setDraft(d => ({ ...d, explanation }))}
+                                                />
 
-                                        <div className="space-y-10 relative z-10">
-                                            <div className="flex items-end justify-between">
-                                                <div className="space-y-1">
-                                                    <span className="text-[10px] font-black opacity-30 uppercase tracking-wider block">
-                                                        {t('library.inspector.meta.stability')} <span className="opacity-60">{t('library.inspector.meta.stability_unit')}</span>
-                                                    </span>
-                                                    <div className="text-3xl font-black text-info se-mono leading-none">
-                                                        {formatStability(stableQuestion.stability) || '0.0d'}
+                                                <FieldGroup
+                                                    label={t('library.inspector.edit.label_mistake', 'Option Analysis')}
+                                                    id="inspector-wrong-answer"
+                                                >
+                                                    <textarea
+                                                        id="inspector-wrong-answer"
+                                                        name="wrong_answer"
+                                                        value={draft.wrong_answer || ''}
+                                                        onChange={(e) => setDraft(d => ({ ...d, wrong_answer: e.target.value }))}
+                                                        rows={2}
+                                                        className="w-full p-3 bg-error/5 border border-error/10 rounded-xl text-sm focus:border-error/40 focus:bg-base-100 outline-none transition-all placeholder:text-error/20 resize-none shadow-sm"
+                                                        placeholder={t('library.inspector.edit.ph_wrong', 'Record your mistake here...')}
+                                                    />
+                                                </FieldGroup>
+
+                                                <div className="space-y-4">
+                                                    <SectionHeader
+                                                        icon={<FileText />}
+                                                        title={t('library.inspector.edit.label_content', 'Question Content')}
+                                                        value={`${(draft.content || '').length} chars`}
+                                                        actions={
+                                                            <button
+                                                                type="button"
+                                                                onClick={() => setIsLivePreview(!isLivePreview)}
+                                                                className={`h-7 px-3 rounded-lg text-[9px] font-black uppercase tracking-wider transition-all border shadow-sm flex items-center gap-2 ${isLivePreview ? 'bg-primary border-primary text-white' : 'bg-base-content/5 border-base-content/10'}`}
+                                                            >
+                                                                {isLivePreview ? <Edit3 size={12} /> : <Layout size={12} />}
+                                                                {isLivePreview ? t('library.inspector.edit.edit_source', 'Edit') : t('library.inspector.edit.live_preview', 'Preview')}
+                                                            </button>
+                                                        }
+                                                    />
+                                                    {isLivePreview ? (
+                                                        <div className="w-full min-h-[192px] p-4 bg-base-content/[0.01] border border-base-content/5 rounded-xl text-sm overflow-y-auto max-h-[400px]">
+                                                            <MarkdownRenderer content={deferredPreviewContent} />
+                                                        </div>
+                                                    ) : (
+                                                        <textarea
+                                                            id="inspector-content"
+                                                            name="content"
+                                                            value={draft.content || ''}
+                                                            onChange={(e) => setDraft(d => ({ ...d, content: e.target.value }))}
+                                                            className="w-full h-48 p-4 bg-base-200/50 border border-base-content/10 rounded-xl font-mono text-sm focus:border-primary/40 focus:bg-base-100 outline-none transition-all resize-none shadow-inner"
+                                                            placeholder={t('library.inspector.edit.ph_md')}
+                                                        />
+                                                    )}
+                                                </div>
+
+                                                <div className="space-y-4 pt-4 border-t border-base-content/5">
+                                                    <SectionHeader
+                                                        icon={<Search />}
+                                                        title={t('library.inspector.edit.label_tags', 'Metadata')}
+                                                        value={(draft.tags?.length || 0).toString()}
+                                                    />
+                                                    {/* Current Tags - Flattened */}
+                                                    <div className="flex flex-wrap gap-2">
+                                                        {draft.tags?.map((tag, idx) => (
+                                                            <EntityBadge
+                                                                key={tag.id || `edit-${tag.name}-${idx}`}
+                                                                name={tag.name}
+                                                                color={tag.color}
+                                                                showHash
+                                                                size="md"
+                                                                className="group/tag"
+                                                            >
+                                                                <button
+                                                                    onClick={(e) => {
+                                                                        e.stopPropagation();
+                                                                        setDraft(d => ({ ...d, tags: (d.tags || []).filter(t => t.name !== tag.name) }));
+                                                                    }}
+                                                                    className="opacity-40 hover:opacity-100 hover:text-error transition-all ml-1"
+                                                                >
+                                                                    <X size={10} />
+                                                                </button>
+                                                            </EntityBadge>
+                                                        ))}
+                                                        {/* Add Tag Input */}
+                                                        <div className="flex items-center gap-2 px-3 py-1.5 border border-dashed border-base-content/10 rounded-xl focus-within:border-primary/40 transition-colors">
+                                                            <Search size={10} className="opacity-20" />
+                                                            <label htmlFor={`inspector-add-tag-${stableQuestion?.id || 'new'}`} className="sr-only">{t('library.inspector.edit.ph_add_tag', '+ Add Tag...')}</label>
+                                                            <input
+                                                                id={`inspector-add-tag-${stableQuestion?.id || 'new'}`}
+                                                                name="add_tag_input"
+                                                                type="text"
+                                                                placeholder={t('library.inspector.edit.ph_add_tag', '+ Add Tag...')}
+                                                                className="bg-transparent border-none outline-none text-[10px] font-black uppercase tracking-widest text-primary placeholder:text-base-content/20 w-24"
+                                                                onKeyDown={(e) => {
+                                                                    if (e.key === 'Enter') {
+                                                                        const val = (e.target as HTMLInputElement).value.trim();
+                                                                        if (val && !draft.tags?.some(t => t.name === val)) {
+                                                                            setDraft(d => ({ ...d, tags: [...(d.tags || []), { id: '', name: val }] }));
+                                                                            (e.target as HTMLInputElement).value = '';
+                                                                        }
+                                                                        e.preventDefault();
+                                                                    }
+                                                                }}
+                                                            />
+                                                        </div>
+                                                    </div>
+                                                    {/* Quick Tag Suggestions */}
+                                                    <div className="flex flex-wrap gap-2">
+                                                        {(availableTags.length > 0 ? availableTags : [{ name: 'Exam' }, { name: 'Important' }, { name: 'Review' }, { name: 'Math' }, { name: 'Physics' }, { name: 'History' }])
+                                                            .filter(tag => !draft.tags?.some(t => t.name === tag.name))
+                                                            .slice(0, 8)
+                                                            .map(tag => (
+                                                                <button
+                                                                    key={tag.name}
+                                                                    onClick={() => setDraft(d => ({ ...d, tags: [...(d.tags || []), { id: '', name: tag.name }] }))}
+                                                                    className="px-2.5 py-1 rounded-lg border border-base-content/5 text-[8px] font-bold uppercase opacity-30 hover:opacity-100 hover:bg-primary/10 hover:text-primary hover:border-primary/20 transition-all flex items-center gap-1"
+                                                                >
+                                                                    <Plus size={8} /> {tag.name}
+                                                                </button>
+                                                            ))}
                                                     </div>
                                                 </div>
-                                                <div className="text-[9px] opacity-40 font-bold max-w-[100px] text-right leading-relaxed">
-                                                    {t('library.inspector.meta.estimated_recall')}
+                                            </div>
+
+                                            {/* --- Advanced: Hints & Metadata (Collapsible) --- */}
+                                            <details className="group/details">
+                                                <summary className="text-[10px] font-black opacity-30 uppercase tracking-widest ml-1 flex items-center gap-2 cursor-pointer hover:opacity-60 transition-opacity mb-3 list-none">
+                                                    <Activity size={10} /> {t('library.inspector.edit.advanced', 'Advanced Metadata')}
+                                                    <ChevronRight size={12} className="transition-transform group-open/details:rotate-90" />
+                                                </summary>
+                                                <div className="space-y-4 animate-in fade-in slide-in-from-top-2 duration-200">
+                                                    <FieldGroup
+                                                        label={t('library.inspector.edit.label_meta', 'Metadata (JSON)')}
+                                                        id="inspector-metadata"
+                                                    >
+                                                        <textarea
+                                                            id="inspector-metadata"
+                                                            name="metadata"
+                                                            value={
+                                                                draft.metadata && typeof draft.metadata === 'object' && Object.keys(draft.metadata).length > 0
+                                                                    ? JSON.stringify(draft.metadata, null, 2)
+                                                                    : (typeof draft.metadata === 'string' ? draft.metadata : '')
+                                                            }
+                                                            onChange={(e) => {
+                                                                const val = e.target.value;
+                                                                try {
+                                                                    setDraft(d => ({ ...d, metadata: JSON.parse(val) }));
+                                                                } catch {
+                                                                    setDraft(d => ({ ...d, metadata: val }));
+                                                                }
+                                                            }}
+                                                            rows={6}
+                                                            className="w-full p-3 bg-base-200/30 border border-base-content/5 rounded-xl font-mono text-xs focus:border-primary/20 outline-none transition-all resize-none"
+                                                            placeholder='{"source": "...", "chapter": "..."}'
+                                                        />
+                                                    </FieldGroup>
+                                                </div>
+                                            </details>
+                                        </section>
+                                    </div>
+                                )}
+
+                                {/* --- META MODE --- */}
+                                {mode === 'meta' && stableQuestion && (
+                                    <div className="space-y-8 animate-in fade-in duration-300">
+                                        <section className="grid grid-cols-2 gap-4">
+                                            <div className="se-glass-panel p-6 bg-primary/5 border-primary/10 relative overflow-hidden rounded-3xl border">
+                                                <div className="absolute top-0 right-0 p-4 opacity-5 pointer-events-none">
+                                                    <Brain size={120} />
+                                                </div>
+                                                <h4 className="text-[10px] font-black uppercase tracking-[0.2em] mb-8 text-primary opacity-60">
+                                                    {t('library.inspector.meta.title')}
+                                                </h4>
+
+                                                <div className="space-y-10 relative z-10">
+                                                    <div className="flex items-end justify-between">
+                                                        <div className="space-y-1">
+                                                            <span className="text-[10px] font-black opacity-30 uppercase tracking-wider block">
+                                                                {t('library.inspector.meta.stability')} <span className="opacity-60">{t('library.inspector.meta.stability_unit')}</span>
+                                                            </span>
+                                                            <div className="text-3xl font-black text-info se-mono leading-none">
+                                                                {formatStability(stableQuestion.stability) || '0.0d'}
+                                                            </div>
+                                                        </div>
+                                                        <div className="text-[9px] opacity-40 font-bold max-w-[100px] text-right leading-relaxed">
+                                                            {t('library.inspector.meta.estimated_recall')}
+                                                        </div>
+                                                    </div>
+
+                                                    <div className="space-y-4">
+                                                        <div className="flex items-center justify-between text-[10px] font-black opacity-30 uppercase tracking-wider">
+                                                            <span>{t('library.inspector.meta.mastery')}</span>
+                                                            <span className="se-mono text-base-content/60">{stableQuestion.mastery}%</span>
+                                                        </div>
+                                                        <div className="w-full h-2 bg-base-content/5 rounded-full overflow-hidden p-0.5 border border-base-content/5">
+                                                            <div
+                                                                className="h-full bg-gradient-to-r from-success/40 to-success rounded-full transition-all duration-1000"
+                                                                style={{ width: `${stableQuestion.mastery}%` }}
+                                                            />
+                                                        </div>
+                                                    </div>
+
+                                                    <div className="grid grid-cols-2 gap-4 pt-4 border-t border-base-content/5">
+                                                        <div className="space-y-1">
+                                                            <div className="text-[9px] font-black opacity-30 uppercase">{t('library.inspector.meta.reps')}</div>
+                                                            <div className="text-xl font-black se-mono">{stableQuestion.review_count}</div>
+                                                        </div>
+                                                        <div className="space-y-1">
+                                                            <div className="text-[9px] font-black opacity-30 uppercase">{t('library.inspector.meta.lapses')}</div>
+                                                            <div className="text-xl font-black se-mono text-error/60">{stableQuestion.lapses || 0}</div>
+                                                        </div>
+                                                    </div>
                                                 </div>
                                             </div>
 
                                             <div className="space-y-4">
-                                                <div className="flex items-center justify-between text-[10px] font-black opacity-30 uppercase tracking-wider">
-                                                    <span>{t('library.inspector.meta.mastery')}</span>
-                                                    <span className="se-mono text-base-content/60">{stableQuestion.mastery}%</span>
-                                                </div>
-                                                <div className="w-full h-2 bg-base-content/5 rounded-full overflow-hidden p-0.5 border border-base-content/5">
-                                                    <div
-                                                        className="h-full bg-gradient-to-r from-success/40 to-success rounded-full transition-all duration-1000"
-                                                        style={{ width: `${stableQuestion.mastery}%` }}
-                                                    />
-                                                </div>
-                                            </div>
-
-                                            <div className="grid grid-cols-2 gap-4 pt-4 border-t border-base-content/5">
-                                                <div className="space-y-1">
-                                                    <div className="text-[9px] font-black opacity-30 uppercase">{t('library.inspector.meta.reps')}</div>
-                                                    <div className="text-xl font-black se-mono">{stableQuestion.review_count}</div>
-                                                </div>
-                                                <div className="space-y-1">
-                                                    <div className="text-[9px] font-black opacity-30 uppercase">{t('library.inspector.meta.lapses')}</div>
-                                                    <div className="text-xl font-black se-mono text-error/60">{stableQuestion.lapses || 0}</div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <div className="space-y-4">
-                                        {/* Integrated Study State Panel */}
-                                        <div className="se-glass-panel p-6 bg-base-content/[0.02] border border-base-content/5 rounded-3xl space-y-8 animate-in fade-in slide-in-from-right-4 duration-500">
-                                            <div className="space-y-6">
-                                                <div className="flex items-center justify-between">
-                                                    <span className="text-[10px] font-black opacity-30 uppercase tracking-widest">{t('library.inspector.meta.next_session')}</span>
-                                                    <div className="flex flex-col items-end">
-                                                        <span className="text-sm font-black text-base-content leading-none">
-                                                            {stableQuestion.due ? new Date(stableQuestion.due).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' }) : t('library.inspector.meta.ready_now')}
-                                                        </span>
-                                                        {!stableQuestion.due && <span className="text-[8px] font-black uppercase text-success mt-1.5 animate-pulse tracking-tighter">{t('library.inspector.meta.ready_now')}</span>}
-                                                    </div>
-                                                </div>
-
-                                                <div className="flex items-center justify-between">
-                                                    <span className="text-[10px] font-black opacity-30 uppercase tracking-widest">{t('library.inspector.meta.state')}</span>
-                                                    <span className={`text-[9px] font-black uppercase px-2 py-1 rounded-md border ${stableQuestion.state === 0 ? 'bg-info/10 text-info border-info/20 shadow-sm shadow-info/10' :
-                                                        stableQuestion.state === 1 ? 'bg-warning/10 text-warning border-warning/20 shadow-sm shadow-warning/10' :
-                                                            stableQuestion.state === 2 ? 'bg-success/10 text-success border-success/20 shadow-sm shadow-success/10' :
-                                                                'bg-error/10 text-error border-error/20 shadow-sm shadow-error/10'
-                                                        }`}>
-                                                        {stableQuestion.state === 0 ? t('review.state.new') :
-                                                            stableQuestion.state === 1 ? t('review.state.learning') :
-                                                                stableQuestion.state === 2 ? t('review.state.review') :
-                                                                    t('review.state.relearning')}
-                                                    </span>
-                                                </div>
-                                            </div>
-
-                                            <div className="pt-8 border-t border-base-content/5 grid grid-cols-2 gap-6">
-                                                <div className="space-y-1.5">
-                                                    <span className="text-[9px] font-black opacity-20 uppercase tracking-widest">{t('library.inspector.meta.created_at')}</span>
-                                                    <div className="text-[10px] font-bold se-mono opacity-60">
-                                                        {stableQuestion.created_at ? new Date(stableQuestion.created_at).toLocaleDateString() : 'N/A'}
-                                                    </div>
-                                                </div>
-                                                <div className="space-y-1.5">
-                                                    <span className="text-[9px] font-black opacity-20 uppercase tracking-widest">{t('library.inspector.meta.last_review')}</span>
-                                                    <div className="text-[10px] font-bold se-mono opacity-60">
-                                                        {stableQuestion.last_review ? new Date(stableQuestion.last_review).toLocaleDateString() : t('library.inspector.meta.never_reviewed')}
-                                                    </div>
-                                                </div>
-                                            </div>
-
-                                            <div className="pt-8 border-t border-base-content/5">
-                                                <details className="group/meta">
-                                                    <summary className="text-[9px] font-black opacity-20 uppercase tracking-widest flex items-center justify-between cursor-pointer hover:opacity-40 transition-opacity list-none">
-                                                        <span>{t('library.inspector.meta.technical')}</span>
-                                                        <div className="flex items-center gap-1.5">
-                                                            <div className="w-1 h-1 rounded-full bg-success opacity-40" />
-                                                            <ChevronRight size={10} className="transition-transform group-open/meta:rotate-90" />
-                                                        </div>
-                                                    </summary>
-                                                    <div className="pt-4 space-y-4 animate-in fade-in slide-in-from-top-1">
-                                                        <div className="p-3 bg-base-content/5 rounded-2xl border border-base-content/5">
-                                                            <span className="text-[8px] font-black opacity-20 uppercase block mb-1.5 tracking-tighter">{t('library.inspector.meta.content_hash')}</span>
-                                                            <div className="text-[8px] se-mono break-all opacity-30 font-medium leading-relaxed">
-                                                                {stableQuestion.content_hash || 'SHA256_NULL'}
+                                                {/* Integrated Study State Panel */}
+                                                <div className="se-glass-panel p-6 bg-base-content/[0.02] border border-base-content/5 rounded-3xl space-y-8 animate-in fade-in slide-in-from-right-4 duration-500">
+                                                    <div className="space-y-6">
+                                                        <div className="flex items-center justify-between">
+                                                            <span className="text-[10px] font-black opacity-30 uppercase tracking-widest">{t('library.inspector.meta.next_session')}</span>
+                                                            <div className="flex flex-col items-end">
+                                                                <span className="text-sm font-black text-base-content leading-none">
+                                                                    {stableQuestion.due ? new Date(stableQuestion.due).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' }) : t('library.inspector.meta.ready_now')}
+                                                                </span>
+                                                                {!stableQuestion.due && <span className="text-[8px] font-black uppercase text-success mt-1.5 animate-pulse tracking-tighter">{t('library.inspector.meta.ready_now')}</span>}
                                                             </div>
                                                         </div>
-                                                        <div className="flex items-center justify-between px-1">
-                                                            <span className="text-[8px] font-black opacity-20 uppercase">{t('library.inspector.meta.integrity_check')}</span>
-                                                            <span className="text-[8px] font-black text-success opacity-40 uppercase tracking-tighter">{t('library.inspector.meta.integrity_match')}</span>
-                                                        </div>
-                                                    </div>
-                                                </details>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </section>
 
-                                <div className="se-glass-panel p-6 bg-base-content/[0.02] border border-base-content/5 rounded-3xl">
-                                    <h4 className="text-[10px] font-black uppercase tracking-widest mb-6 flex items-center justify-between">
-                                        <div className="flex items-center gap-2 opacity-40">
-                                            <RefreshCw size={12} /> {t('library.inspector.meta.history')}
-                                        </div>
-                                        {isLoadingHistory && <div className="loading loading-spinner loading-xs opacity-20" />}
-                                    </h4>
-
-                                    {reviewHistory.length > 0 ? (
-                                        <div className="space-y-3">
-                                            {reviewHistory.map((log) => (
-                                                <div key={log.id} className="flex items-center justify-between p-3 rounded-2xl bg-base-content/[0.03] border border-base-content/5 hover:border-primary/10 transition-all group/log">
-                                                    <div className="flex items-center gap-3">
-                                                        <div className={cn(
-                                                            "w-12 h-8 rounded-xl flex items-center justify-center text-[9px] font-black shadow-sm",
-                                                            log.rating === 1 ? "bg-error/10 text-error" :
-                                                                log.rating === 2 ? "bg-warning/10 text-warning" :
-                                                                    log.rating === 3 ? "bg-success/10 text-success" :
-                                                                        "bg-info/10 text-info"
-                                                        )}>
-                                                            {log.rating === 1 ? t('review.rating.again').toUpperCase() :
-                                                                log.rating === 2 ? t('review.rating.hard').toUpperCase() :
-                                                                    log.rating === 3 ? t('review.rating.good').toUpperCase() :
-                                                                        t('review.rating.easy').toUpperCase()}
-                                                        </div>
-                                                        <div className="flex flex-col">
-                                                            <span className="text-[10px] font-bold text-base-content/70">
-                                                                {format(new Date(log.review), 'MMM d, yyyy HH:mm', { locale: i18n.language === 'zh' ? zhCN : enUS })}
-                                                            </span>
-                                                            <span className="text-[8px] font-black opacity-30 uppercase tracking-tighter">
-                                                                {t('library.inspector.meta.stability')}: {log.stability.toFixed(2)}d · {t('library.card.difficulty.title')}: {log.difficulty.toFixed(2)}
+                                                        <div className="flex items-center justify-between">
+                                                            <span className="text-[10px] font-black opacity-30 uppercase tracking-widest">{t('library.inspector.meta.state')}</span>
+                                                            <span className={`text-[9px] font-black uppercase px-2 py-1 rounded-md border ${stableQuestion.state === 0 ? 'bg-info/10 text-info border-info/20 shadow-sm shadow-info/10' :
+                                                                stableQuestion.state === 1 ? 'bg-warning/10 text-warning border-warning/20 shadow-sm shadow-warning/10' :
+                                                                    stableQuestion.state === 2 ? 'bg-success/10 text-success border-success/20 shadow-sm shadow-success/10' :
+                                                                        'bg-error/10 text-error border-error/20 shadow-sm shadow-error/10'
+                                                                }`}>
+                                                                {stableQuestion.state === 0 ? t('review.state.new') :
+                                                                    stableQuestion.state === 1 ? t('review.state.learning') :
+                                                                        stableQuestion.state === 2 ? t('review.state.review') :
+                                                                            t('review.state.relearning')}
                                                             </span>
                                                         </div>
                                                     </div>
-                                                    <div className="opacity-0 group-hover/log:opacity-100 transition-opacity">
-                                                        <div className="text-[8px] font-black px-1.5 py-0.5 rounded-md bg-base-content/5 opacity-40">
-                                                            {log.state === 0 ? t('review.state.new').toUpperCase() :
-                                                                log.state === 1 ? t('review.state.learning').toUpperCase() :
-                                                                    log.state === 2 ? t('review.state.review').toUpperCase() :
-                                                                        t('review.state.relearning').toUpperCase()}
+
+                                                    <div className="pt-8 border-t border-base-content/5 grid grid-cols-2 gap-6">
+                                                        <div className="space-y-1.5">
+                                                            <span className="text-[9px] font-black opacity-20 uppercase tracking-widest">{t('library.inspector.meta.created_at')}</span>
+                                                            <div className="text-[10px] font-bold se-mono opacity-60">
+                                                                {stableQuestion.created_at ? new Date(stableQuestion.created_at).toLocaleDateString() : 'N/A'}
+                                                            </div>
                                                         </div>
+                                                        <div className="space-y-1.5">
+                                                            <span className="text-[9px] font-black opacity-20 uppercase tracking-widest">{t('library.inspector.meta.last_review')}</span>
+                                                            <div className="text-[10px] font-bold se-mono opacity-60">
+                                                                {stableQuestion.last_review ? new Date(stableQuestion.last_review).toLocaleDateString() : t('library.inspector.meta.never_reviewed')}
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <div className="pt-8 border-t border-base-content/5">
+                                                        <details className="group/meta">
+                                                            <summary className="text-[9px] font-black opacity-20 uppercase tracking-widest flex items-center justify-between cursor-pointer hover:opacity-40 transition-opacity list-none">
+                                                                <span>{t('library.inspector.meta.technical')}</span>
+                                                                <div className="flex items-center gap-1.5">
+                                                                    <div className="w-1 h-1 rounded-full bg-success opacity-40" />
+                                                                    <ChevronRight size={10} className="transition-transform group-open/meta:rotate-90" />
+                                                                </div>
+                                                            </summary>
+                                                            <div className="pt-4 space-y-4 animate-in fade-in slide-in-from-top-1">
+                                                                <div className="p-3 bg-base-content/5 rounded-2xl border border-base-content/5">
+                                                                    <span className="text-[8px] font-black opacity-20 uppercase block mb-1.5 tracking-tighter">{t('library.inspector.meta.content_hash')}</span>
+                                                                    <div className="text-[8px] se-mono break-all opacity-30 font-medium leading-relaxed">
+                                                                        {stableQuestion.content_hash || 'SHA256_NULL'}
+                                                                    </div>
+                                                                </div>
+                                                                <div className="flex items-center justify-between px-1">
+                                                                    <span className="text-[8px] font-black opacity-20 uppercase">{t('library.inspector.meta.integrity_check')}</span>
+                                                                    <span className="text-[8px] font-black text-success opacity-40 uppercase tracking-tighter">{t('library.inspector.meta.integrity_match')}</span>
+                                                                </div>
+                                                            </div>
+                                                        </details>
                                                     </div>
                                                 </div>
-                                            ))}
+                                            </div>
+                                        </section>
+
+                                        <div className="se-glass-panel p-6 bg-base-content/[0.02] border border-base-content/5 rounded-3xl">
+                                            <h4 className="text-[10px] font-black uppercase tracking-widest mb-6 flex items-center justify-between">
+                                                <div className="flex items-center gap-2 opacity-40">
+                                                    <RefreshCw size={12} /> {t('library.inspector.meta.history')}
+                                                </div>
+                                                {isLoadingHistory && <div className="loading loading-spinner loading-xs opacity-20" />}
+                                            </h4>
+
+                                            {reviewHistory.length > 0 ? (
+                                                <div className="space-y-3">
+                                                    {reviewHistory.map((log) => (
+                                                        <div key={log.id} className="flex items-center justify-between p-3 rounded-2xl bg-base-content/[0.03] border border-base-content/5 hover:border-primary/10 transition-all group/log">
+                                                            <div className="flex items-center gap-3">
+                                                                <div className={cn(
+                                                                    "w-12 h-8 rounded-xl flex items-center justify-center text-[9px] font-black shadow-sm",
+                                                                    log.rating === 1 ? "bg-error/10 text-error" :
+                                                                        log.rating === 2 ? "bg-warning/10 text-warning" :
+                                                                            log.rating === 3 ? "bg-success/10 text-success" :
+                                                                                "bg-info/10 text-info"
+                                                                )}>
+                                                                    {log.rating === 1 ? t('review.rating.again').toUpperCase() :
+                                                                        log.rating === 2 ? t('review.rating.hard').toUpperCase() :
+                                                                            log.rating === 3 ? t('review.rating.good').toUpperCase() :
+                                                                                t('review.rating.easy').toUpperCase()}
+                                                                </div>
+                                                                <div className="flex flex-col">
+                                                                    <span className="text-[10px] font-bold text-base-content/70">
+                                                                        {format(new Date(log.review), 'MMM d, yyyy HH:mm', { locale: i18n.language === 'zh' ? zhCN : enUS })}
+                                                                    </span>
+                                                                    <span className="text-[8px] font-black opacity-30 uppercase tracking-tighter">
+                                                                        {t('library.inspector.meta.stability')}: {log.stability.toFixed(2)}d · {t('library.card.difficulty.title')}: {log.difficulty.toFixed(2)}
+                                                                    </span>
+                                                                </div>
+                                                            </div>
+                                                            <div className="opacity-0 group-hover/log:opacity-100 transition-opacity">
+                                                                <div className="text-[8px] font-black px-1.5 py-0.5 rounded-md bg-base-content/5 opacity-40">
+                                                                    {log.state === 0 ? t('review.state.new').toUpperCase() :
+                                                                        log.state === 1 ? t('review.state.learning').toUpperCase() :
+                                                                            log.state === 2 ? t('review.state.review').toUpperCase() :
+                                                                                t('review.state.relearning').toUpperCase()}
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            ) : isLoadingHistory ? (
+                                                <div className="space-y-3">
+                                                    <div className="h-10 w-full bg-base-content/5 rounded-2xl animate-pulse" />
+                                                    <div className="h-10 w-full bg-base-content/5 rounded-2xl animate-pulse" />
+                                                    <div className="h-10 w-full bg-base-content/5 rounded-2xl animate-pulse" />
+                                                </div>
+                                            ) : (
+                                                <div className="py-8 text-center bg-base-content/[0.02] rounded-2xl border border-dashed border-base-content/10">
+                                                    <p className="text-[10px] font-bold opacity-30">{t('library.inspector.meta.never_reviewed')}</p>
+                                                </div>
+                                            )}
+                                            <div className="mt-6 text-[8px] font-black text-center opacity-30 uppercase tracking-[0.2em]">{t('library.inspector.meta.history_hint')}</div>
                                         </div>
-                                    ) : isLoadingHistory ? (
-                                        <div className="space-y-3">
-                                            <div className="h-10 w-full bg-base-content/5 rounded-2xl animate-pulse" />
-                                            <div className="h-10 w-full bg-base-content/5 rounded-2xl animate-pulse" />
-                                            <div className="h-10 w-full bg-base-content/5 rounded-2xl animate-pulse" />
-                                        </div>
-                                    ) : (
-                                        <div className="py-8 text-center bg-base-content/[0.02] rounded-2xl border border-dashed border-base-content/10">
-                                            <p className="text-[10px] font-bold opacity-30">{t('library.inspector.meta.never_reviewed')}</p>
-                                        </div>
-                                    )}
-                                    <div className="mt-6 text-[8px] font-black text-center opacity-30 uppercase tracking-[0.2em]">{t('library.inspector.meta.history_hint')}</div>
-                                </div>
-                            </div>
-                        )}
+                                    </div>
+                                )}
+                            </motion.div>
+                        </AnimatePresence>
                     </div>
 
                     {/* Fixed Actions Footer */}

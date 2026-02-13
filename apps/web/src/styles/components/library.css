@@ -135,29 +135,6 @@
     box-shadow: 0 0 0 4px oklch(from var(--color-primary) l c h / 0.15);
 }
 
-/* ✅ Jump Highlight Animation */
-@keyframes q-card-jump-pulse {
-    0% {
-        box-shadow: 0 0 0 0 oklch(from var(--color-primary) l c h / 0.6);
-        transform: scale(1.02);
-    }
-
-    70% {
-        box-shadow: 0 0 0 20px oklch(from var(--color-primary) l c h / 0);
-        transform: scale(1);
-    }
-
-    100% {
-        box-shadow: 0 0 0 0 oklch(from var(--color-primary) l c h / 0);
-        transform: scale(1);
-    }
-}
-
-.sea .q-card.is-jumping {
-    animation: q-card-jump-pulse 0.8s var(--ease-spring);
-    z-index: 50;
-}
-
 /* Accent Indicators Refinement */
 .sea .q-card::before {
     display: none;

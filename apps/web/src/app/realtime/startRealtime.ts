@@ -12,10 +12,15 @@ export function startRealtime(userId: string) {
     const channels: RealtimeChannel[] = [];
 
     // 1. Initial Sync / Recovery
-    // Force a one-time refetch of critical views on startup using the standardized v: prefix
+    // Force a one-time refetch of critical views on startup using the standardized v: prefix.
+    // NOTE: v:question_list is intentionally excluded here.
+    // The QuestionBank page uses TanStack Query (useQuestionBankFetch) for its data,
+    // and no page registers useActiveView('v:question_list'), so the Scheduler
+    // would never be able to process it anyway (canRun visibility gate blocks it).
+    // Question data for other consumers (QuestionDetailPage, DashboardPage) enters
+    // entities.questions via the v:due_list bridge and realtime entity patches.
     markStale('v:dashboard');
     markStale('v:due_list');
-    markStale('v:question_list');
     markStale('v:asset');
 
     // 2. Realtime Signals

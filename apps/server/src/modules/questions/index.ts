@@ -14,11 +14,15 @@ export const questions = new Elysia({ prefix: '/questions' })
             return { error: 'Unauthorized' }
         }
 
-        const { limit = 50, cursor, q, subjectId, type, difficulty, archived = 'false', tags } = query;
+        const { limit = 50, cursor, q, subjectId, subjectIds, type, difficulty, archived = 'false', tags } = query;
 
         // Parse tags filter
         const tagNames = tags ? tags.split(',').map(t => t.trim()).filter(Boolean) : [];
         const hasTagFilter = tagNames.length > 0;
+
+        // Parse subjectIds (comma-separated) for multi-subject filtering
+        const subjectIdList = subjectIds ? subjectIds.split(',').filter(Boolean) : [];
+        const hasMultiSubjectFilter = subjectIdList.length > 0;
 
         // Dynamic select: use !inner join only when filtering by tags
         const selectQuery = hasTagFilter
@@ -49,7 +53,12 @@ export const questions = new Elysia({ prefix: '/questions' })
             dbQuery = dbQuery.or(`title.ilike.%${q}%,content.ilike.%${q}%,explanation.ilike.%${q}%`);
         }
 
-        if (subjectId && subjectId !== 'all') dbQuery = dbQuery.eq('subject_id', subjectId);
+        // Subject filtering: multi-select takes priority over single select
+        if (hasMultiSubjectFilter) {
+            dbQuery = dbQuery.in('subject_id', subjectIdList);
+        } else if (subjectId && subjectId !== 'all') {
+            dbQuery = dbQuery.eq('subject_id', subjectId);
+        }
         if (type && type !== 'all') dbQuery = dbQuery.eq('question_type', type);
         if (difficulty && difficulty !== 'all') dbQuery = dbQuery.eq('difficulty', difficulty);
 
@@ -86,10 +95,13 @@ export const questions = new Elysia({ prefix: '/questions' })
             const card = Array.isArray(q.cards) ? q.cards[0] : (q.cards || null);
             const subject = Array.isArray(q.subjects) ? q.subjects[0] : (q.subjects || null);
             const rawTags = Array.isArray(q.error_question_tags) ? q.error_question_tags : [];
+            const rawContent = typeof q.content === 'string' ? q.content : '';
 
             return {
                 ...q,
                 question_id: q.id,
+                // 🚀 content_preview: First 200 chars for list display, full content via GET /questions/:id
+                content_preview: rawContent.slice(0, 200),
                 subject_id: q.subject_id,
                 subject_name: subject?.name || 'General',
                 subject_color: subject?.color || null,
@@ -122,6 +134,7 @@ export const questions = new Elysia({ prefix: '/questions' })
             cursor: t.Optional(t.String()),
             q: t.Optional(t.String()),
             subjectId: t.Optional(t.String()),
+            subjectIds: t.Optional(t.String()),
             type: t.Optional(t.String()),
             difficulty: t.Optional(t.String()),
             archived: t.Optional(t.String()),

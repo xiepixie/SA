@@ -1,4 +1,4 @@
-import React, { useMemo, useState, useEffect, useCallback, useDeferredValue } from 'react';
+import React, { useMemo, useState, useEffect, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
@@ -201,7 +201,6 @@ const QuestionCard = React.memo(({
     isSelected,
     isFocused,
     isSelectMode,
-    isJumping,
     filters,
     handleCardClick,
     handleCardHover,
@@ -213,7 +212,6 @@ const QuestionCard = React.memo(({
     isSelected: boolean;
     isFocused: boolean;
     isSelectMode: boolean;
-    isJumping: boolean;
     filters: any;
     handleCardClick: (id: string, e: React.MouseEvent) => void;
     handleCardHover: (q: AugmentedQuestion) => void;
@@ -236,8 +234,7 @@ const QuestionCard = React.memo(({
                     ? "active bg-primary/[0.03] border-primary/40 shadow-lg ring-1 ring-primary/10 scale-[1.01] z-10"
                     : "bg-base-100 border-base-content/[0.06] hover:bg-base-content/[0.02] hover:border-base-content/[0.12] hover:shadow-md",
                 isFocused && "ring-2 ring-primary/60 bg-primary/[0.01]",
-                isSelected && "ring-2 ring-primary ring-inset bg-primary/[0.02]",
-                isJumping && "is-jumping"
+                isSelected && "ring-2 ring-primary ring-inset bg-primary/[0.02]"
             )}
         >
             <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
@@ -324,53 +321,61 @@ const QuestionCard = React.memo(({
 export const QuestionBank: React.FC = () => {
     const { t } = useTranslation(['library', 'common']);
     const navigate = useNavigate();
-    useActiveView('v:question_list');
     useActiveView('v:asset'); // Load subjects and tags for sidebar
 
     const { filters, activeId, setFilters, setActiveId } = useQuestionBankParams();
 
-    // --- Realtime & Revalidation ---
+    // --- Realtime → TanStack Query Bridge ---
     const queryClient = useQueryClient();
-    const isQuestionListStale = useAppStore(s => !!s.stale['v:question_list']);
+    // When realtime signals mark v:question_list stale, we bridge that into
+    // TanStack Query invalidation so the current filter set refetches.
+    //
+    // IMPORTANT: We watch `markedAt` (unique per signal) instead of a boolean.
+    // Since no page registers useActiveView('v:question_list'), the Zustand
+    // Scheduler can never clear the stale flag (canRun visibility gate blocks it).
+    // If we watched a boolean, it would stay `true` forever after the first signal,
+    // and subsequent signals would NOT re-trigger the effect — silently dropping updates.
+    const questionListStaleAt = useAppStore(s => s.stale['v:question_list']?.markedAt ?? 0);
+    const clearStale = useAppStore(s => s.clearStale);
 
-    // Listen for stale signals (from Realtime or other views)
     useEffect(() => {
-        if (isQuestionListStale) {
-            console.log('[QuestionBank] Question list is stale, invalidating queries...');
+        if (questionListStaleAt > 0) {
+            console.log('[QuestionBank] Question list stale (at=%d), invalidating queries...', questionListStaleAt);
             queryClient.invalidateQueries({ queryKey: questionKeys.all });
-            // The scheduler will eventually clear the stale flag after it finishes its own background fetch.
-            // By invalidating here, we ensure the UI reflected the "new" truth immediately.
+            // Clear the stale flag ourselves — the Scheduler won't do it because
+            // v:question_list has no active view registered.
+            clearStale('v:question_list');
         }
-    }, [isQuestionListStale, queryClient]);
+    }, [questionListStaleAt, queryClient, clearStale]);
 
     const {
         data,
         fetchNextPage,
         hasNextPage,
         isFetchingNextPage,
+        isFetching,
         isLoading,
     } = useQuestionBankFetch({
         q: filters.q,
+        subjectIds: filters.subjectIds.length > 0 ? filters.subjectIds.join(',') : undefined,
+        type: filters.type !== 'all' ? filters.type : undefined,
+        difficulty: filters.difficulty !== 'all' ? filters.difficulty : undefined,
+        tags: filters.tags.length > 0 ? filters.tags.join(',') : undefined,
         archived: filters.status === 'archived' ? 'true' : 'false',
         sort: filters.sort as any,
     });
 
     // --- Search & Filtering State ---
     const [localSearch, setLocalSearch] = useState(filters.q);
-    // 🚀 PERFORMANCE: Use deferred values to keep UI responsive even during complex filtering.
-    const deferredSearch = useDeferredValue(localSearch);
-    const deferredSubjectIds = useDeferredValue(filters.subjectIds);
-    const deferredTags = useDeferredValue(filters.tags);
-    const deferredType = useDeferredValue(filters.type);
-    const deferredDifficulty = useDeferredValue(filters.difficulty);
 
-    // --- Data ---
-    const rawQuestions: AugmentedQuestion[] = useMemo(() => {
+    // --- Data: Server-side filtered + paginated ---
+    // 🚀 V2: All filtering now happens on the server. No more client-side filter engine.
+    // TanStack Query's `placeholderData: (prev) => prev` keeps old data visible during transitions.
+    const questions: AugmentedQuestion[] = useMemo(() => {
         const pages = data?.pages || [];
         const allItems = pages.flatMap(page => page.items || []);
 
-        // 🚀 DEDUPLICATION: Ensure unique IDs to prevent React key conflicts and state swapping.
-        // During infinite scroll, concurrent updates can cause items to appear in multiple "pages".
+        // Deduplication: Ensure unique IDs to prevent React key conflicts during infinite scroll.
         const uniqueMap = new Map<string, AugmentedQuestion>();
         allItems.forEach(item => {
             if (item?.id) uniqueMap.set(item.id, item);
@@ -378,50 +383,6 @@ export const QuestionBank: React.FC = () => {
 
         return Array.from(uniqueMap.values());
     }, [data]);
-
-    // 🚀 PREMIUM: Local-First Multi-Filter Engine
-    // This provides the legendary "Snappiness" of V1 while supporting V2's scalable backend.
-    const questions = useMemo(() => {
-        let result = rawQuestions;
-
-        // 1. Local Search Filter
-        if (deferredSearch && deferredSearch.length > 0) {
-            const search = deferredSearch.toLowerCase();
-            result = result.filter(q =>
-                q.title.toLowerCase().includes(search) ||
-                q.content.toLowerCase().includes(search) ||
-                (q.explanation && q.explanation.toLowerCase().includes(search)) ||
-                q.subject_name?.toLowerCase().includes(search) ||
-                q.tags?.some(t => t.name.toLowerCase().includes(search))
-            );
-        }
-
-        // 2 & 3. Global Entity Filter (Subject OR Tag - Satisfy ANY)
-        const hasSubjectFilters = deferredSubjectIds && deferredSubjectIds.length > 0;
-        const hasTagFilters = deferredTags && deferredTags.length > 0;
-
-        if (hasSubjectFilters || hasTagFilters) {
-            result = result.filter(q => {
-                const matchesSubject = hasSubjectFilters && q.subject_id && deferredSubjectIds.includes(q.subject_id);
-                const matchesTag = hasTagFilters && deferredTags.some(targetTag =>
-                    q.tags?.some(tag => tag.name === targetTag || tag.id === targetTag)
-                );
-                return (matchesSubject || matchesTag);
-            });
-        }
-
-        // 4. Type Filter
-        if (deferredType && deferredType !== 'all') {
-            result = result.filter(q => q.question_type === deferredType);
-        }
-
-        // 5. Difficulty Filter
-        if (deferredDifficulty && deferredDifficulty !== 'all') {
-            result = result.filter(q => q.difficulty === deferredDifficulty);
-        }
-
-        return result;
-    }, [rawQuestions, deferredSearch, deferredSubjectIds, deferredTags, deferredType, deferredDifficulty]);
 
 
     // Local UI State
@@ -441,28 +402,40 @@ export const QuestionBank: React.FC = () => {
     const [isBulkUpdating, setIsBulkUpdating] = useState(false);
     const [focusedIndex, setFocusedIndex] = useState(-1);
     const [isInternalSidebarCollapsed, setIsInternalSidebarCollapsed] = useState(false);
-    const [jumpingId, setJumpingId] = useState<string | null>(null);
+    const listContainerRef = React.useRef<HTMLDivElement>(null);
 
-    const scrollToQuestion = useCallback((id: string, highlight = false) => {
+    const scrollToQuestion = useCallback((id: string, isInitial = false) => {
         if (!id) return;
-        // Use requestAnimationFrame for smoother timing
-        requestAnimationFrame(() => {
-            const element = document.querySelector(`[data-question-id="${id}"]`);
-            if (element) {
-                // Check if element is already largely in view to avoid unnecessary violent jumps
-                element.scrollIntoView({
-                    behavior: 'smooth',
-                    block: 'center',
-                    inline: 'center'
-                });
 
-                if (highlight) {
-                    setJumpingId(id);
-                    // Shorter highlight duration
-                    setTimeout(() => setJumpingId(e => e === id ? null : e), 600);
-                }
-            }
-        });
+        const doScroll = () => {
+            const scrollContainer = listContainerRef.current;
+            const element = scrollContainer?.querySelector(`[data-question-id="${id}"]`) as HTMLElement | null;
+            if (!scrollContainer || !element) return;
+
+            const containerRect = scrollContainer.getBoundingClientRect();
+            const elementRect = element.getBoundingClientRect();
+
+            // Calculate element position relative to scroll container
+            const elementTop = elementRect.top - containerRect.top;
+            const containerHeight = containerRect.height;
+
+            // ✅ Silkier Glide: Scroll to 'middle-top' (30% from viewport top) 
+            // instead of dead-center, as requested for better visibility.
+            const scrollTarget = scrollContainer.scrollTop + elementTop - (containerHeight * 0.3) + (elementRect.height / 2);
+
+            scrollContainer.scrollTo({
+                top: Math.max(0, scrollTarget),
+                behavior: 'smooth'
+            });
+        };
+
+        // ✅ Silkier Glide: For initial load, we wait slightly longer so the user 
+        // actually sees the motion happen, reinforcing the spatial mental model.
+        if (isInitial) {
+            setTimeout(() => requestAnimationFrame(doScroll), 250);
+        } else {
+            requestAnimationFrame(() => requestAnimationFrame(doScroll));
+        }
     }, []);
 
     // --- Sidebar-Inspector Auto Sync ---
@@ -519,14 +492,14 @@ export const QuestionBank: React.FC = () => {
 
 
     // Debounce: localSearch → URL (user typing)
-    // Increased to 500ms since we have instant local search. 
-    // This saves bandwidth/server load while typing rapidly.
+    // 400ms debounce balances responsiveness vs server load.
+    // When the URL updates, TanStack Query refetches with the new `q` parameter.
     useEffect(() => {
         const timer = setTimeout(() => {
             if (localSearch !== filters.q) {
                 setFilters({ q: localSearch });
             }
-        }, 500);
+        }, 400);
         return () => clearTimeout(timer);
     }, [localSearch, filters.q, setFilters]);
 
@@ -836,20 +809,19 @@ export const QuestionBank: React.FC = () => {
 
     // --- Center Active Question ---
     const lastScrolledId = React.useRef<string | null>(null);
-    const isFirstOpen = React.useRef(true); // Track if this is the first time opening inspector
     useEffect(() => {
         if (isShowingInspector && activeId && activeId !== lastScrolledId.current) {
-            lastScrolledId.current = activeId;
-            // Only highlight (pulse animation) on first open, not on subsequent switches
-            // This prevents duplicate animations (active state + jump pulse)
-            const shouldHighlight = isFirstOpen.current;
-            isFirstOpen.current = false;
-            scrollToQuestion(activeId, shouldHighlight);
+            // Check if element is in DOM before marking as scrolled
+            const el = listContainerRef.current?.querySelector(`[data-question-id="${activeId}"]`);
+            if (el) {
+                const isInitial = lastScrolledId.current === null;
+                lastScrolledId.current = activeId;
+                scrollToQuestion(activeId, isInitial);
+            }
         } else if (!isShowingInspector) {
             lastScrolledId.current = null;
-            isFirstOpen.current = true; // Reset for next inspector open
         }
-    }, [activeId, isShowingInspector, questions.length, isLoading, scrollToQuestion]);
+    }, [activeId, isShowingInspector, questions, scrollToQuestion]);
 
     // keyboard nav
     useEffect(() => {
@@ -887,15 +859,18 @@ export const QuestionBank: React.FC = () => {
 
     return (
         <div className="sea library-layout h-full w-full relative flex bg-base-100 isolate overflow-clip" data-inspector-open={isShowingInspector}>
-            {/* Sidebar (Left) */}
+            {/* Sidebar (Left) — Instant width, smooth content fade */}
             <aside
                 className={cn(
-                    "hidden lg:flex flex-col bg-base-content/[0.02] border-r border-base-content/5 transition-all duration-400 ease-emphasized overflow-hidden shrink-0",
+                    "hidden lg:flex flex-col bg-base-content/[0.02] border-r border-base-content/5 overflow-hidden shrink-0",
                     Z_INDEX.SIDEBAR,
-                    isSidebarCollapsed ? "w-0 opacity-0" : "w-72 opacity-100"
+                    isSidebarCollapsed ? "w-0" : "w-72"
                 )}
             >
-                <div className="p-5 flex flex-col gap-6 h-full min-w-[288px]">
+                <div className={cn(
+                    "p-5 flex flex-col gap-6 h-full min-w-[288px] transition-opacity duration-200 ease-out",
+                    isSidebarCollapsed ? "opacity-0" : "opacity-100"
+                )}>
                     {/* Subjects Section */}
                     <div className="flex flex-col gap-3">
                         <div className="flex items-center justify-between px-1">
@@ -1108,7 +1083,7 @@ export const QuestionBank: React.FC = () => {
             </aside>
 
             {/* Main Pane (Question List) */}
-            <div className="library-pane flex flex-col flex-1 min-w-0 h-full relative z-10 transition-all duration-400 ease-emphasized">
+            <div className="library-pane flex flex-col flex-1 min-w-0 h-full relative z-10">
                 {/* Header */}
                 <header className={cn("se-glass-nav shrink-0 sticky top-0 flex items-center justify-between gap-4 px-6 lg:px-10 h-16 border-b border-base-content/[0.05]", Z_INDEX.HEADER)}>
                     <div className="flex items-center gap-4 flex-1">
@@ -1174,9 +1149,19 @@ export const QuestionBank: React.FC = () => {
 
 
                 {/* List Container */}
-                <div className="flex-1 min-h-0 bg-base-100 overflow-y-auto custom-scrollbar p-6">
+                <div ref={listContainerRef} className="flex-1 min-h-0 bg-base-100 overflow-y-auto custom-scrollbar p-6 relative">
+                    {/* 🚀 Subtle updating indicator — shows when filters change and new data is loading */}
+                    {isFetching && !isLoading && (
+                        <div className="absolute top-0 left-0 right-0 z-20 h-0.5 bg-primary/10 overflow-hidden">
+                            <div className="h-full w-1/3 bg-primary/60 rounded-full"
+                                style={{ animation: 'glow-sweep 1.2s ease-in-out infinite' }} />
+                        </div>
+                    )}
                     {isLoading ? (
-                        <div className="grid gap-6 grid-cols-1 sm:grid-cols-2 xl:grid-cols-3">
+                        <div className={cn(
+                            "grid gap-6",
+                            isShowingInspector ? "grid-cols-1" : "grid-cols-1 sm:grid-cols-2 xl:grid-cols-3"
+                        )}>
                             {[...Array(9)].map((_, i) => (
                                 <div
                                     key={i}
@@ -1227,7 +1212,6 @@ export const QuestionBank: React.FC = () => {
                                     isSelected={selection.selectedIds.has(question.id)}
                                     isFocused={focusedIndex === idx}
                                     isSelectMode={selection.isSelectMode}
-                                    isJumping={jumpingId === question.id}
                                     filters={filters}
                                     handleCardClick={handleCardClick}
                                     handleCardHover={handleCardHover}
@@ -1243,24 +1227,29 @@ export const QuestionBank: React.FC = () => {
                 </div>
             </div>
 
-            {/* Inspector (Primary Content Area) */}
+            {/* Inspector (Primary Content Area) — Instant width, smooth content fade */}
             <div
                 className={cn(
-                    "fixed lg:relative inset-0 lg:inset-auto lg:z-10 transition-all duration-400 ease-emphasized h-full overflow-hidden flex flex-col bg-base-100 lg:bg-transparent shrink-0",
+                    "fixed lg:relative inset-0 lg:inset-auto lg:z-10 h-full flex flex-col bg-base-100 lg:bg-transparent shrink-0 overflow-hidden",
                     isShowingInspector
-                        ? ["translate-x-0 opacity-100 w-full lg:w-[640px] xl:w-[840px] border-l border-base-content/[0.08] lg:shadow-[-20px_0_60px_-15px_rgba(0,0,0,0.15)]", Z_INDEX.INSPECTOR]
-                        : "translate-x-full opacity-0 lg:translate-x-0 lg:w-0 lg:border-none pointer-events-none"
+                        ? ["lg:w-[640px] xl:w-[840px] w-full border-l border-base-content/[0.08] lg:shadow-[-20px_0_60px_-15px_rgba(0,0,0,0.15)]", Z_INDEX.INSPECTOR]
+                        : "lg:w-0 w-0 pointer-events-none border-none"
                 )}
             >
-                <div className="h-full w-full lg:p-4 min-w-[320px] lg:min-w-[640px] xl:min-w-[840px]">
-                    <AnimatePresence mode="popLayout" initial={false}>
+                <div className={cn(
+                    "h-full w-full lg:p-4 lg:min-w-[640px] xl:min-w-[840px]",
+                    // Content fades in after layout settles
+                    "transition-opacity duration-300 ease-out",
+                    isShowingInspector ? "opacity-100" : "opacity-0"
+                )}>
+                    <AnimatePresence mode="wait" initial={false}>
                         <motion.div
                             key={showBulkInspector ? 'bulk' : 'single'}
                             initial={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, scale: 0.98 }}
                             animate={{ opacity: 1, scale: 1 }}
                             exit={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, scale: 1.02 }}
                             transition={{
-                                duration: 0.25,
+                                duration: 0.2,
                                 ease: [0.2, 0.8, 0.2, 1]
                             }}
                             className="h-full w-full"
@@ -1271,7 +1260,7 @@ export const QuestionBank: React.FC = () => {
                                 activeQuestion={activeQuestion as any}
                                 isVisible={isShowingInspector}
                                 isBulkMode={showBulkInspector}
-                                selectedQuestions={rawQuestions.filter(item => selection.selectedIds.has(item.id)) as any}
+                                selectedQuestions={questions.filter(item => selection.selectedIds.has(item.id)) as any}
                                 onBulkUpdate={handleBulkUpdate}
                                 availableSubjects={subjects}
                                 availableTags={tags}

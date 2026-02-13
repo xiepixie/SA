@@ -16,6 +16,7 @@ export interface ImportMutationVariables {
         create_cards?: boolean;
         cards_due_spread?: 'immediate' | 'spread_1d' | 'spread_7d';
         cards_due_start?: string;
+        allowDuplicates?: boolean;
     };
 }
 
@@ -67,6 +68,8 @@ export function useImportMutation() {
                         create_cards: config?.create_cards ?? true,
                         cards_due_spread: config?.cards_due_spread ?? 'spread_7d',
                         cards_due_start: config?.cards_due_start ?? new Date().toISOString(),
+                        useAtomic: true,
+                        allowDuplicates: config?.allowDuplicates,
                     },
                 });
 

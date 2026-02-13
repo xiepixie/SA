@@ -1,0 +1,34 @@
+{
+    "nav": {
+        "sections": {
+            "main": "Main",
+            "systems": "Systems"
+        },
+        "items": {
+            "welcome": "Welcome",
+            "dashboard": "Dashboard",
+            "review": "Review",
+            "notebook": "Notebook",
+            "exams": "Exams",
+            "questions": "Question Bank",
+            "import": "Import Wizard",
+            "sync": "Sync Center",
+            "manage": "Archival",
+            "settings": "Settings"
+        },
+        "sidebar": "Sidebar",
+        "startReview": "Start Review",
+        "openMenu": "Open Menu",
+        "collapse": "Collapse sidebar (Cmd+B)",
+        "expand": "Expand sidebar (Cmd+B)",
+        "signOut": "Sign Out",
+        "logout": {
+            "title": "Sign Out?",
+            "description": "You will need to sign in again to access your data."
+        }
+    },
+    "footer": {
+        "active_nodes": "Operational Units",
+        "stability": "Global Stability Index"
+    }
+}

@@ -159,22 +159,62 @@ export function importReducer(state: ImportState, action: ImportAction): ImportS
         }
 
         case 'AUTO_CLEANUP': {
-            const newItems = state.items.filter(item => item.question.title?.trim());
+            // Smart cleanup: fix what can be fixed, remove what can't
+            const fixedItems = state.items
+                .map(item => {
+                    const q = item.question;
+                    const updates: Partial<typeof q> = {};
+
+                    // 1. Trim title whitespace
+                    if (q.title && q.title !== q.title.trim()) {
+                        updates.title = q.title.trim();
+                    }
+
+                    // 2. Auto-fill correct_answer.type if missing
+                    const ans = q.correct_answer as Record<string, unknown> | undefined;
+                    if (ans && Object.keys(ans).length > 0 && !ans.type) {
+                        updates.correct_answer = { ...ans, type: q.question_type };
+                    }
+
+                    // 3. Generate correct_answer from correct_answer_text if empty
+                    const isEmptyAnswer = !ans || Object.keys(ans).length === 0;
+                    if (isEmptyAnswer && q.correct_answer_text?.trim()) {
+                        const tokens = q.correct_answer_text.split(/[;,、\n]+/).map(s => s.trim()).filter(Boolean);
+                        if (tokens.length > 0) {
+                            if (q.question_type === 'fill_blank') {
+                                updates.correct_answer = { type: 'fill_blank', blanks: tokens };
+                            } else if (q.question_type === 'short_answer') {
+                                updates.correct_answer = { type: 'short_answer', answers: tokens };
+                            }
+                        }
+                    }
+
+                    // Apply updates if any
+                    if (Object.keys(updates).length > 0) {
+                        return {
+                            ...item,
+                            question: { ...q, ...updates }
+                        };
+                    }
+                    return item;
+                })
+                // Filter out items with empty titles (truly unfixable)
+                .filter(item => item.question.title?.trim());
 
             // Adjust selection if needed
             let newSelectedId = state.selectedId;
             if (state.selectedId) {
-                const stillExists = newItems.some(
+                const stillExists = fixedItems.some(
                     item => getItemId(item) === state.selectedId
                 );
                 if (!stillExists) {
-                    newSelectedId = newItems.length > 0 ? getItemId(newItems[0]) : null;
+                    newSelectedId = fixedItems.length > 0 ? getItemId(fixedItems[0]) : null;
                 }
             }
 
             return {
                 ...state,
-                items: newItems,
+                items: fixedItems,
                 selectedId: newSelectedId,
             };
         }
@@ -242,8 +282,9 @@ export function importReducer(state: ImportState, action: ImportAction): ImportS
             return { ...state, focusTrigger: action.payload };
 
         case 'RETRY_FAILED': {
-            const failedRows = new Set(action.payload);
-            const remainingItems = state.items.filter(item => failedRows.has(item.__row));
+            const { failedRows } = action.payload; // Destructure object payload
+            const failedSet = new Set(failedRows);
+            const remainingItems = state.items.filter(item => failedSet.has(item.__row));
 
             return {
                 ...state,
@@ -253,6 +294,18 @@ export function importReducer(state: ImportState, action: ImportAction): ImportS
                 filterMode: 'error', // Auto-filter to errors for focus
             };
         }
+
+        case 'SET_DUPLICATES':
+            return {
+                ...state,
+                duplicates: action.payload.duplicates,
+            };
+
+        case 'SET_ALLOW_DUPLICATES':
+            return {
+                ...state,
+                allowDuplicates: action.payload,
+            };
 
         default:
             return state;

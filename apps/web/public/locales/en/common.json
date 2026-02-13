@@ -1,0 +1,219 @@
+{
+    "nav": {
+        "sections": {
+            "main": "Main",
+            "systems": "Systems"
+        },
+        "items": {
+            "welcome": "Welcome",
+            "dashboard": "Dashboard",
+            "review": "Review",
+            "notebook": "Notebook",
+            "exams": "Exams",
+            "questions": "Question Bank",
+            "import": "Import Wizard",
+            "sync": "Sync Center",
+            "manage": "Archival",
+            "settings": "Settings"
+        },
+        "sidebar": "Sidebar",
+        "startReview": "Start Review",
+        "openMenu": "Open Menu",
+        "collapse": "Collapse sidebar (Cmd+B)",
+        "expand": "Expand sidebar (Cmd+B)",
+        "signOut": "Sign Out",
+        "logout": {
+            "title": "Sign Out?",
+            "description": "You will need to sign in again to access your data."
+        }
+    },
+    "common": {
+        "untitled": "Untitled",
+        "actions": {
+            "save": "Save",
+            "cancel": "Cancel",
+            "confirm": "Confirm",
+            "close": "Close",
+            "dismiss": "Dismiss",
+            "delete": "Delete",
+            "retry": "Retry",
+            "search": "Search",
+            "copy": "Copy",
+            "reset": "Reset",
+            "add": "Add",
+            "exit": "Exit",
+            "edit": "Edit",
+            "type": "Type",
+            "back": "Back",
+            "rename": "Rename",
+            "share": "Share",
+            "sync": "Sync Now",
+            "actions": "Actions",
+            "clear_all": "Clear All",
+            "undo": "Undo",
+            "remove": "Remove",
+            "click_to_view": "Resolve",
+            "locate": "Locate",
+            "collapse": "Collapse",
+            "expand": "Expand",
+            "retry_failed": "Retry Failed",
+            "back_to_dashboard": "Back to Dashboard",
+            "collapse_all": "Focus Mode",
+            "expand_all": "Full Analysis",
+            "more": "More",
+            "pin_sidebar": "Pin Sidebar",
+            "back_home": "Back to Home"
+        },
+        "status": {
+            "loading": "Loading...",
+            "error": "Error",
+            "success": "Complete",
+            "ready": "Ready",
+            "copied": "Copied",
+            "synced": "Synced",
+            "in_progress": "In Progress",
+            "completed": "Completed",
+            "abandoned": "Abandoned",
+            "time_est": "EST. TIME",
+            "weak": "WEAKNESS",
+            "items": "items",
+            "minutes_short": "m",
+            "locked": "Locked",
+            "processing": "Processing",
+            "saving": "Saving...",
+            "saved": "Saved",
+            "none": "None",
+            "more_queued": "more queued"
+        },
+        "units": {
+            "cards_per_day": "Items / Day",
+            "days_abbr": "d"
+        },
+        "search_placeholder": "Type to filter results…",
+        "search_results": "Search Results",
+        "no_results": "No records match your search",
+        "all": "All Categories",
+        "recommended": "Recommended",
+        "experimental": "Technical Preview",
+        "standard": "Standard Specification",
+        "general": {
+            "all": "Comprehensive",
+            "unknown": "Unclassified",
+            "universal": "Universal"
+        },
+        "continents": {
+            "asia_oceania": "Asia & Oceania",
+            "europe_africa": "Europe & Africa",
+            "americas": "Americas",
+            "system": "System Default"
+        },
+        "time": {
+            "just_now": "Moments ago",
+            "mins_ago": "{{count}}m ago",
+            "hours_ago": "{{count}}h ago",
+            "yesterday": "Yesterday",
+            "days_ago": "{{count}}d ago"
+        },
+        "time_left": "{{hours}}h {{minutes}}m remaining",
+        "difficulty": {
+            "easy": "Foundational",
+            "medium": "Intermediate",
+            "hard": "Advanced"
+        },
+        "type": {
+            "choice": "Selective Response",
+            "fill_blank": "Cloze Deletion",
+            "short_answer": "Open Response"
+        },
+        "toast": {
+            "info": "Notification",
+            "success": "Success",
+            "warning": "Warning",
+            "error": "Error"
+        },
+        "subjects": "Subjects",
+        "tags": "Tags",
+        "archive": "Archive"
+    },
+    "settings": {
+        "theme": {
+            "toggle": "Switch Theme",
+            "switchToLight": "Switch to Light",
+            "switchToDark": "Switch to Dark"
+        }
+    },
+    "notes": {
+        "sidebar": {
+            "title": "Notes Garden",
+            "new_folder": "New Folder",
+            "new_note": "New Note",
+            "search_placeholder": "Search notes or questions...",
+            "all_notes": "All Folders",
+            "recents": "Recents"
+        }
+    },
+    "tags": {
+        "editor_label": "Tag editor",
+        "list_label": "Added tags",
+        "tag_with_name": "Tag: {{name}}",
+        "remove_tag": "Remove tag {{name}}"
+    },
+    "markdown": {
+        "notifications": {
+            "tex_copied": "TeX Formula copied to clipboard",
+            "code_copied": "Code copied",
+            "code_lines_copied": "Copied {{count}} selected lines",
+            "latex_source_copied": "LaTeX source copied",
+            "copy_failed": "Copy failed",
+            "copy_failed_manual": "Copy failed. Please long-press to select text and copy manually"
+        }
+    },
+    "footer": {
+        "active_nodes": "Operational Units",
+        "stability": "Global Stability Index"
+    },
+    "errors": {
+        "report_copied": "Diagnostic info copied",
+        "retrying": "Retrying…",
+        "retry": "Retry Now",
+        "hard_reload": "Force Reload",
+        "continue_review": "Continue Review",
+        "go_back": "Go Back",
+        "go_home": "Home",
+        "safe_mode": "Enter Safe Mode",
+        "reload_page": "Reload Page",
+        "copied": "Copied successfully",
+        "copy_report": "Copy Diagnostic Report",
+        "dev_details": "Details",
+        "keyboard_prefix": "Press",
+        "keyboard_suffix": "to return home",
+        "key_esc": "ESC",
+        "troubleshooting": "Troubleshooting",
+        "suggest": {
+            "network": "Check your network connection",
+            "vpn": "Try disabling any active VPN or proxy",
+            "refresh": "Try refreshing the page",
+            "browser": "Ensure your browser is up to date",
+            "storage": "Check if your disk is full",
+            "contact": "If the issue persists, contact support"
+        },
+        "not_found": {
+            "title": "Page Not Found",
+            "description": "The page you are looking for does not exist or has been moved."
+        },
+        "boundary": {
+            "title": "Application Error",
+            "message": "An unexpected error occurred. You can retry or return to the home page."
+        }
+    },
+    "boot": {
+        "title": "Loading Application",
+        "subtitle": "Smart Archive V2",
+        "status": "System ready, synchronizing data",
+        "steps": {
+            "renderer": "Initializing UI components",
+            "sync": "Synchronizing local database",
+            "review": "Calculating today's review schedule"
+        }
+    }
+}

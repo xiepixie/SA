@@ -41,7 +41,7 @@ export const ActiveFiltersBar: React.FC<ActiveFiltersBarProps> = ({
     onRemoveFilter,
     onClearAll,
 }) => {
-    const { t } = useTranslation();
+    const { t } = useTranslation(['common', 'library']);
 
     // Build list of active filter chips
     const activeFilters: Array<{
@@ -125,7 +125,7 @@ export const ActiveFiltersBar: React.FC<ActiveFiltersBarProps> = ({
             transition={{ duration: 0.15, ease: 'easeOut' }}
             className="border-b border-base-content/[0.05] bg-base-content/[0.01]"
             role="region"
-            aria-label={t('library.filters.active', 'Active filters')}
+            aria-label={t('library:library.filters.active', 'Active filters')}
             aria-live="polite"
         >
             <div className="px-6 lg:px-10 py-3">
@@ -169,10 +169,10 @@ export const ActiveFiltersBar: React.FC<ActiveFiltersBarProps> = ({
                             "transition-all duration-200",
                             "focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2"
                         )}
-                        aria-label={t('library.filters.clear_all', 'Clear all filters')}
+                        aria-label={t('library:library.filters.clear_all', 'Clear all filters')}
                     >
                         <X size={14} strokeWidth={2.5} />
-                        <span className="hidden sm:inline">{t('library.filters.clear_all', 'Clear all')}</span>
+                        <span className="hidden sm:inline">{t('library:library.filters.clear_all', 'Clear all')}</span>
                     </button>
                 </div>
             </div>

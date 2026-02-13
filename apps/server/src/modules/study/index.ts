@@ -175,10 +175,12 @@ export const study = new Elysia()
                 success: true,
                 card_id,
                 intervals: {
-                    again: Math.round(states.again.interval),
-                    hard: Math.round(states.hard.interval),
-                    good: Math.round(states.good.interval),
-                    easy: Math.round(states.easy.interval),
+                    // Return precise floats (in days) for accurate time display
+                    // e.g., 0.0069 = ~10 minutes, 0.5 = 12 hours
+                    again: states.again.interval,
+                    hard: states.hard.interval,
+                    good: states.good.interval,
+                    easy: states.easy.interval,
                 },
                 states,
                 retrievability

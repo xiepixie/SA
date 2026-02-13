@@ -21,9 +21,9 @@ i18n
         // Debug mode (only in development)
         debug: import.meta.env.DEV,
 
-        // Namespace configuration - using single 'translation' namespace
-        ns: ['translation'],
-        defaultNS: 'translation',
+        // Namespace configuration - using modular namespaces
+        ns: ['common', 'layout', 'ui', 'app', 'error', 'auth', 'dashboard', 'review', 'import', 'library', 'exams', 'sync', 'settings', 'notes', 'renderer', 'markdown'],
+        defaultNS: 'common',
 
         // Interpolation settings
         interpolation: {

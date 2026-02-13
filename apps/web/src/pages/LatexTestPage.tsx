@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import QuickJotEditor from '../features/notes/editor/QuickJotEditor';
 import { useSearchParams, useLocation } from 'react-router-dom';
-import { MarkdownRenderer } from '../components/LatexRenderer';
+import { MarkdownRenderer, parse_content } from '../components/LatexRenderer';
 
 // Simple debounce hook
 function useDebounce<T>(value: T, delay: number): T {
@@ -453,7 +453,49 @@ $$
   $\\frac{1}{2$ (KaTeX error color should be visible)
 `;
 
+const WIKI_FEATURES_EXAMPLE = `# Wiki 功能测试 (WikiLinks & Embeds)
+
+## 1. 点击链接测试 (WikiLinks)
+
+- **基础链接**：[[Math_Core]]
+- **带别名的链接**：[[Math_Core|数学核心概念]]
+- **链接到章节**：[[Math_Core#Calculus]]
+- **链接到嵌套章节**：[[Math_Core#Calculus#Derivatives]]
+- **同页锚点链接**：[[#1. 点击链接测试 (WikiLinks)]] (跳转至本章开头)
+
+## 2. 内容嵌入测试 (WikiEmbeds / Transclusion)
+
+### 笔记嵌入 (Note Transclusion)
+嵌入完整的笔记：
+![[Math_Core]]
+
+---
+
+### 精准章节嵌入 (Section Transclusion)
+仅嵌入 "Calculus" 章节及其子章节：
+![[Math_Core#Calculus]]
+
+仅嵌入 "Derivatives" 章节（包含其中的 LaTeX）：
+![[Math_Core#Calculus#Derivatives]]
+
+---
+
+### 图片嵌入 (Image Embed)
+![[Laser_Diagram.png|实验装置示意图]]
+
+## 3. 递归与嵌套测试
+嵌入一个包含自己图片的笔记：
+![[Physics_Lab]]
+
+## 4. 语法与状态测试
+- **Hover 预览**：鼠标悬停在上面的链接上查看即时预览。
+- **严格片段检查**：[[Math_Core##Calculus]] (双井号，应解析失败，显示为源码)
+- **严格尾部检查**：[[Math_Core#]] (空片段，应解析失败)
+- **不存在的笔记**：![[Missing_Note]] (应显示加载失败 UI)
+`;
+
 const EXAMPLES = [
+    { key: 'wiki', name: 'Wiki 功能', content: WIKI_FEATURES_EXAMPLE },
     { key: 'fourier', name: '傅里叶级数', content: FOURIER_EXAMPLE },
     { key: 'editing', name: '编辑状态测试', content: EDITING_STATE_EXAMPLE },
     { key: 'code', name: '代码块交互', content: CODE_BLOCK_EXAMPLE },
@@ -471,20 +513,102 @@ export const LatexTestPage: React.FC = () => {
     const location = useLocation();
     const outputRef = useRef<HTMLDivElement>(null);
 
-    // Get current tab from URL, default to 'fourier'
-    const currentTab = searchParams.get('tab') || 'fourier';
-    const currentContent = EXAMPLE_MAP[currentTab] || FOURIER_EXAMPLE;
+    // Mock data for WikiLink/Embed testing
+    const mockNotes: Record<string, string> = {
+        'Math_Core': `
+# Mathematics Core
+This is the central knowledge base for mathematics.
+
+## Calculus
+Calculus is the mathematical study of continuous change.
+
+### Derivatives
+The derivative of a function measures the sensitivity to change.
+
+Example: $$\\frac{d}{dx}x^2 = 2x$$
+
+### Integrals
+An integral assigns numbers to functions describing area/volume.
+
+## Geometry
+Geometry is concerned with properties of space.
+`,
+        'Physics_Lab': `
+# Physics Lab Notes
+Experimental data and findings.
+
+- Laser Emitter
+- Photosensor
+
+![[Laser_Diagram.png|Laser Setup Diagram]]
+`
+    };
+
+    const resolveAsset = useCallback((name: string) => {
+        return `https://picsum.photos/seed/${name}/800/400`;
+    }, []);
+
+    const resolveNote = useCallback(async (name: string) => {
+        // Mock delay to test loading states
+        await new Promise(r => setTimeout(r, 800));
+        if (name === 'Missing_Note') throw new Error('Note not found in system');
+
+        const content = mockNotes[name] || `# ${name}\nContent for ${name}...`;
+
+        // 🚀 CRITICAL: Use the actual Rust parser to convert Markdown to HTML
+        // This ensures math tags, headings, and lists are formatted exactly like the real app.
+        try {
+            const result = parse_content(content);
+            return result.html;
+        } catch (e) {
+            console.error('Parser failed in mock:', e);
+            return `<div>Error parsing note content</div>`;
+        }
+    }, []);
+
+    const handleWikiLinkClick = useCallback((target: string) => {
+        console.log('WikiLink Navigation:', target);
+        // Simulate navigation by updating search params
+        // This makes it feel like a real app routing
+        const [page, fragment] = target.split('#');
+        const params: Record<string, string> = { tab: 'wiki' };
+        if (page) params.note = page;
+        setSearchParams(params);
+
+        // If there's a fragment, we'll handle it via hash update after a short delay
+        if (fragment) {
+            window.location.hash = fragment;
+        }
+    }, [setSearchParams]);
+
+    // Get current tab from URL, default to 'wiki'
+    const currentTab = searchParams.get('tab') || 'wiki';
+    const currentContent = EXAMPLE_MAP[currentTab] || WIKI_FEATURES_EXAMPLE;
 
     const [input, setInput] = useState(currentContent);
     const debouncedInput = useDebounce(input, 150);
 
+    // Handle initial note simulation from URL
+    useEffect(() => {
+        const note = searchParams.get('note');
+        if (note && currentTab === 'wiki') {
+            // ✅ Simulation: If it's a mock note, we update the editor content
+            // In a real app, this would be a full page transition or side-panel open
+            if (mockNotes[note]) {
+                const simulatedContent = `# ${note}\n\nThis is a simulated view of the note **${note}**.\n\n${mockNotes[note]}`;
+                setInput(simulatedContent);
+            }
+            console.log(`[Simulator] Active Note Context: ${note}`);
+        }
+    }, [searchParams, currentTab]);
+
     // Sync input with URL tab changes
     useEffect(() => {
         const newContent = EXAMPLE_MAP[currentTab];
-        if (newContent && newContent !== input) {
+        if (newContent && newContent !== input && !searchParams.get('note')) {
             setInput(newContent);
         }
-    }, [currentTab]);
+    }, [currentTab, searchParams]);
 
     // Handle initial hash navigation on page load
     useEffect(() => {
@@ -573,7 +697,12 @@ export const LatexTestPage: React.FC = () => {
                 <div className="flex flex-col overflow-hidden" ref={outputRef}>
                     <h2 className="text-sm font-bold opacity-60 mb-2 px-1">渲染输出</h2>
                     <div className="flex-1 overflow-y-auto p-6 glass-surface rounded-xl">
-                        <MarkdownRenderer content={debouncedInput} />
+                        <MarkdownRenderer
+                            content={debouncedInput}
+                            resolveAsset={resolveAsset}
+                            resolveNote={resolveNote}
+                            onWikiLinkClick={handleWikiLinkClick}
+                        />
                     </div>
                 </div>
             </div>

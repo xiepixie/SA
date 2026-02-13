@@ -25,7 +25,7 @@ import {
 export const QuestionDetailPage: React.FC = () => {
     const navigate = useNavigate();
     const { id } = useParams();
-    const { t } = useTranslation();
+    const { t } = useTranslation(['library', 'common']);
     const [activeLayer, setActiveLayer] = useState<'asset' | 'state'>('asset');
 
     // Data Hook

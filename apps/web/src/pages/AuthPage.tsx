@@ -55,7 +55,7 @@ const StatCard: React.FC<StatCardProps> = ({ value, suffix, label, icon }) => (
 );
 
 export const AuthPage: React.FC = () => {
-    const { t } = useTranslation();
+    const { t } = useTranslation('auth');
     const navigate = useNavigate();
     const { pushEffect, dismissEffect, effects } = useAppStore(useShallow(s => ({
         pushEffect: s.pushEffect,

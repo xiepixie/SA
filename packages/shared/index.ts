@@ -88,6 +88,8 @@ export interface ImportConfig {
     cards_due_start?: string; // ISO
     cards_due_spread?: 'immediate' | 'spread_1d' | 'spread_7d';
     importBatchId?: string;
+    useAtomic?: boolean; // [V3.3] Transactional Import
+    allowDuplicates?: boolean; // [V3.3] Skip server-side dedupe
 }
 
 export interface ImportPipelineResult {

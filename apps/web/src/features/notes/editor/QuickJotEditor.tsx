@@ -188,7 +188,7 @@ export const QuickJotEditor = forwardRef<HTMLDivElement, QuickJotEditorProps>(({
         <div
             ref={containerRef}
             className={className}
-            style={{ minHeight: '120px', maxHeight: '400px' }}
+            style={{ width: '100%', height: '100%' }}
         />
     );
 });

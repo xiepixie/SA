@@ -41,7 +41,7 @@ export const SimulationPanel: React.FC<SimulationPanelProps> = ({
     onFocusField,
     onToggleWorkbenchMode,
 }) => {
-    const { t } = useTranslation();
+    const { t } = useTranslation(['import', 'common', 'renderer']);
     const { matchesShortcut } = useShortcut();
 
     // Hotkey listener for 'r' to toggle reveal/reset
@@ -76,18 +76,18 @@ export const SimulationPanel: React.FC<SimulationPanelProps> = ({
                     <div className="flex flex-col">
                         <div className="flex items-center gap-2 text-[9px] font-black opacity-30 uppercase tracking-[0.2em]">
                             <Brain size={12} />
-                            {t('import.preview.simulation_view')}
+                            {t('import:import.preview.simulation_view')}
                         </div>
                         <div className="mt-1 flex items-center gap-2">
                             <span className="text-[10px] font-black tabular-nums opacity-40 uppercase tracking-widest text-base-content/60">
-                                {t('import.preview.label_row')} #{activeItem.__row}
+                                {t('import:import.preview.label_row')} #{activeItem.__row}
                             </span>
                             <div className="w-1 h-1 rounded-full bg-base-content/10" />
                             <span className={cn(
                                 "text-[10px] font-black uppercase tracking-widest px-1.5 py-0.5 rounded-lg",
                                 "bg-primary/10 text-primary"
                             )}>
-                                {t(`common.type.${activeItem.question.question_type}`, { defaultValue: activeItem.question.question_type?.toUpperCase() })}
+                                {t(`common:common.type.${activeItem.question.question_type}`, { defaultValue: activeItem.question.question_type?.toUpperCase() })}
                             </span>
                         </div>
                     </div>
@@ -100,7 +100,7 @@ export const SimulationPanel: React.FC<SimulationPanelProps> = ({
                             "w-10 h-10 rounded-xl bg-base-content/5 hover:bg-base-content/10 flex items-center justify-center text-base-content/40 hover:text-primary transition-all active:scale-95",
                             workbenchMode === 'preview' && "bg-primary/10 text-primary"
                         )}
-                        title={workbenchMode === 'preview' ? t('import.preview.editor_mode_guided') : t('import.preview.mode_preview')}
+                        title={workbenchMode === 'preview' ? t('import:import.preview.editor_mode_guided') : t('import:import.preview.mode_preview')}
                     >
                         {workbenchMode === 'preview' ? <PanelRightClose size={18} /> : <Target size={18} />}
                     </button>
@@ -146,21 +146,21 @@ export const SimulationPanel: React.FC<SimulationPanelProps> = ({
                                 <div className={cn("flex items-center gap-3", hasErr ? "text-rose-500" : "text-amber-500")}>
                                     {hasErr ? <AlertCircle size={20} /> : <AlertTriangle size={20} />}
                                     <h4 className="text-sm font-black uppercase tracking-[0.2em]">
-                                        {hasErr ? t('import.preview.status_blocked') : t('import.preview.status_issues_upper', { count: validationErrors.filter(v => v.level === 'warning').length })}
+                                        {hasErr ? t('import:import.preview.status_blocked') : t('import:import.preview.status_issues_upper', { count: validationErrors.filter(v => v.level === 'warning').length })}
                                     </h4>
                                 </div>
                                 <div className="flex items-center gap-2">
                                     <button
                                         onClick={() => onJumpToProblem('prev')}
                                         className="w-10 h-10 rounded-xl bg-white/5 hover:bg-white/10 flex items-center justify-center transition-all group/nav"
-                                        title={t('import.preview.btn_prev_problem')}
+                                        title={t('import:import.preview.btn_prev_problem')}
                                     >
                                         <ChevronLeft size={18} className="group-active/nav:-translate-x-1 transition-transform" />
                                     </button>
                                     <button
                                         onClick={() => onJumpToProblem('next')}
                                         className="w-10 h-10 rounded-xl bg-base-content/5 hover:bg-primary/10 hover:text-primary flex items-center justify-center transition-all group/nav active:scale-95"
-                                        title={t('import.preview.btn_next_problem')}
+                                        title={t('import:import.preview.btn_next_problem')}
                                     >
                                         <ChevronRight size={18} className="group-hover/nav:translate-x-0.5 transition-transform" />
                                     </button>
@@ -183,7 +183,7 @@ export const SimulationPanel: React.FC<SimulationPanelProps> = ({
                                         {err.field && (
                                             <div className="px-2 py-1 rounded-lg bg-base-content/20 text-[8px] font-black uppercase tracking-widest opacity-0 group-hover/err:opacity-100 transition-opacity flex items-center gap-1.5">
                                                 <Target size={8} />
-                                                {t('common.actions.locate')}
+                                                {t('common:common.actions.locate')}
                                             </div>
                                         )}
                                     </button>
@@ -197,11 +197,11 @@ export const SimulationPanel: React.FC<SimulationPanelProps> = ({
                         <div className="glass-card p-4 md:p-6 lg:p-8 rounded-[2.5rem] shadow-premium-xl border-base-content/10 bg-base-100/35 backdrop-blur-3xl relative z-10 transition-all">
                             <div className="mb-8 flex items-center justify-between px-2">
                                 <h2 className="text-xl font-black text-base-content/90 tracking-tight leading-tight max-w-[85%]">
-                                    <MarkdownRenderer content={(activeItem.question.title as string) || t('import.preview.untitled_object')} className="prose-none" />
+                                    <MarkdownRenderer content={(activeItem.question.title as string) || t('import:import.preview.untitled_object')} className="prose-none" showTexBadge={false} />
                                 </h2>
                                 <div className="text-[9px] font-black uppercase tracking-[0.2em] select-none flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary/5 text-primary/60 border border-primary/10">
                                     <div className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse shadow-[0_0_8px_rgba(var(--color-primary),0.8)]" />
-                                    {t('import.preview.simulation_badge', 'SIMULATION PREVIEW')}
+                                    {t('import:import.preview.simulation_badge', 'SIMULATION PREVIEW')}
                                 </div>
                             </div>
 
@@ -227,7 +227,7 @@ export const SimulationPanel: React.FC<SimulationPanelProps> = ({
                                 </span>
                             ))}
                             <span className="px-3 py-1.5 font-black text-[9px] uppercase rounded-lg bg-primary/5 border border-primary/10 text-primary">
-                                @{activeItem.subject_name || t('common.general.universal')}
+                                @{activeItem.subject_name || t('common:common.general.universal')}
                             </span>
                         </div>
                     </div>

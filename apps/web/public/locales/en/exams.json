@@ -1,0 +1,200 @@
+{
+    "exams": {
+        "header": {
+            "title": "Exams",
+            "subtitle": "Create and manage tests from your question library",
+            "btn_create": "Create Exam"
+        },
+        "stats": {
+            "total_exams": "Total Exams",
+            "total_exams_tooltip": "Total number of completed tests.",
+            "avg_score": "Average Score",
+            "avg_score_tooltip": "Your average precision across all tests.",
+            "streak": "Study Streak",
+            "streak_tooltip": "Consecutive days of taking exams.",
+            "total_time": "Total Time Spent",
+            "total_time_tooltip": "Cumulative time spent on formal testing.",
+            "weak_subjects": "Weak Subjects",
+            "weak_subjects_tooltip": "Areas where you frequently make mistakes."
+        },
+        "create": {
+            "quick_start": "Quick Start",
+            "custom_config": "Custom Settings",
+            "title": "Create New Exam",
+            "step_info": "Step {{current}} / {{total}}",
+            "btn_generate": "Generate Exam"
+        },
+        "milestone": {
+            "title": "Progress Milestone",
+            "desc": "Tracking your proficiency growth over time.",
+            "streak_unit": "{{count}} days",
+            "excellent": "Excellent Performance"
+        },
+        "generate_title": {
+            "general": "General",
+            "practice": "Practice",
+            "comprehensive": "Comprehensive"
+        },
+        "modes": {
+            "eval": {
+                "title": "Exam Mode",
+                "desc": "Hide feedback until submission. Best for formal testing."
+            },
+            "drill": {
+                "title": "Practice Mode",
+                "desc": "Get instant feedback after each response."
+            }
+        },
+        "list": {
+            "title": "Recent Exams",
+            "view_report": "View Report",
+            "duration": "Duration: {{m}}m {{s}}s",
+            "score": "Score: {{score}}%",
+            "search": "Filter history...",
+            "filter": "Sort Options",
+            "col_id": "Exam ID",
+            "col_subject": "Subject",
+            "col_metrics": "Metrics",
+            "col_score": "Score",
+            "col_actions": "Actions",
+            "remaining": "{{count}} remaining",
+            "elapsed": "{{time}} elapsed",
+            "empty_title": "No History Found",
+            "empty_desc": "Complete your first exam to see results here.",
+            "btn_continue": "Resume Exam",
+            "btn_retry": "Try Again"
+        }
+    },
+    "history": {
+        "search_placeholder": "Search history...",
+        "stats": {
+            "questions": "Questions",
+            "correct": "Correct",
+            "time": "Time"
+        },
+        "efficiency": "Efficiency",
+        "efficiency_unit": "s / item",
+        "grade": "Grade"
+    },
+    "filters": {
+        "title": "Advanced Parameters",
+        "active": "{{count}} parameters active",
+        "desc": "Refine historical data query.",
+        "status": "State",
+        "mode": "Protocol",
+        "time_range": "Temporal Range",
+        "time_today": "Current Cycle",
+        "time_week": "7-Day Interval",
+        "time_month": "30-Day Interval",
+        "score_range": "Precision Variance",
+        "sort_by": "Metric Rank",
+        "sort_date": "Recency",
+        "sort_score": "Peak Precision",
+        "sort_duration": "Optimized Speed",
+        "sort_questions": "Volume"
+    },
+    "wizard": {
+        "nav": {
+            "prev": "Previous Stage",
+            "next": "Proceed"
+        },
+        "step1": {
+            "title": "Define Domains",
+            "desc": "Specify knowledge domains for inclusion.",
+            "search": "Filter domains…",
+            "all": "Comprehensive Select",
+            "clear": "Clear Selection",
+            "available": "Eligible units",
+            "show_more": "Expand ({{count}})",
+            "show_less": "Collapse",
+            "error": "A minimum of one domain must be specified.",
+            "search_placeholder": "Search domains…"
+        },
+        "step2": {
+            "title": "Targeting Parameters",
+            "desc": "Specify optional filters for granular targeting.",
+            "tags": "Metadata Tags",
+            "tags_desc": "Target high-specific concepts",
+            "mastery": "Proficiency Range",
+            "difficulty": "Complexity Tier",
+            "type": "Logic Classification",
+            "clear": "Reset Filters"
+        },
+        "step3": {
+            "title": "Sampling Strategy",
+            "desc": "Determine record selection logic",
+            "question_count": "Payload Volume",
+            "question_types": "Unit Classifications",
+            "unit": "units",
+            "recommended": "Optimal",
+            "available_hint": "Only {{count}} eligible records identified.",
+            "shuffle": "Randomize Sequence",
+            "shuffle_desc": "Mitigates order-bias during recall.",
+            "archived": "Include Archives",
+            "archived_desc": "Include suppressed or archived units."
+        },
+        "step4": {
+            "title": "Verification & Activation",
+            "desc": "Final review of assessment configuration.",
+            "mode": "Operation Mode",
+            "overview": "Configuration Summary",
+            "overview_desc": "Verify parameters before protocol activation.",
+            "stats_count": "Volume",
+            "stats_subjects": "Domains",
+            "stats_time": "Estimated Duration",
+            "time_limit": "Temporal Constraint",
+            "enable_limit": "Activate Timer",
+            "mins": "min",
+            "more_subjects": " + {{count}} additional"
+        }
+    },
+    "strategies": {
+        "weakness": {
+            "title": "Deficiency Prioritization",
+            "desc": "Target units with statistical high error rates."
+        },
+        "due_first": {
+            "title": "Recall Prioritization",
+            "desc": "Target units at the critical decay threshold."
+        },
+        "new_first": {
+            "title": "Acquisition First",
+            "desc": "Prioritize uninitialized knowledge units."
+        },
+        "random": {
+            "title": "Stochastic Selection",
+            "desc": "Uniform random sampling across repository."
+        }
+    },
+    "live_stats": {
+        "title": "Configuration Analytics",
+        "desc": "Real-time estimation based on current parameters.",
+        "realtime_config": "Protocol Config",
+        "intensity_high": "High Cognitive Load",
+        "ready": "System Ready",
+        "configuring": "Calculating Payload…",
+        "coverage": "Payload Volume",
+        "coverage_unit": "/ {{count}} target",
+        "est_time": "Est. Duration",
+        "time_unit": "min",
+        "time_avg": "2m / unit baseline",
+        "time_value": "{{count}} min",
+        "selected_subjects": "Active Domains",
+        "no_subjects": "Define domains to begin telemetry.",
+        "distribution": "Complexity Variance",
+        "strategy": "Selection Logic",
+        "not_found": "Zero Records Identified",
+        "not_found_desc": "Refine parameters to expand potential selection.",
+        "insufficient": "Suboptimal Volume",
+        "insufficient_tip": "Payload size is below recommended threshold.",
+        "ready_btn": "Ready for Execution",
+        "ready_tip": "Select “Generate Assessment” to activate protocol."
+    },
+    "grades": {
+        "excellent": "Superior",
+        "good": "Proficient",
+        "average": "Competent",
+        "pass": "Marginal",
+        "poor": "Deficient"
+    }
+}

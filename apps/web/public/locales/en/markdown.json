@@ -1,0 +1,12 @@
+{
+    "markdown": {
+        "notifications": {
+            "tex_copied": "TeX Formula copied to clipboard",
+            "code_copied": "Code copied",
+            "code_lines_copied": "Copied {{count}} selected lines",
+            "latex_source_copied": "LaTeX source copied",
+            "copy_failed": "Copy failed",
+            "copy_failed_manual": "Copy failed. Please long-press to select text and copy manually"
+        }
+    }
+}

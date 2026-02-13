@@ -1,0 +1,156 @@
+{
+    "dashboard": {
+        "overdue_warning": "{{count}} 题已逾期",
+        "on_track": "进度正常",
+        "all_clear": {
+            "title": "任务已清空",
+            "subtitle": "记忆保留率处于峰值，系统运行状态良好。"
+        },
+        "metrics": {
+            "pulse": "今日待复习",
+            "stability": "稳定性",
+            "persistence": "连续学习",
+            "base": "题库规模"
+        },
+        "retention": {
+            "title": "保留率分析",
+            "desc": "按时间查看记忆稳定性变化",
+            "avg_stability": "平均稳定性",
+            "peak_accuracy": "最高准确率",
+            "overdue_drift": "逾期影响",
+            "sync_health": "同步健康度",
+            "efficiency": "效率",
+            "volume": "数量"
+        },
+        "subjects": {
+            "title": "学科分布",
+            "empty": "暂无学科数据。请先导入题目开始使用。"
+        },
+        "discipline": {
+            "title": "学习习惯",
+            "footer": "最近 42 天记录",
+            "last_42_days": "最近 42 天",
+            "reviews": "次复习",
+            "active_rate": "活跃率",
+            "efficiency": "效率",
+            "active": "活跃"
+        },
+        "milestone": {
+            "title": "里程碑",
+            "desc": "过去 7 天你掌握了 <1>{{count}} 个知识点</1>。"
+        },
+        "insight": {
+            "title": "学习洞察",
+            "desc": "基于最近 <1>{{count}} 条复习记录</1>，系统估算你的最佳保留率区间为 <2>{{percentage}}%</2>。",
+            "drift": "逾期补偿",
+            "sync": "FSRS 建议间隔",
+            "density": "负载",
+            "target_accuracy": "目标准确率",
+            "suggested_action": "建议操作",
+            "action_focus": "优先复习稳定性最低的 20% 题目",
+            "action_rest": "今日任务已清空，建议休息或录入新题",
+            "act_now": "立即行动"
+        },
+        "quality": {
+            "title": "质量指标",
+            "lapse_rate": "遗忘率",
+            "new_traps": "新增易错点",
+            "new_traps_desc": "最近 7 天频繁出错的知识点"
+        }
+    },
+    "welcome": {
+        "default_username": "同学",
+        "greeting": {
+            "morning": "早上好",
+            "afternoon": "下午好",
+            "evening": "晚上好",
+            "night": "夜深了"
+        },
+        "hero": {
+            "badge": "首页",
+            "title": "管理你的错题",
+            "subtitle": "一站式错题与复习中心。",
+            "status": "待复习：{{count}} 题。建议先完成同步，确保数据一致。",
+            "btn_review": "开始复习",
+            "btn_analyze": "查看分析"
+        },
+        "states": {
+            "loading": {
+                "desc": "正在同步数据…"
+            },
+            "ready": {
+                "badge": "待复习",
+                "title": "可以开始复习了",
+                "btn": "开始复习",
+                "segmented_hint": "建议分段完成"
+            },
+            "clear": {
+                "badge": "已完成",
+                "title": "今日任务已清空",
+                "desc": "你已完成今天的复习任务。",
+                "btn_practice": "自由练习",
+                "btn_browse": "浏览题库"
+            },
+            "empty": {
+                "badge": "引导",
+                "title": "开始学习",
+                "desc": "先导入题目，建立你的题库",
+                "btn_import": "导入题目"
+            }
+        },
+        "onboarding": {
+            "step1": "导入文件或粘贴内容",
+            "step2": "生成复习卡片",
+            "step3": "开始复习"
+        },
+        "quick_actions": {
+            "recommended": "推荐",
+            "quick_access": "快捷入口",
+            "review": {
+                "title": "开始复习",
+                "desc": "待复习 {{count}} 题",
+                "desc_empty": "暂无待复习内容",
+                "benefit": "预计用时 {{time}} 分钟",
+                "unit": "题"
+            },
+            "library": {
+                "title": "题库管理",
+                "desc": "浏览所有题目",
+                "benefit": "整理、归档并完善题目"
+            },
+            "matrix": {
+                "title": "数据分析",
+                "desc": "趋势与分析",
+                "benefit": "定位薄弱点并制定提升策略"
+            },
+            "import": {
+                "title": "导入题目",
+                "desc": "导入外部数据",
+                "benefit": "将资料快速转换为练习题",
+                "status_running": "正在导入…"
+            }
+        },
+        "timer": {
+            "daily": "每日重置倒计时",
+            "custom": "目标倒计时",
+            "days": "天",
+            "hours": "小时",
+            "min": "分钟",
+            "sec": "秒",
+            "event_label": "事件名称",
+            "event_placeholder": "例如：期末考试、项目截止…"
+        },
+        "sessions": {
+            "short": "番茄练习",
+            "urgent": "冲刺练习"
+        },
+        "footer": {
+            "active_nodes": "活跃题目",
+            "nodes_synced": "已同步 {{count}} 题",
+            "stability": "稳定性",
+            "latency": "延迟",
+            "insight_ready": "分析已就绪",
+            "insight_desc": "已生成最新复习建议。"
+        }
+    }
+}

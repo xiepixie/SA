@@ -30,7 +30,7 @@ import { useNavigate } from 'react-router-dom';
 import { GlassSelect, type GlassSelectOption, type GlassSelectGroup } from '../components/ui';
 
 export const SettingsPage: React.FC = () => {
-    const { i18n, t } = useTranslation();
+    const { i18n, t } = useTranslation(['settings', 'review', 'common', 'dashboard', 'layout']);
     const [section, setSection] = useState<'general' | 'algorithm' | 'security' | 'display' | 'shortcuts'>('general');
     const [shortcutCategory, setShortcutCategory] = useState<string>('global');
     const navigate = useNavigate();
@@ -54,7 +54,7 @@ export const SettingsPage: React.FC = () => {
 
     const timezoneGroups: GlassSelectGroup<string>[] = useMemo(() => [
         {
-            label: t('common.continents.asia_oceania'),
+            label: t('common:common.continents.asia_oceania'),
             options: [
                 { value: 'Asia/Shanghai', label: 'Shanghai (UTC+8)' },
                 { value: 'Asia/Hong_Kong', label: 'Hong Kong (UTC+8)' },
@@ -67,7 +67,7 @@ export const SettingsPage: React.FC = () => {
             ]
         },
         {
-            label: t('common.continents.europe_africa'),
+            label: t('common:common.continents.europe_africa'),
             options: [
                 { value: 'Europe/London', label: 'London (UTC+0)' },
                 { value: 'Europe/Paris', label: 'Paris (UTC+1)' },
@@ -78,7 +78,7 @@ export const SettingsPage: React.FC = () => {
             ]
         },
         {
-            label: t('common.continents.americas'),
+            label: t('common:common.continents.americas'),
             options: [
                 { value: 'America/New_York', label: 'New York (UTC-5)' },
                 { value: 'America/Chicago', label: 'Chicago (UTC-6)' },
@@ -89,7 +89,7 @@ export const SettingsPage: React.FC = () => {
             ]
         },
         {
-            label: t('common.continents.system'),
+            label: t('common:common.continents.system'),
             options: [
                 { value: 'UTC', label: 'Universal Time (UTC)' },
             ]
@@ -220,14 +220,14 @@ export const SettingsPage: React.FC = () => {
                 <div className="space-y-1 flex justify-between items-start">
                     <div className="flex-1">
                         <h2 className="text-3xl font-black text-base-content tracking-tight uppercase flex items-center gap-3">
-                            {t('nav.items.settings')}
+                            {t('layout:nav.items.settings')}
                             {isExpertMode && (
                                 <span className="text-[10px] bg-primary/20 text-primary border border-primary/20 px-2 py-0.5 rounded-full tracking-[0.2em] font-black animate-pulse">
                                     EXPERT
                                 </span>
                             )}
                         </h2>
-                        <p className="text-sm font-bold text-base-content/40 uppercase tracking-widest">{t('nav.sections.systems')}</p>
+                        <p className="text-sm font-bold text-base-content/40 uppercase tracking-widest">{t('layout:nav.sections.systems')}</p>
                     </div>
 
                     <div className="flex flex-col items-end gap-2">
@@ -250,10 +250,10 @@ export const SettingsPage: React.FC = () => {
                             )}
                             <div className="flex flex-col justify-center">
                                 <span>
-                                    {saveStatus === 'saving' && t('settings.status.saving')}
-                                    {saveStatus === 'saved' && t('settings.status.saved')}
-                                    {saveStatus === 'error' && (t('settings.status.error') || 'Error')}
-                                    {saveStatus === 'idle' && (t('settings.status.synced') || 'Cloud Integrity')}
+                                    {saveStatus === 'saving' && t('common:common.status.saving')}
+                                    {saveStatus === 'saved' && t('common:common.status.saved')}
+                                    {saveStatus === 'error' && (t('common:common.status.error') || 'Error')}
+                                    {saveStatus === 'idle' && (t('common:common.status.synced') || 'Cloud Integrity')}
                                 </span>
                                 {saveStatus === 'idle' && useUserSettings.getState().lastSynced && (
                                     <span className="text-[7px] opacity-40 -mt-1 tracking-normal font-mono normal-case">
@@ -281,7 +281,7 @@ export const SettingsPage: React.FC = () => {
                                 className="text-[9px] font-black uppercase tracking-[0.2em] text-base-content/20 hover:text-primary transition-colors flex items-center gap-1.5 px-2 py-1 group"
                             >
                                 <Database className="w-2.5 h-2.5 group-hover:rotate-180 transition-transform duration-700" />
-                                {t('settings.status.refresh') || 'Force Refresh'}
+                                {t('common:common.actions.retry') || 'Force Refresh'}
                             </button>
                         </div>
                     </div>
@@ -444,7 +444,7 @@ export const SettingsPage: React.FC = () => {
                                                         <div className="flex items-center justify-between px-2">
                                                             <label htmlFor="setting-rollover" className="text-[10px] font-black text-base-content/30 uppercase tracking-[0.2em]">{t('settings.general.temporal.rollover')}</label>
                                                             {!isExpertMode && preferences.countdownMode === 'custom' && (
-                                                                <span className="text-[8px] font-black text-primary/40 uppercase bg-primary/5 px-1.5 py-0.5 rounded">{t('common.status.locked', 'Locked')}</span>
+                                                                <span className="text-[8px] font-black text-primary/40 uppercase bg-primary/5 px-1.5 py-0.5 rounded">{t('common:common.status.locked', 'Locked')}</span>
                                                             )}
                                                         </div>
                                                         <GlassSelect
@@ -469,8 +469,8 @@ export const SettingsPage: React.FC = () => {
                                                             dropdownWidth="w-[320px]"
                                                             dropdownAlign="end"
                                                             searchable={true}
-                                                            searchPlaceholder={t('common.search_placeholder')}
-                                                            emptyText={t('common.no_results')}
+                                                            searchPlaceholder={t('common:common.search_placeholder')}
+                                                            emptyText={t('common:common.no_results')}
                                                         />
                                                     </div>
                                                 </div>
@@ -485,7 +485,7 @@ export const SettingsPage: React.FC = () => {
                                                             <p className="text-[10px] font-black text-primary/40 uppercase tracking-widest">{t('settings.preview.rollover_label')}</p>
                                                             <div className="flex items-center gap-2">
                                                                 <span className="font-mono text-base font-black text-base-content tracking-tight">{nextRollover.time.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
-                                                                <span className="text-[11px] font-bold text-base-content/20 uppercase tracking-widest">({t('common.time_left', { hours: nextRollover.hours, minutes: nextRollover.minutes }) || `${nextRollover.hours}h ${nextRollover.minutes} m`})</span>
+                                                                <span className="text-[11px] font-bold text-base-content/20 uppercase tracking-widest">({t('common:common.time_left', { hours: nextRollover.hours, minutes: nextRollover.minutes }) || `${nextRollover.hours}h ${nextRollover.minutes} m`})</span>
                                                             </div>
                                                         </div>
                                                     </div>
@@ -510,7 +510,7 @@ export const SettingsPage: React.FC = () => {
                                                                 `}
                                                             >
                                                                 <div className={`text-base font-black tracking-tight mb-0.5 transition-colors ${preferences.countdownMode === mode ? 'text-primary' : 'text-base-content/60'}`}>
-                                                                    {t(`welcome.timer.${mode}`)}
+                                                                    {t(`dashboard:welcome.timer.${mode}`)}
                                                                 </div>
                                                                 <div className="text-[10px] font-bold text-base-content/20 uppercase tracking-widest leading-none">
                                                                     {mode === 'daily' ? t('settings.preview.countdown_daily_short') : t('settings.preview.countdown_custom_short')}
@@ -548,12 +548,12 @@ export const SettingsPage: React.FC = () => {
                                                             </div>
                                                         </div>
                                                         <div className="space-y-2">
-                                                            <label htmlFor="setting-cd-name" className="text-[10px] font-black text-base-content/30 uppercase tracking-widest ml-2">{t('welcome.timer.event_label')}</label>
+                                                            <label htmlFor="setting-cd-name" className="text-[10px] font-black text-base-content/30 uppercase tracking-widest ml-2">{t('dashboard:welcome.timer.event_label')}</label>
                                                             <input
                                                                 id="setting-cd-name"
                                                                 name="custom_event_name"
                                                                 type="text"
-                                                                placeholder={t('welcome.timer.event_placeholder')}
+                                                                placeholder={t('dashboard:welcome.timer.event_placeholder')}
                                                                 className="input input-bordered input-md w-full bg-base-100 border-base-content/5 rounded-xl font-black text-sm focus:border-primary/30 transition-all placeholder:font-bold placeholder:opacity-10 text-center"
                                                                 value={preferences.customEventName}
                                                                 onChange={(e) => updatePref({ customEventName: e.target.value })}
@@ -575,7 +575,7 @@ export const SettingsPage: React.FC = () => {
                                 {isFsrsLoading ? (
                                     <div className="flex-1 flex flex-col items-center justify-center p-20 gap-4">
                                         <Loader2 className="w-8 h-8 animate-spin text-primary opacity-20" />
-                                        <p className="text-[10px] font-black uppercase text-base-content/20 tracking-[0.3em]">{t('common.loading')}</p>
+                                        <p className="text-[10px] font-black uppercase text-base-content/20 tracking-[0.3em]">{t('common:common.loading')}</p>
                                     </div>
                                 ) : (
                                     <>
@@ -664,7 +664,7 @@ export const SettingsPage: React.FC = () => {
                                                             <div className="space-y-3">
                                                                 <div className="flex items-center justify-between px-2">
                                                                     <label htmlFor="setting-daily-review-cap" className="text-[10px] font-black text-base-content/30 uppercase tracking-[0.2em]">{t('settings.algorithm.capacity.daily_cap')}</label>
-                                                                    <span className="text-[10px] font-black text-primary/40 uppercase tracking-widest">{fsrsProfile?.daily_review_cap ? t('common.units.cards_per_day') : t('settings.algorithm.daily_cap_unlimited')}</span>
+                                                                    <span className="text-[10px] font-black text-primary/40 uppercase tracking-widest">{fsrsProfile?.daily_review_cap ? t('common:common.units.cards_per_day') : t('settings.algorithm.daily_cap_unlimited')}</span>
                                                                 </div>
                                                                 <div className="group relative">
                                                                     <div className="absolute -inset-0.5 bg-gradient-to-r from-primary/5 to-primary/20 rounded-2xl blur opacity-0 group-focus-within:opacity-100 transition-all duration-700" />
@@ -923,7 +923,7 @@ p-4 rounded-2xl transition-all duration-700
                                                     <div className="p-5 bg-base-300/40 backdrop-blur-md rounded-2xl border border-base-content/5 font-mono text-xs text-base-content/20 flex justify-between items-center group-hover:border-primary/20 transition-all">
                                                         <span className="tracking-[0.3em]">sea_live_••••••••••••••••••••••••••••••••</span>
                                                         <button className="btn btn-ghost btn-xs text-[10px] font-black uppercase tracking-widest opacity-0 group-hover:opacity-100 transition-all hover:text-primary">
-                                                            {t('common.copy') || 'Copy'}
+                                                            {t('common:common.copy') || 'Copy'}
                                                         </button>
                                                     </div>
                                                 </div>
@@ -984,7 +984,7 @@ p-4 rounded-2xl transition-all duration-700
                                             className="se-interactive px-3 py-1.5 rounded-xl border border-base-content/10 flex items-center gap-2 hover:bg-base-content/5 transition-all text-[9px] font-black uppercase tracking-widest text-base-content/40 hover:text-base-content"
                                         >
                                             <RefreshCw size={12} />
-                                            {t('common.actions.reset')}
+                                            {t('common:common.actions.reset')}
                                         </button>
                                     </div>
                                 </div>
@@ -1272,14 +1272,14 @@ function ShortcutRecorder({
                         onClick={onCancel}
                         className="flex-1 py-3 rounded-2xl bg-base-content/5 border border-base-content/5 text-[10px] font-black uppercase tracking-widest hover:bg-error/10 hover:text-error transition-all"
                     >
-                        {t('common.actions.cancel')}
+                        {t('common:common.actions.cancel')}
                     </button>
                     <button
                         onClick={() => recorded && onSave(recorded)}
                         disabled={!recorded}
                         className="flex-1 py-3 rounded-2xl bg-primary text-white text-[10px] font-black uppercase tracking-widest hover:bg-primary/90 disabled:opacity-20 transition-all shadow-lg shadow-primary/20"
                     >
-                        {t('common.actions.save')}
+                        {t('common:common.actions.save')}
                     </button>
                 </div>
             </div>
@@ -1383,7 +1383,7 @@ function ShortcutTable({ groupId, shortcuts, t }: { groupId: string, shortcuts: 
                                                 <button
                                                     onClick={(e) => handleReset(item.id, e)}
                                                     className="opacity-0 group-hover:opacity-100 p-1 rounded-lg hover:bg-error/10 hover:text-error transition-all text-base-content/20"
-                                                    title={t('common.actions.reset')}
+                                                    title={t('common:common.actions.reset')}
                                                 >
                                                     <RefreshCw size={10} />
                                                 </button>

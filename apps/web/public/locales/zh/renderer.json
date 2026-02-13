@@ -1,0 +1,92 @@
+{
+    "renderer": {
+        "header": {
+            "echo": "题干原文",
+            "last_mistake": "上次错误记录"
+        },
+        "hints": {
+            "fragment": "逐步提示 {{n}}",
+            "get_hint": "显示提示",
+            "refine_logic": "深入提示",
+            "unlock_msg": "解锁提示以辅助思考",
+            "revealed_hints": "已显示的提示"
+        },
+        "analysis": {
+            "title": "选项诊断",
+            "reconstruction_complete": "解析同步完成",
+            "valid": "逻辑严密",
+            "fallacy": "逻辑谬误",
+            "your_choice": "我的选择",
+            "no_analysis": "该选项暂无详细分析数据。"
+        },
+        "fill_blank": {
+            "placeholder": "输入填空变量…",
+            "blank_label": "填空 #{{index}}",
+            "correct": "正确答案",
+            "match": "正确",
+            "miss": "错误",
+            "expected": "参考答案",
+            "enter_hint": "按 Enter 查看结果"
+        },
+        "short_answer": {
+            "placeholder": "输入你的回答…",
+            "your_answer": "你的答案",
+            "model_answer": "参考答案",
+            "no_reference": "暂无参考答案"
+        },
+        "question": "题干",
+        "answer_explanation": "解析与详解",
+        "empty": {
+            "title": "暂无内容"
+        },
+        "sections": {
+            "content": "题干内容",
+            "interactive_preview": "交互预览",
+            "explanation": "题目详析",
+            "expert_insight": "深度解析",
+            "hints": "解题思路",
+            "answer_visual": "参考图示",
+            "stem_init": "题目内容",
+            "mastery": "稳定性"
+        },
+        "answer": {
+            "reveal": "揭示标准答案",
+            "reset": "重置交互状态"
+        }
+    },
+    "common": {
+        "difficulty": {
+            "easy": "基础",
+            "medium": "中等",
+            "hard": "困难"
+        }
+    },
+    "markdown": {
+        "notifications": {
+            "tex_copied": "TeX 公式已复制到剪贴板",
+            "code_copied": "代码已复制",
+            "code_lines_copied": "已复制选中的 {{count}} 行",
+            "latex_source_copied": "LaTeX 源码已复制",
+            "copy_failed": "复制失败",
+            "copy_failed_manual": "复制失败。请长按选择文本手动复制"
+        },
+        "action": {
+            "back_to_render": "返回渲染",
+            "back": "返回",
+            "copy_latex": "复制 LaTeX",
+            "copy": "复制",
+            "copy_code": "复制代码",
+            "copy_lines": "复制 {{count}} 行"
+        },
+        "panel": {
+            "latex_ref": "LaTeX 参考"
+        },
+        "aria": {
+            "math_label": "数学{{type}}，双击{{action}}查看源码",
+            "type_block": "公式块",
+            "type_inline": "公式",
+            "action_block": "或按回车",
+            "action_inline": ""
+        }
+    }
+}

@@ -99,6 +99,8 @@ export const ImportWizard: React.FC<ImportWizardProps> = ({
                         isPending={mutation.isPending}
                         canImport={canImport}
                         onImport={onImport}
+                        allowDuplicates={wizard.state.allowDuplicates}
+                        onAllowDuplicatesChange={(allow) => dispatch(actions.setAllowDuplicates(allow))}
                     />
                 </>
             );
@@ -139,10 +141,12 @@ export const ImportWizard: React.FC<ImportWizardProps> = ({
 
 // Floating import action button for preview step
 interface ImportActionButtonProps {
-    stats: { valid: number; errorCount: number };
+    stats: { valid: number; errorCount: number; total: number };
     isPending: boolean;
     canImport: boolean;
     onImport: () => void;
+    allowDuplicates: boolean;
+    onAllowDuplicatesChange: (allow: boolean) => void;
 }
 
 const ImportActionButton: React.FC<ImportActionButtonProps> = ({
@@ -150,8 +154,10 @@ const ImportActionButton: React.FC<ImportActionButtonProps> = ({
     isPending,
     canImport,
     onImport,
+    allowDuplicates,
+    onAllowDuplicatesChange,
 }) => {
-    const { t } = useTranslation();
+    const { t } = useTranslation(['import', 'common', 'markdown']);
     const hasErrors = stats.errorCount > 0;
 
     return (
@@ -162,6 +168,22 @@ const ImportActionButton: React.FC<ImportActionButtonProps> = ({
                         <p className="text-[10px] font-black uppercase tracking-widest text-rose-500">
                             {t('import.preview.status_blocked')}
                         </p>
+                    </div>
+                )}
+
+                {stats.total > 0 && (
+                    <div className="flex items-center gap-2 px-3 py-2 rounded-xl bg-base-100/50 border border-base-content/10 backdrop-blur-md mb-2">
+                        <label className="flex items-center gap-2 cursor-pointer select-none">
+                            <input
+                                type="checkbox"
+                                className="checkbox checkbox-xs checkbox-warning rounded-md"
+                                checked={allowDuplicates}
+                                onChange={(e) => onAllowDuplicatesChange(e.target.checked)}
+                            />
+                            <span className="text-xs font-bold opacity-80">
+                                {t('import.preview.config.allow_duplicates', '允许导入重复项 (Allow Duplicates)')}
+                            </span>
+                        </label>
                     </div>
                 )}
                 <button

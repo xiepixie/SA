@@ -1,0 +1,36 @@
+{
+    "general": {
+        "report_copied": "已复制诊断信息",
+        "retrying": "正在重试...",
+        "retry": "立即重试",
+        "hard_reload": "强制刷新",
+        "continue_review": "继续复习",
+        "go_back": "返回上一页",
+        "go_home": "返回首页",
+        "safe_mode": "进入安全模式",
+        "reload_page": "刷新页面",
+        "copied": "复制成功",
+        "copy_report": "复制诊断报告",
+        "dev_details": "详细信息",
+        "keyboard_prefix": "按",
+        "keyboard_suffix": "返回首页",
+        "key_esc": "ESC",
+        "troubleshooting": "问题排查",
+        "suggest": {
+            "network": "检查你的网络连接",
+            "vpn": "尝试关闭活跃的 VPN 或代理",
+            "refresh": "尝试刷新页面",
+            "browser": "确保浏览器已更新到最新版本",
+            "storage": "检查磁盘空间是否充足",
+            "contact": "如果问题仍然存在，请联系支持团队"
+        },
+        "not_found": {
+            "title": "页面未找到",
+            "description": "你正在寻找的页面不存在或已被移动。"
+        },
+        "boundary": {
+            "title": "应用运行错误",
+            "message": "应用运行时遇到非预期异常。你可以重试，或返回首页。"
+        }
+    }
+}

@@ -1,0 +1,428 @@
+{
+    "settings": {
+        "sidebar": {
+            "general": {
+                "title": "常规设置",
+                "desc": "账户与偏好"
+            },
+            "algorithm": {
+                "title": "FSRS 引擎",
+                "desc": "算法参数调优"
+            },
+            "display": {
+                "title": "界面外观",
+                "desc": "主题与视觉效果"
+            },
+            "security": {
+                "title": "安全同步",
+                "desc": "数据与身份验证"
+            }
+        },
+        "health": {
+            "title": "系统状态",
+            "core_sync": "同步状态",
+            "storage": "存储占用",
+            "cache": "缓存占用",
+            "status_operational": "运行正常",
+            "status_degraded": "部分降级",
+            "status_storage_free": "{{percentage}} 已优化"
+        },
+        "general": {
+            "title": "常规设置",
+            "profile": {
+                "title": "个人资料",
+                "desc": "配置你的职业身份标识。",
+                "display_name": "显示名称",
+                "placeholder": "输入你的名字"
+            },
+            "temporal": {
+                "title": "时间与计划",
+                "desc": "配置每日任务的重置与统计逻辑。",
+                "rollover": "每日重置时间",
+                "rollover_hint": "决定每日新任务何时刷新。",
+                "timezone": "时区",
+                "countdown": "计时器模式",
+                "target_date": "目标日期",
+                "target_time": "目标时间",
+                "use_rollover": "与每日重置同步"
+            },
+            "notifications": {
+                "title": "消息通知",
+                "desc": "管理系统提醒与状态反馈。",
+                "push": "系统推送",
+                "push_desc": "在设备上接收复习提醒。",
+                "drift": "参数变化预警",
+                "drift_desc": "当算法参数发生剧烈波动时提醒。",
+                "sync": "同步进度提示",
+                "sync_desc": "在同步完成后显示通知。"
+            },
+            "language": {
+                "title": "语言",
+                "desc": "选择系统界面语言。",
+                "label": "选择语言"
+            }
+        },
+        "profiles": {
+            "page_title": "FSRS 配置方案",
+            "page_desc": "为不同的知识领域配置独立的记忆优化策略。",
+            "back_to_settings": "返回设置",
+            "selector": {
+                "title": "配置方案",
+                "global_default": "全局默认策略",
+                "add_override": "+ 添加学科独立覆盖",
+                "status": {
+                    "inherited": "已继承",
+                    "custom": "独立配置",
+                    "low_confidence": "数据积累中"
+                }
+            },
+            "picker": {
+                "title": "添加学科配置",
+                "desc": "选择一个学科以创建独立的 FSRS 设置",
+                "search": "搜索学科...",
+                "no_match": "没有找到匹配的学科",
+                "all_configured": "所有学科都已有独立配置"
+            },
+            "header": {
+                "inheritance": {
+                    "label": "继承模式",
+                    "inherit_all": "跟随全局策略",
+                    "customize": "自定义独立参数",
+                    "revert": "恢复全局继承",
+                    "revert_confirm": "确定要恢复继承状态吗？该学科的所有自定义配置都将被清除。"
+                },
+                "actions": {
+                    "reset": "放弃当前更改",
+                    "delete": "删除配置覆盖"
+                }
+            },
+            "tabs": {
+                "overview": "概览",
+                "tuning": "参数调优",
+                "advanced": "底层权重"
+            },
+            "overview": {
+                "metrics": {
+                    "daily_load": "测算日均负载",
+                    "peak_day": "峰值复习强度",
+                    "confidence": "AI 拟合置信度"
+                },
+                "forecast": "14 天容量投影",
+                "data_sufficiency": "基于内存中的 {{count}} 个项目",
+                "unreliable_hint": "由于数据量较低，预测结果可能不准确。",
+                "empty": "优化引擎需要活跃的交互日志才能运行。",
+                "empty_desc": "开始复习以生成负载预测并映射潜在的记忆稳定性衰减。"
+            },
+            "tuning": {
+                "controls": {
+                    "retention": {
+                        "label": "目标记忆保留率",
+                        "recommended": "最佳平衡点: 90%"
+                    },
+                    "daily_cap": {
+                        "label": "每日复习上限",
+                        "unlimited": "无限制",
+                        "custom": "固定上限"
+                    },
+                    "style": {
+                        "label": "复习倾向",
+                        "conservative": "保守 (高保留率)",
+                        "balanced": "平衡 (标准优化)",
+                        "aggressive": "激进 (高效率)"
+                    },
+                    "presets": {
+                        "label": "快速预设"
+                    }
+                },
+                "preview": {
+                    "title": "实时模拟推演",
+                    "deep_dive": "深度变更审计",
+                    "status": {
+                        "estimating": "正在推演负载...",
+                        "updated": "模拟数据已更新 ✓"
+                    },
+                    "delta": {
+                        "daily_load": "平均负载变化",
+                        "peak_day": "峰值负载位移",
+                        "intervals": "间隔调度偏移"
+                    },
+                    "risks": {
+                        "low_retention": "遗忘风险显著上升",
+                        "high_retention": "日常复习压力将大幅增加",
+                        "low_cap": "存在复习题目堆积风险",
+                        "low_confidence": "数据量不足，模拟结果精度较低"
+                    }
+                }
+            },
+            "deep_dive": {
+                "title": "参数变更审计",
+                "comparison": "参数详情对比",
+                "digest": "核心变更摘要",
+                "explain": "算法逻辑说明",
+                "workload": "总负载变化趋势",
+                "peak": "关键路径偏移",
+                "actions": {
+                    "back": "返回调优",
+                    "save": "保存更改",
+                    "discard": "放弃更改"
+                }
+            },
+            "advanced": {
+                "sandbox": {
+                    "label": "沙箱编辑模式",
+                    "desc": "在沙箱中的修改不会影响实际复习，直到你点击“应用”。"
+                },
+                "weights": {
+                    "label": "FSRS 权重矩阵",
+                    "import": "导入配置文件",
+                    "export": "导出配置文件",
+                    "reset": "恢复默认权重"
+                },
+                "validation": {
+                    "title": "配置自检面板",
+                    "schema_valid": "矩阵格式合法",
+                    "range_valid": "参数范围安全",
+                    "run_simulation": "运行高精度模拟"
+                },
+                "diff": {
+                    "title": "人工调优风险声明",
+                    "confirm_risk": "我已理解手动调整权重可能导致的模型不稳定性风险。"
+                },
+                "versioning": {
+                    "undo": "撤销上次更改",
+                    "history": "配置历史记录",
+                    "rollback": "回滚版本"
+                }
+            },
+            "dirty_bar": {
+                "changed": "检测到 {{count}} 项参数变更",
+                "uncommitted_desc": "未保存的调度参数修改",
+                "save": "保存更改",
+                "discard": "放弃更改",
+                "discard_confirm": "您有未保存的更改，确定放弃吗？",
+                "save_apply": "保存并立即生效"
+            },
+            "toast": {
+                "save_success": "配置文件设置已成功应用。",
+                "delete_success": "学科独立配置已删除，回退至全局设置。"
+            },
+            "modal": {
+                "unsaved_title": "未保存的更改",
+                "unsaved_desc": "当前配置文件有未提交的更改，您希望如何处理？",
+                "save_switch": "保存并切换",
+                "discard_switch": "放弃并切换"
+            }
+        },
+        "algorithm": {
+            "title": "算法设置 (FSRS)",
+            "desc": "基于先进间隔重复算法的记忆模型。90% 是综合效率的最佳平衡点。",
+            "global_config_label": "全局默认调度算法配置",
+            "retention": {
+                "title": "记忆保留策略",
+                "desc": "配置 FSRS 模型的目标成功回忆概率。",
+                "label": "全局保留率",
+                "global_config_label": "全局默认调度算法配置"
+            },
+            "capacity": {
+                "title": "负载管理",
+                "desc": "配置每日复习容量上限与调度强度。",
+                "daily_cap": "每日复习上限",
+                "daily_cap_desc": "限制每日处理的题目量，以维持学习负荷的确定性。",
+                "style": "复习节奏强度",
+                "style_desc": "调整复习间隔的扩展激进程度。"
+            },
+            "daily_cap_unlimited": "无限制",
+            "styles": {
+                "conservative": "稳健",
+                "balanced": "优化",
+                "aggressive": "高效"
+            },
+            "slider_labels": {
+                "speed": "提升效率",
+                "standard": "均衡优化",
+                "stability": "极高保留",
+                "standard_desc": "自适应调优"
+            },
+            "presets": {
+                "title": "算法预设",
+                "desc": "选择针对特定学习模式优化的权重集。"
+            },
+            "presets_data": {
+                "balanced": {
+                    "name": "标准均衡",
+                    "desc": "适用于大多数通用学习场景。"
+                },
+                "conservative": {
+                    "name": "记忆优先",
+                    "desc": "通过更频繁的复习确保极高保留率。"
+                },
+                "aggressive": {
+                    "name": "效率优先",
+                    "desc": "最大化复习间隔以提升学习吞吐量。"
+                }
+            },
+            "subject_config_title": "多学科独立策略",
+            "subject_config_desc": "进入学科配置页面，为不同领域管理专属的 FSRS 配置方案。",
+            "subject_config_btn": "管理配置方案",
+            "isolation_status": "多领域配置隔离已就绪",
+            "locked_title": "专家模式锁定",
+            "locked_desc": "调整底层参数会显著影响复习逻辑，仅限专业用户使用。",
+            "btn_reset": "恢复默认权重",
+            "stats": {
+                "total_reviews": "总复习数",
+                "avg_stability": "平均稳定性",
+                "lapse_rate": "遗忘率",
+                "weight_status": "参数状态",
+                "custom": "自定义调优",
+                "default": "标准预设",
+                "need_login": "需要登录",
+                "need_data": "数据不足"
+            },
+            "expert": {
+                "title": "专家级参数调优",
+                "mode_label": "启用专家模式",
+                "warning_title": "核心参数区",
+                "custom_weights_detected": "检测到非标权重配置。这会覆盖标准优化模型。",
+                "groups": {
+                    "s0": "初始稳定性 (S₀)",
+                    "d0": "初始难度 (D₀)",
+                    "stability": "迭代学习权重",
+                    "lapse": "遗忘重学权重"
+                }
+            }
+        },
+        "display": {
+            "title": "界面外观",
+            "appearance": {
+                "title": "显示模式",
+                "desc": "选择应用如何适配你的环境光线。",
+                "system": "跟随系统",
+                "light": "日间模式",
+                "dark": "夜间模式"
+            },
+            "light": {
+                "title": "日间主题",
+                "desc": "适合明亮环境的界面风格。"
+            },
+            "dark": {
+                "title": "夜间主题",
+                "desc": "适合昏暗环境的护眼风格。"
+            },
+            "themes": {
+                "dark": "工业深邃",
+                "light": "标准明亮",
+                "liquid_light": "流光玻璃 (浅)",
+                "liquid_light_desc": "极简高对比度",
+                "warm_paper": "温润纸张",
+                "warm_paper_desc": "低蓝光护眼模式",
+                "liquid_dark": "流光玻璃 (深)",
+                "liquid_dark_desc": "静谧蓝调风格",
+                "midnight_oled": "极纯黑 (OLED)",
+                "midnight_oled_desc": "完全纯黑，节省电力"
+            },
+            "ux": {
+                "title": "动态效果",
+                "desc": "配置界面动画与视觉特效。",
+                "reflections": "玻璃反射效果",
+                "animations": "启用全量动画",
+                "reduced_motion": "减少动态效果"
+            },
+            "theme": {
+                "toggle": "切换主题",
+                "switchToLight": "切换至日间",
+                "switchToDark": "切换至夜间"
+            }
+        },
+        "security": {
+            "title": "安全与同步",
+            "keys": {
+                "title": "访问密钥",
+                "desc": "管理你的个人访问令牌，用于 API 集成。",
+                "primary_label": "生产环境访问令牌",
+                "status_active": "状态：已启用 • 完全访问权限",
+                "btn_generate": "生成密钥"
+            },
+            "sync": {
+                "title": "多端同步",
+                "desc": "管理你的云端同步设备与身份验证。",
+                "btn_revoke": "撤销授权",
+                "last_sync": "最近同步: {{time}}"
+            }
+        },
+        "preview": {
+            "rollover_label": "周期重置",
+            "rollover_countdown": "(剩余 {{hours}} 小时 {{minutes}} 分钟)",
+            "rollover_impact": "影响当前复习队列",
+            "countdown_daily": "每日进度",
+            "countdown_daily_short": "每日目标",
+            "countdown_custom": "目标倒计时: {{time}}",
+            "countdown_custom_short": "重大项目里程碑"
+        },
+        "expert": {
+            "mode_label": "专家模式",
+            "enable": "启用专家模式",
+            "disable": "退出专家模式",
+            "exit": "退出专家调试",
+            "warning": "警告: 手动调整参数可能影响记忆模型准确度。"
+        },
+        "theme": {
+            "title": "主页面主题",
+            "toggle": "切换风格",
+            "switchToLight": "日日间",
+            "switchToDark": "夜间",
+            "light": "浅色",
+            "dark": "深色",
+            "system": "跟随环境"
+        },
+        "shortcuts": {
+            "title": "快捷键设置",
+            "desc": "管理应用中的键盘快捷键，提升操作效率。",
+            "profile": {
+                "global": "全局同步",
+                "device": "此设备"
+            },
+            "global": {
+                "title": "全局快捷键",
+                "title_desc": "在任何页面都可使用的快捷键",
+                "desc": "在任何页面都可使用的快捷键",
+                "toggle_sidebar": "切换侧边栏",
+                "dismiss_toast": "关闭通知"
+            },
+            "review": {
+                "title": "复习会话",
+                "title_desc": "复习模式下的快捷操作",
+                "desc": "复习模式下的快捷操作",
+                "reveal": "显示答案",
+                "choice_a": "选择 A",
+                "choice_b": "选择 B",
+                "choice_c": "选择 C",
+                "choice_d": "选择 D",
+                "rate_again": "评分：重来",
+                "rate_hard": "评分：困难",
+                "rate_good": "评分：良好",
+                "rate_easy": "评分：轻松",
+                "undo": "撤销评分"
+            },
+            "inspector": {
+                "title": "题目检查器",
+                "title_desc": "题库详情面板的快捷操作",
+                "desc": "题库详情面板的快捷操作",
+                "mode_preview": "预览模式",
+                "mode_edit": "编辑模式",
+                "mode_meta": "学习数据",
+                "toggle_answer": "显示/隐藏答案",
+                "toggle_preview": "切换实时预览",
+                "save": "保存更改"
+            },
+            "table": {
+                "key": "快捷键",
+                "action": "操作"
+            },
+            "recording": "正在录制新快捷键",
+            "press_keys": "请按下组合键...",
+            "recording_hint": "按下组合键（如 Ctrl+S）开始录制",
+            "conflict": "冲突于：",
+            "wait_input": "等待输入..."
+        }
+    }
+}

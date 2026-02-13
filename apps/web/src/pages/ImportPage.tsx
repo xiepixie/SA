@@ -39,6 +39,7 @@ export const ImportPage: React.FC = () => {
                     create_cards: true,
                     cards_due_spread: 'spread_7d',
                     cards_due_start: new Date().toISOString(),
+                    allowDuplicates: state.allowDuplicates,
                 },
             },
             {

@@ -5,7 +5,7 @@ import {
     Hash,
     History,
     Combine,
-    FolderTree,
+    Layers,
     Plus,
     Search,
     X,
@@ -29,7 +29,7 @@ import { MergeModal } from './manage/MergeModal';
 import { type Subject, type Tag, type AuditLog } from '../app/api/views';
 
 export const ManagePage: React.FC = () => {
-    const { t } = useTranslation();
+    const { t } = useTranslation(['library', 'common']);
     const { pushEffect, dismissEffect, effects, commit } = useAppStore(useShallow(s => ({
         pushEffect: s.pushEffect,
         dismissEffect: s.dismissEffect,
@@ -159,7 +159,7 @@ export const ManagePage: React.FC = () => {
             pushEffect({
                 id: `manage-succ-${Date.now()}`,
                 type: 'toast',
-                message: t('common.status.success'),
+                message: t('common:common.status.success'),
                 level: 'success'
             });
         } catch (err: any) {
@@ -178,7 +178,7 @@ export const ManagePage: React.FC = () => {
             pushEffect({
                 id: `manage-err-${Date.now()}`,
                 type: 'toast',
-                message: err.message || t('common.status.error'),
+                message: err.message || t('common:common.status.error'),
                 level: 'error'
             });
             throw err; // Re-throw for modal loading state
@@ -207,7 +207,7 @@ export const ManagePage: React.FC = () => {
             pushEffect({
                 id: `del-succ-${Date.now()}`,
                 type: 'toast',
-                message: t('common.status.success'),
+                message: t('common:common.status.success'),
                 level: 'success'
             });
         } catch (err: any) {
@@ -224,7 +224,7 @@ export const ManagePage: React.FC = () => {
             pushEffect({
                 id: `del-err-${Date.now()}`,
                 type: 'toast',
-                message: err.message || t('common.status.error'),
+                message: err.message || t('common:common.status.error'),
                 level: 'error'
             });
         }
@@ -241,14 +241,14 @@ export const ManagePage: React.FC = () => {
             pushEffect({
                 id: `merge-succ-${Date.now()}`,
                 type: 'toast',
-                message: t('common.status.success'),
+                message: t('common:common.status.success'),
                 level: 'success'
             });
         } catch (err: any) {
             pushEffect({
                 id: `merge-err-${Date.now()}`,
                 type: 'toast',
-                message: err.message || t('common.status.error'),
+                message: err.message || t('common:common.status.error'),
                 level: 'error'
             });
         }
@@ -291,7 +291,7 @@ export const ManagePage: React.FC = () => {
             pushEffect({
                 id: `quick-err-${Date.now()}`,
                 type: 'toast',
-                message: err.message || t('common.status.error'),
+                message: err.message || t('common:common.status.error'),
                 level: 'error'
             });
         }
@@ -324,7 +324,7 @@ export const ManagePage: React.FC = () => {
                                 active={activeTab === 'subjects'}
                                 onClick={() => setActiveTab('subjects')}
                                 label={t('manage.tabs.subjects')}
-                                icon={FolderTree}
+                                icon={Layers}
                             />
                             <TabButton
                                 active={activeTab === 'tags'}
@@ -421,14 +421,14 @@ export const ManagePage: React.FC = () => {
                                     pushEffect({
                                         id: `undo-success-${Date.now()}`,
                                         type: 'toast',
-                                        message: t('manage.audit_tab.status_reverted', 'Action reverted successfully'),
+                                        message: t('manage.audit_tab.status_reverted'),
                                         level: 'success'
                                     });
                                 } catch (err: any) {
                                     pushEffect({
                                         id: `undo-error-${Date.now()}`,
                                         type: 'toast',
-                                        message: err.message || t('common.status.error'),
+                                        message: err.message || t('common:common.status.error'),
                                         level: 'error'
                                     });
                                 }

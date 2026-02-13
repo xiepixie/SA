@@ -1,0 +1,36 @@
+{
+    "general": {
+        "report_copied": "Diagnostic info copied",
+        "retrying": "Retrying…",
+        "retry": "Retry Now",
+        "hard_reload": "Force Reload",
+        "continue_review": "Continue Review",
+        "go_back": "Go Back",
+        "go_home": "Home",
+        "safe_mode": "Enter Safe Mode",
+        "reload_page": "Reload Page",
+        "copied": "Copied successfully",
+        "copy_report": "Copy Diagnostic Report",
+        "dev_details": "Details",
+        "keyboard_prefix": "Press",
+        "keyboard_suffix": "to return home",
+        "key_esc": "ESC",
+        "troubleshooting": "Troubleshooting",
+        "suggest": {
+            "network": "Check your network connection",
+            "vpn": "Try disabling any active VPN or proxy",
+            "refresh": "Try refreshing the page",
+            "browser": "Ensure your browser is up to date",
+            "storage": "Check if your disk is full",
+            "contact": "If the issue persists, contact support"
+        },
+        "not_found": {
+            "title": "Page Not Found",
+            "description": "The page you are looking for does not exist or has been moved."
+        },
+        "boundary": {
+            "title": "Application Error",
+            "message": "An unexpected error occurred. You can retry or return to the home page."
+        }
+    }
+}

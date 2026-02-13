@@ -22,7 +22,8 @@ import {
     Play,
     LogOut,
     ShieldCheck,
-    AlertTriangle
+    AlertTriangle,
+    BookOpen
 } from 'lucide-react';
 import { supabase } from '../../lib/supabase';
 import { useSupabaseAuth } from '../../hooks/useSync';
@@ -388,6 +389,7 @@ const NAV_ITEMS: { sectionKey: string; items: NavItem[] }[] = [
             { id: 'welcome', icon: Home, label: 'Welcome', path: '/' },
             { id: 'dashboard', icon: BarChart3, label: 'Dashboard', path: '/dashboard' },
             { id: 'review', icon: Zap, label: 'Review', path: '/review', isPrimary: true },
+            { id: 'notebook', icon: BookOpen, label: 'Notebook', path: '/notebook' },
             { id: 'exams', icon: ClipboardList, label: 'Exams', path: '/exams' },
             { id: 'questions', icon: Database, label: 'Question Bank', path: '/questions' },
         ]
@@ -403,7 +405,7 @@ const NAV_ITEMS: { sectionKey: string; items: NavItem[] }[] = [
 ];
 
 export function AppSidebar() {
-    const { t } = useTranslation();
+    const { t } = useTranslation(['layout', 'ui', 'dashboard', 'settings', 'common']);
     const {
         isCollapsed, toggleCollapse, isMobileOpen, setMobileOpen,
         isMobile, isRestoring, theme, mode, toggleTheme, prefersReducedMotion
@@ -544,7 +546,7 @@ export function AppSidebar() {
             {...(isMobile && isMobileOpen ? {
                 role: 'dialog',
                 'aria-modal': 'true',
-                'aria-label': t('nav.sidebar')
+                'aria-label': t('layout:nav.sidebar')
             } : {})}
         >
             {/* Mobile Close Button */}
@@ -553,7 +555,7 @@ export function AppSidebar() {
                     ref={closeButtonRef}
                     onClick={() => setMobileOpen(false)}
                     className="absolute top-4 right-4 btn btn-ghost btn-sm btn-circle z-10"
-                    aria-label={t('common.close')}
+                    aria-label={t('ui:actions.close')}
                 >
                     <X className="w-5 h-5" />
                 </button>
@@ -564,7 +566,7 @@ export function AppSidebar() {
                 {isAuthenticated ? (
                     <Tooltip
                         position="right"
-                        content={t('nav.items.settings')}
+                        content={t('layout:nav.items.settings')}
                         disabled={!isCollapsed && !isMobile}
                         ariaLabel={isCollapsed && !isMobile}
                     >
@@ -579,7 +581,7 @@ export function AppSidebar() {
                                     ? 'w-11 h-11 justify-center rounded-xl hover:bg-base-content/5'
                                     : 'gap-3 w-full p-2 rounded-2xl hover:bg-base-content/5'}
                             `}
-                            aria-label={isCollapsed && !isMobile ? t('nav.items.settings') : undefined}
+                            aria-label={isCollapsed && !isMobile ? t('layout:nav.items.settings') : undefined}
                         >
                             <div className={`avatar placeholder online ${isCollapsed && !isMobile ? '' : 'transition-transform group-hover/avatar:scale-105'}`}>
                                 <div className={`
@@ -630,7 +632,7 @@ export function AppSidebar() {
                         className="w-full btn btn-primary gap-2 shadow-lg hover:shadow-xl transition-shadow"
                     >
                         <Play className="w-4 h-4" />
-                        <span>{t('nav.startReview')}</span>
+                        <span>{t('layout:nav.startReview')}</span>
                         <span className="badge badge-sm bg-primary-content/20 text-primary-content border-0">
                             {dueCount > 99 ? '99+' : dueCount}
                         </span>
@@ -643,12 +645,12 @@ export function AppSidebar() {
                 {NAV_ITEMS.map(group => (
                     <div key={group.sectionKey}>
                         <div className="nav-title px-3 mb-2 text-[10px] font-black uppercase text-base-content/30 tracking-[0.2em]">
-                            {t(`nav.sections.${group.sectionKey}`)}
+                            {t(`layout:nav.sections.${group.sectionKey}`)}
                         </div>
-                        <nav className="flex flex-col gap-1.5" aria-label={t(`nav.sections.${group.sectionKey}`)}>
+                        <nav className="flex flex-col gap-1.5" aria-label={t(`layout:nav.sections.${group.sectionKey}`)}>
                             {group.items.map(item => {
                                 const showTooltip = isCollapsed && !isMobile;
-                                const tooltipLabel = t(`nav.items.${item.id}`);
+                                const tooltipLabel = t(`layout:nav.items.${item.id}`);
                                 return (
                                     <Tooltip
                                         key={item.id}
@@ -706,11 +708,11 @@ export function AppSidebar() {
             {/* Footer */}
             <div className={`sidebar-footer flex p-3 border-t border-base-content/5 ${isCollapsed && !isMobile ? 'flex-col-reverse gap-2 items-center justify-center' : 'items-center justify-between gap-2'}`}>
                 {/* Theme Toggle */}
-                <Tooltip position="right" content={`${t('settings.theme.toggle')} (${mode})`} ariaLabel>
+                <Tooltip position="right" content={`${t('ui:theme.toggle')} (${mode})`} ariaLabel>
                     <button
                         onClick={(e) => toggleTheme(e)}
                         className="btn btn-ghost btn-sm btn-square text-base-content/60 hover:text-base-content hover:bg-base-content/10 transition-colors"
-                        aria-label={isDark ? t('settings.theme.switchToLight') : t('settings.theme.switchToDark')}
+                        aria-label={isDark ? t('ui:theme.switchToLight') : t('ui:theme.switchToDark')}
                     >
                         {isDark ? <Moon className="w-4 h-4" aria-hidden="true" /> : <Sun className="w-4 h-4" aria-hidden="true" />}
                     </button>
@@ -718,11 +720,11 @@ export function AppSidebar() {
 
                 {/* Logout Button */}
                 {isAuthenticated && (
-                    <Tooltip position="right" content={t('nav.signOut', 'Sign Out')}>
+                    <Tooltip position="right" content={t('layout:nav.signOut', 'Sign Out')}>
                         <button
                             onClick={handleLogoutRequest}
                             className="btn btn-ghost btn-sm btn-square text-error/60 hover:text-error hover:bg-error/10 transition-colors"
-                            aria-label={t('nav.signOut', 'Sign Out')}
+                            aria-label={t('layout:nav.signOut', 'Sign Out')}
                         >
                             <LogOut className="w-4 h-4" aria-hidden="true" />
                         </button>
@@ -731,11 +733,11 @@ export function AppSidebar() {
 
                 {/* Collapse Toggle */}
                 {!isMobile && (
-                    <Tooltip position={isCollapsed && !isMobile ? 'right' : 'left'} content={isCollapsed ? t('nav.expand') : t('nav.collapse')} ariaLabel>
+                    <Tooltip position={isCollapsed && !isMobile ? 'right' : 'left'} content={isCollapsed ? t('layout:nav.expand') : t('layout:nav.collapse')} ariaLabel>
                         <button
                             onClick={toggleCollapse}
                             className="btn btn-ghost btn-sm btn-square text-base-content/60 hover:text-base-content hover:bg-base-content/10 transition-colors"
-                            aria-label={isCollapsed ? t('nav.expand') : t('nav.collapse')}
+                            aria-label={isCollapsed ? t('layout:nav.expand') : t('layout:nav.collapse')}
                             aria-expanded={!isCollapsed}
                         >
                             {isCollapsed ? <PanelLeftOpen className="w-4 h-4" aria-hidden="true" /> : <PanelLeftClose className="w-4 h-4" aria-hidden="true" />}
@@ -757,7 +759,7 @@ export function AppSidebar() {
                     className="btn btn-circle btn-primary fixed bottom-6 left-6 z-40 shadow-xl md:hidden"
                     aria-controls="sidebar-main"
                     aria-expanded={isMobileOpen}
-                    aria-label={t('nav.openMenu')}
+                    aria-label={t('layout:nav.openMenu')}
                 >
                     <Menu className="w-5 h-5" aria-hidden="true" />
                 </button>

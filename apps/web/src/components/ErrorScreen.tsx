@@ -117,7 +117,7 @@ const ErrorScreenBase: React.FC<ErrorScreenBaseProps> = (props) => {
         hasRouter,
     } = props;
 
-    const { t } = useTranslation();
+    const { t } = useTranslation(['common']);
 
     // Stability: Fixed ID and Memoized Report
     const errorIdRef = useRef(`ERR-${Date.now().toString(36).toUpperCase()}`);

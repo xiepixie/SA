@@ -10,16 +10,15 @@ const MAX_INPUT_SIZE: usize = 512_000;
 // ✅ P0: More robust regex patterns that don't assume attribute order
 // These patterns work regardless of where `class` appears in the tag
 static MATH_TAG_RE: Lazy<Regex> = Lazy::new(|| {
-    // Match <code ...class="...language-math..."> with any attribute order
-    Regex::new(r#"<code\b[^>]*\bclass="[^"]*\blanguage-math\b"#).unwrap()
+    // Match <code ...class="...language-math..."> or <span ...class="...math-inline|math-block...">
+    // Handles single/double/no quotes and various attribute orders
+    Regex::new(r#"(?i)<(?:code|span)\b[^>]*\bclass\s*=\s*['"]?[^'"]*\b(?:language-math|math-inline|math-block|math-display)\b"#).unwrap()
 });
 static CODE_TAG_RE: Lazy<Regex> = Lazy::new(|| {
-    // Match <pre>...<code with optional attributes/whitespace
-    Regex::new(r#"<pre\b[^>]*>\s*<code\b"#).unwrap()
+    Regex::new(r#"(?i)<pre\b[^>]*>\s*<code\b"#).unwrap()
 });
 static TABLE_TAG_RE: Lazy<Regex> = Lazy::new(|| {
-    // Match <table with any attributes
-    Regex::new(r#"<table\b[^>]*>"#).unwrap()
+    Regex::new(r#"(?i)<table\b[^>]*>"#).unwrap()
 });
 
 #[derive(Serialize)]
@@ -29,10 +28,8 @@ pub struct ParseResult {
     pub has_math: bool,
     pub has_code: bool,
     pub has_table: bool,
-    /// Indicates whether the document contains **clickable** wiki-links.
-    /// [[...]] inside code/pre/a blocks are NOT counted (they remain as literal text).
-    /// This semantic is intentional: frontend only cares about interactive links.
     pub has_wiki_links: bool,
+    pub has_wiki_embeds: bool,
 }
 
 /// ✅ P0: Efficient HTML attribute escaping without chained .replace() calls
@@ -53,109 +50,304 @@ fn escape_html_attr(s: &str) -> String {
     result
 }
 
-/// ✅ P0 优化: 高效单次遍历状态机处理 WikiLink
-/// 
-/// **Algorithm**: Single-pass state machine with O(n) time complexity
-/// 
-/// **Semantic**: `has_wiki_links` is TRUE only when we produce a clickable `<a>` element.
-/// [[...]] inside <code>, <pre>, or <a> tags are left as literal text and NOT counted.
-/// This is the desired behavior - frontend only needs to know about interactive links.
-/// 
-/// **Assumptions**:
-/// - Input HTML is well-formed (balanced open/close tags for code/pre/a)
-/// - markdown-rs output with `allow_dangerous_html=false` guarantees this
-/// - Self-closing tags like `<a .../>` are NOT expected from markdown-rs
-/// - If `allow_dangerous_html` is enabled in the future, this logic may need revision
-fn process_wiki_links(html: &str) -> (String, bool) {
+/// Escape for HTML *text node* context (inner text).
+/// Note: text nodes do not need to escape quotes, being slightly faster than attr escaping.
+#[inline]
+fn escape_html_text(s: &str) -> String {
+    let mut result = String::with_capacity(s.len() + 8);
+    for c in s.chars() {
+        match c {
+            '&' => result.push_str("&amp;"),
+            '<' => result.push_str("&lt;"),
+            '>' => result.push_str("&gt;"),
+            _ => result.push(c),
+        }
+    }
+    result
+}
+
+/// Parse a light HTML tag starting at `i` (where bytes[i] == b'<').
+/// Returns (tag_end_index_exclusive, char_discriminator, is_closing, is_self_closing)
+#[inline]
+fn parse_tag(bytes: &[u8], i: usize) -> (usize, Option<u8>, bool, bool) {
+    let len = bytes.len();
+    let mut j = i + 1;
+    let mut quote: Option<u8> = None;
+
+    while j < len {
+        let b = bytes[j];
+        if let Some(q) = quote {
+            if b == q { quote = None; }
+        } else if b == b'"' || b == b'\'' {
+            quote = Some(b);
+        } else if b == b'>' {
+            break;
+        }
+        j += 1;
+    }
+    let end = if j < len { j + 1 } else { len };
+
+    let mut k = i + 1;
+    while k < end && bytes[k].is_ascii_whitespace() { k += 1; }
+
+    let mut is_closing = false;
+    if k < end && bytes[k] == b'/' {
+        is_closing = true;
+        k += 1;
+        while k < end && bytes[k].is_ascii_whitespace() { k += 1; }
+    }
+
+    let name_start = k;
+    while k < end && bytes[k].is_ascii_alphanumeric() { k += 1; }
+    let name = &bytes[name_start..k];
+
+    let kind = if name.eq_ignore_ascii_case(b"code") { Some(b'c') }
+               else if name.eq_ignore_ascii_case(b"pre") { Some(b'p') }
+               else if name.eq_ignore_ascii_case(b"a") { Some(b'a') }
+               else { None };
+
+    let mut is_self_closing = false;
+    if end >= 2 && bytes[end - 1] == b'>' {
+        let mut t = end - 2;
+        while t > i && bytes[t].is_ascii_whitespace() { t -= 1; }
+        if bytes[t] == b'/' { is_self_closing = true; }
+    }
+
+    (end, kind, is_closing, is_self_closing)
+}
+
+#[derive(Debug)]
+struct WikiLinkParts<'a> {
+    full_target: String,    // 规范化后的全路径: "Page#H1#H2"
+    page: &'a str,          // 页面名
+    fragment: String,       // 片段路径: "H1#H2"
+    label: &'a str,         // 显式别名 (可能为空)
+    has_explicit_label: bool,
+}
+
+/// ✅ P1: ASCII Optimized image detection without allocation
+fn is_image_ext(page: &str) -> bool {
+    let ext = match page.rsplit('.').next() {
+        Some(e) if e.len() != page.len() => e, // 确保真的有 '.' 且不是以 '.' 开头
+        _ => return false,
+    };
+    ext.eq_ignore_ascii_case("png")
+        || ext.eq_ignore_ascii_case("jpg")
+        || ext.eq_ignore_ascii_case("jpeg")
+        || ext.eq_ignore_ascii_case("webp")
+        || ext.eq_ignore_ascii_case("gif")
+        || ext.eq_ignore_ascii_case("svg")
+}
+
+/// 解析位于 `i` 处的 WikiLink（[[...]] 或 ![[...]] 内部内容）
+fn parse_wikilink_at<'a>(html: &'a str, bytes: &[u8], i: usize) -> Option<(usize, WikiLinkParts<'a>)> {
+    let len = bytes.len();
+    if i + 1 >= len || bytes[i] != b'[' || bytes[i + 1] != b'[' { return None; }
+
+    let start = i + 2;
+    let mut j = start;
+    let mut pipe_pos: Option<usize> = None;
+
+    while j + 1 < len {
+        let b = bytes[j];
+        if b == b'\n' || b == b'\r' || b == b'[' { return None; } // 不允许跨行或嵌套
+        if b == b']' {
+            if bytes[j + 1] == b']' { break; }
+            return None; // 单个 ] 不合法
+        }
+        if b == b'|' && pipe_pos.is_none() { pipe_pos = Some(j); }
+        j += 1;
+    }
+
+    if j + 1 >= len || bytes[j] != b']' || bytes[j + 1] != b']' { return None; }
+
+    let (dest_raw, label_raw_opt) = if let Some(p) = pipe_pos {
+        (&html[start..p], Some(&html[p + 1..j]))
+    } else {
+        (&html[start..j], None)
+    };
+
+    let dest = dest_raw.trim();
+    if dest.is_empty() { return None; }
+
+    let (label, has_explicit_label) = match label_raw_opt {
+        Some(l) => (l.trim(), true),
+        None => ("", false),
+    };
+
+    // 解析目的地: Page#H1#H2
+    let mut page = "";
+    let mut fragments: Vec<&str> = Vec::new();
+
+    // ✅ P0: Strict fragment checking - no empty segments allowed
+    if let Some(rest) = dest.strip_prefix('#') {
+        let rest = rest.trim();
+        if rest.is_empty() { return None; }
+        for seg in rest.split('#') {
+            let s = seg.trim();
+            if s.is_empty() { return None; }
+            fragments.push(s);
+        }
+    } else {
+        let mut it = dest.split('#');
+        page = it.next().unwrap_or("").trim();
+        if page.is_empty() { return None; }
+        for seg in it {
+            let s = seg.trim();
+            if s.is_empty() { return None; }
+            fragments.push(s);
+        }
+    }
+
+    if page.is_empty() && fragments.is_empty() { return None; }
+
+    let fragment = fragments.join("#");
+    let mut full_target = String::with_capacity(page.len() + fragment.len() + 1);
+    if page.is_empty() {
+        full_target.push('#');
+        full_target.push_str(&fragment);
+    } else {
+        full_target.push_str(page);
+        if !fragment.is_empty() {
+            full_target.push('#');
+            full_target.push_str(&fragment);
+        }
+    }
+
+    Some((j + 2, WikiLinkParts {
+        full_target,
+        page,
+        fragment,
+        label,
+        has_explicit_label,
+    }))
+}
+
+/// 渲染默认显示文本: "Page > H1 > H2"
+fn push_default_display(out: &mut String, page: &str, fragment: &str) {
+    if fragment.is_empty() {
+        out.push_str(&escape_html_text(page));
+        return;
+    }
+    if page.is_empty() {
+        for (idx, seg) in fragment.split('#').enumerate() {
+            if idx > 0 { out.push_str(" &gt; "); }
+            out.push_str(&escape_html_text(seg));
+        }
+        return;
+    }
+    out.push_str(&escape_html_text(page));
+    for seg in fragment.split('#') {
+        out.push_str(" &gt; ");
+        out.push_str(&escape_html_text(seg));
+    }
+}
+
+/// ✅ P0 优化: 结构解耦的高性能 WikiLink/Embed 处理器
+fn process_wiki_links(html: &str) -> (String, bool, bool) {
+    if !html.contains("[[") {
+        return (html.to_string(), false, false);
+    }
+
     let bytes = html.as_bytes();
     let len = bytes.len();
-    
-    // 快速路径：如果没有 [[ 则直接返回（零拷贝场景除外）
-    if !html.contains("[[") {
-        return (html.to_string(), false);
-    }
-    
-    let mut result = String::with_capacity(html.len() + 256);
+    let mut out = String::with_capacity(len + 1024);
     let mut has_wiki_links = false;
+    let mut has_wiki_embeds = false;
+    let mut last = 0;
     let mut skip_depth: i32 = 0;
     let mut i = 0;
-    
+
     while i < len {
-        // 检测 HTML 标签
-        if bytes[i] == b'<' {
-            // 检查是否是 code, pre, 或 a 标签
-            let remaining = &html[i..];
-            
-            // ✅ P0: 零分配的大小写不敏感检查（使用 eq_ignore_ascii_case）
-            // markdown-rs 总是输出小写标签，但我们仍保持鲁棒性
-            let remaining_bytes = remaining.as_bytes();
-            
-            // 闭合标签检测
-            if remaining.len() >= 7 && remaining_bytes[1] == b'/' {
-                let tag_start = &remaining[2..remaining.len().min(6)];
-                if tag_start.eq_ignore_ascii_case("code") {
-                    skip_depth = skip_depth.saturating_sub(1);
-                } else if tag_start.len() >= 3 && tag_start[..3].eq_ignore_ascii_case("pre") {
-                    skip_depth = skip_depth.saturating_sub(1);
-                } else if tag_start.len() >= 1 && (tag_start.starts_with('a') || tag_start.starts_with('A')) {
-                    // </a> or </A>
-                    if remaining.len() >= 4 && (remaining_bytes[3] == b'>' || remaining_bytes[3] == b' ') {
-                        skip_depth = skip_depth.saturating_sub(1);
+        match bytes[i] {
+            b'<' => {
+                if last < i { out.push_str(&html[last..i]); }
+                let (tag_end, kind, is_closing, is_self_closing) = parse_tag(bytes, i);
+                if let Some(_) = kind {
+                    if !is_self_closing {
+                        if is_closing { skip_depth = skip_depth.saturating_sub(1); }
+                        else { skip_depth = skip_depth.saturating_add(1); }
                     }
                 }
+                out.push_str(&html[i..tag_end]);
+                i = tag_end;
+                last = i;
             }
-            // 开始标签检测
-            else if remaining.len() >= 5 {
-                let tag_start = &remaining[1..remaining.len().min(5)];
-                if tag_start.eq_ignore_ascii_case("code") {
-                    skip_depth += 1;
-                } else if tag_start.len() >= 3 && tag_start[..3].eq_ignore_ascii_case("pre") {
-                    skip_depth += 1;
-                } else if tag_start.len() >= 2 && 
-                          (tag_start.starts_with("a ") || tag_start.starts_with("a>") ||
-                           tag_start.starts_with("A ") || tag_start.starts_with("A>")) {
-                    skip_depth += 1;
+            b'[' => {
+                if i + 1 < len && bytes[i + 1] == b'[' && skip_depth == 0 {
+                    let is_embed = i > 0 && bytes[i - 1] == b'!';
+                    let start_idx = if is_embed { i - 1 } else { i };
+
+                    if let Some((end, parts)) = parse_wikilink_at(html, bytes, i) {
+                        if last < start_idx { out.push_str(&html[last..start_idx]); }
+
+                        let is_image = is_image_ext(parts.page);
+                        
+                        let escaped_full = escape_html_attr(&parts.full_target);
+                        let escaped_page = escape_html_attr(parts.page);
+                        let escaped_frag = escape_html_attr(&parts.fragment);
+
+                        if is_embed {
+                            has_wiki_embeds = true;
+                            let embed_type = if is_image { "image" } else { "note" };
+                            let escaped_alias = escape_html_attr(parts.label);
+                            out.push_str("<span class=\"wiki-embed\" data-embed=\"true\" data-type=\"");
+                            out.push_str(embed_type);
+                            out.push_str("\" data-target=\"");
+                            out.push_str(&escaped_full);
+                            out.push_str("\" data-page=\"");
+                            out.push_str(&escaped_page);
+                            out.push_str("\" data-fragment=\"");
+                            out.push_str(&escaped_frag);
+                            if parts.has_explicit_label {
+                                let escaped_alias = escape_html_attr(parts.label);
+                                out.push_str("\" data-alias=\"");
+                                out.push_str(&escaped_alias);
+                            }
+                            out.push_str("\">");
+                            
+                            if is_image { out.push_str("<span class=\"wiki-embed-image-placeholder\">🖼️ "); }
+                            else { out.push_str("<span class=\"wiki-embed-note-placeholder\">📄 "); }
+                            
+                            if parts.has_explicit_label && !parts.label.is_empty() {
+                                out.push_str(&escape_html_text(parts.label));
+                            } else {
+                                push_default_display(&mut out, parts.page, &parts.fragment);
+                            }
+                            out.push_str("</span></span>");
+                        } else {
+                            has_wiki_links = true;
+                            out.push_str("<a class=\"wiki-link\" data-target=\"");
+                            out.push_str(&escaped_full);
+                            out.push_str("\" data-page=\"");
+                            out.push_str(&escaped_page);
+                            out.push_str("\" data-fragment=\"");
+                            out.push_str(&escaped_frag);
+                            out.push_str("\" href=\"#\" title=\"Link to: ");
+                            out.push_str(&escaped_full);
+                            out.push_str("\">");
+
+                            if parts.has_explicit_label && !parts.label.is_empty() {
+                                out.push_str(&escape_html_text(parts.label));
+                            } else {
+                                push_default_display(&mut out, parts.page, &parts.fragment);
+                            }
+                            out.push_str("</a>");
+                        }
+
+                        i = end;
+                        last = i;
+                        continue;
+                    }
                 }
+                i += 1;
             }
-            
-            result.push('<');
-            i += 1;
-            continue;
+            _ => { i += 1; }
         }
-        
-        // 检测 [[wiki link]]
-        if bytes[i] == b'[' && i + 1 < len && bytes[i + 1] == b'[' && skip_depth == 0 {
-            // 查找闭合的 ]]
-            if let Some(end_offset) = html[i + 2..].find("]]") {
-                let target = &html[i + 2..i + 2 + end_offset];
-                
-                // 验证 target: 非空，不含嵌套括号
-                if !target.is_empty() && !target.contains('[') && !target.contains(']') {
-                    has_wiki_links = true;
-                    
-                    // ✅ P0: 使用高效的单次遍历转义
-                    let escaped = escape_html_attr(target);
-                    
-                    result.push_str("<a class=\"wiki-link\" data-target=\"");
-                    result.push_str(&escaped);
-                    result.push_str("\" href=\"#\" title=\"Link to: ");
-                    result.push_str(&escaped);
-                    result.push_str("\">");
-                    result.push_str(&escaped);
-                    result.push_str("</a>");
-                    
-                    i += 2 + end_offset + 2; // 跳过 [[ + content + ]]
-                    continue;
-                }
-            }
-        }
-        
-        // 普通字符，直接复制
-        result.push(bytes[i] as char);
-        i += 1;
     }
-    
-    (result, has_wiki_links)
+
+    if last < len { out.push_str(&html[last..len]); }
+    (out, has_wiki_links, has_wiki_embeds)
 }
 
 /// Parses Markdown content with full GFM support + Math extensions.
@@ -189,6 +381,7 @@ pub fn parse_content(input: &str) -> Result<JsValue, JsValue> {
                 // Math extensions (layered on top of GFM)
                 math_text: true,
                 math_flow: true,
+                frontmatter: true,
                 // Use GFM baseline for everything else
                 ..markdown::Constructs::gfm()
             },
@@ -217,8 +410,8 @@ pub fn parse_content(input: &str) -> Result<JsValue, JsValue> {
         .map_err(|e| JsValue::from_str(&format!("Parse error: {}", e)))?;
 
     // ✅ P0 优化: 单次遍历状态机处理 WikiLink 转换
-    // 这比 regex replace_all 更高效，特别是对于长文档
-    let (html, has_wiki_links) = process_wiki_links(&html);
+    // 这比 regex replace_all 更高效，特别是对于大型文档 (large documents)
+    let (html, has_wiki_links, has_wiki_embeds) = process_wiki_links(&html);
 
     // ✅ P0: Detect features using precise regex patterns to avoid false positives
     let has_math = MATH_TAG_RE.is_match(&html);
@@ -234,6 +427,7 @@ pub fn parse_content(input: &str) -> Result<JsValue, JsValue> {
         has_code,
         has_table,
         has_wiki_links,
+        has_wiki_embeds,
     };
 
     serde_wasm_bindgen::to_value(&result)

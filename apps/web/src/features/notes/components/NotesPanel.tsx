@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { QuickJot } from './QuickJot';
+import { QuickJot, type QuickJotHandle } from './QuickJot';
 import { BookOpen, Link2, Sparkles, CheckCircle2 } from 'lucide-react';
 import { cn } from '../../../app/utils/cn';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -9,7 +9,7 @@ import { MarkdownRenderer } from '../../../components/LatexRenderer';
 
 interface NotesPanelProps {
     questionId: string;
-    onPopOutJot?: () => void;
+    onPopOutJot?: () => void | Promise<void>;
     className?: string;
     isJotPoppedOut?: boolean;
     hints?: any; // The hints object from question data
@@ -35,6 +35,7 @@ export const NotesPanel: React.FC<NotesPanelProps> = ({
     const { t } = useTranslation();
     const [internalTab, setInternalTab] = useState<Tab>(isJotPoppedOut ? 'backlinks' : 'notes');
     const activeTab = externalTab || internalTab;
+    const quickJotRef = useRef<QuickJotHandle>(null);
 
     const handleTabChange = (tab: Tab) => {
         if (onTabChange) onTabChange(tab);
@@ -58,14 +59,18 @@ export const NotesPanel: React.FC<NotesPanelProps> = ({
 
     return (
         <div className={cn(
-            "flex flex-col h-full backdrop-blur-xl border-l border-base-content/5 transition-colors duration-500",
+            "flex flex-col h-full backdrop-blur-lg border-l border-base-content/5 transition-colors duration-500",
             "bg-base-100/40", // Fixed neutral background
             className
         )}>
             {/* Quick Jot - Immersive Header Area */}
             {!isJotPoppedOut && (
                 <div className="p-4 shrink-0">
-                    <QuickJot questionId={questionId} onPopOut={onPopOutJot} />
+                    <QuickJot ref={quickJotRef} questionId={questionId} onPopOut={async () => {
+                        // Save any unsaved edits before pop-out, so floating window gets fresh data
+                        await quickJotRef.current?.save();
+                        onPopOutJot?.();
+                    }} />
                 </div>
             )}
 

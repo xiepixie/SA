@@ -6,6 +6,80 @@ export const notes = new Elysia({ prefix: '/notes' })
     .use(auth)
 
     /**
+     * GET /search - Unified search across notes AND questions
+     * Used by wiki link autocompletion in the editor
+     * Returns mixed results with type discriminator
+     */
+    .get('/search', async ({ user, query, set }) => {
+        if (!user) {
+            set.status = 401
+            return { error: 'Unauthorized' }
+        }
+
+        const { q, limit = 10 } = query;
+        if (!q || q.trim().length === 0) {
+            return { results: [] };
+        }
+
+        const searchTerm = `%${q.trim()}%`;
+
+        // Search notes (GLOBAL type) and questions in parallel
+        const [notesRes, questionsRes] = await Promise.all([
+            supabase
+                .from('notes')
+                .select('id, title, type, updated_at')
+                .eq('user_id', user.id)
+                .eq('type', 'GLOBAL')
+                .eq('is_folder', false)
+                .ilike('title', searchTerm)
+                .order('updated_at', { ascending: false })
+                .limit(limit),
+            supabase
+                .from('error_questions')
+                .select('id, title')
+                .eq('user_id', user.id)
+                .ilike('title', searchTerm)
+                .limit(limit)
+        ]);
+
+        const results: Array<{
+            id: string;
+            title: string;
+            type: 'note' | 'question';
+            snippet?: string;
+        }> = [];
+
+        // Add note results
+        if (notesRes.data) {
+            for (const note of notesRes.data) {
+                results.push({
+                    id: note.id,
+                    title: note.title || 'Untitled',
+                    type: 'note',
+                });
+            }
+        }
+
+        // Add question results
+        if (questionsRes.data) {
+            for (const q of questionsRes.data) {
+                results.push({
+                    id: q.id,
+                    title: q.title || `Question ${q.id.slice(0, 8)}`,
+                    type: 'question',
+                });
+            }
+        }
+
+        return { results: results.slice(0, limit) };
+    }, {
+        query: t.Object({
+            q: t.String(),
+            limit: t.Optional(t.Numeric({ default: 10 }))
+        })
+    })
+
+    /**
      * GET / - List notes with filtering
      * Supports:
      * - questionId: Get the specific Jot for a question (type=QUESTION)
@@ -290,6 +364,57 @@ export const notes = new Elysia({ prefix: '/notes' })
                 target_anchor: t.Optional(t.Union([t.String(), t.Null()])),
                 mode: t.Optional(t.String())
             })))
+        })
+    })
+
+    /**
+     * PATCH /:id/move - Move note to a different folder
+     */
+    .patch('/:id/move', async ({ user, params: { id }, body, set }) => {
+        if (!user) {
+            set.status = 401
+            return { error: 'Unauthorized' }
+        }
+
+        const { parentId } = body;
+
+        // If parentId is provided, verify it exists and is a folder
+        if (parentId) {
+            const { data: parentNote, error: parentError } = await supabase
+                .from('notes')
+                .select('id, is_folder')
+                .eq('id', parentId)
+                .eq('user_id', user.id)
+                .single();
+
+            if (parentError || !parentNote) {
+                set.status = 404;
+                return { error: 'Target folder not found' };
+            }
+            if (!parentNote.is_folder) {
+                set.status = 400;
+                return { error: 'Target is not a folder' };
+            }
+        }
+
+        const { error } = await supabase
+            .from('notes')
+            .update({
+                parent_id: parentId || null,
+                updated_at: new Date().toISOString()
+            })
+            .eq('id', id)
+            .eq('user_id', user.id);
+
+        if (error) {
+            set.status = 500;
+            return { error: error.message };
+        }
+
+        return { success: true };
+    }, {
+        body: t.Object({
+            parentId: t.Union([t.String(), t.Null()])
         })
     })
 

@@ -1,4 +1,4 @@
-import { Hash, Edit3, Trash2, FolderOpen } from 'lucide-react';
+import { Hash, Edit3, Trash2 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { EntityBadge } from '../../components/ui/EntityBadge';
 
@@ -36,7 +36,7 @@ export const TagTable: React.FC<TagTableProps> = ({ tags, onEdit, onDelete }) =>
                                         <EntityBadge
                                             name={tag.name}
                                             color={tag.color}
-                                            size="md"
+                                            size="xs"
                                             showHash
                                         />
                                         <span className="text-[9px] font-black text-base-content/15 uppercase tracking-[0.2em] ml-1">
@@ -47,9 +47,9 @@ export const TagTable: React.FC<TagTableProps> = ({ tags, onEdit, onDelete }) =>
                                 <td className="px-6 py-5">
                                     <div className="flex items-center gap-2 text-base-content/40">
                                         <div className="w-6 h-6 flex items-center justify-center rounded-md border border-base-content/5 bg-base-content/[0.03]">
-                                            <FolderOpen className="w-3 h-3" />
+                                            <Hash className="w-3 h-3" />
                                         </div>
-                                        <span className="text-[9px] font-black uppercase tracking-[0.2em]">{t('manage.tabs.subjects')}</span>
+                                        <span className="text-[9px] font-black uppercase tracking-[0.2em]">{t('common:common.tags')}</span>
                                     </div>
                                 </td>
                                 <td className="px-6 py-4">

@@ -26,7 +26,7 @@ interface ImportStepperProps {
  * ImportStepper - Premium Step progress indicator
  */
 export const ImportStepper: React.FC<ImportStepperProps> = ({ currentStep, className }) => {
-    const { t } = useTranslation();
+    const { t } = useTranslation('import');
 
     const displayStep = currentStep === 'importing' ? 'done' : currentStep;
     const currentIndex = STEPS.findIndex(s => s.id === displayStep);

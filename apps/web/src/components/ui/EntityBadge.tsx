@@ -18,6 +18,7 @@ export interface EntityBadgeProps {
     /** Whether to show the tag hash prefix (for tags) */
     showHash?: boolean;
     /** Optional children (e.g., for removal buttons) */
+    icon?: React.ElementType; // Optional icon override
     children?: React.ReactNode;
 }
 
@@ -35,6 +36,7 @@ export const EntityBadge = React.memo<EntityBadgeProps>(({
     size = 'sm',
     interactive = false,
     showHash = false,
+    icon: Icon,
     children
 }) => {
     const visuals = useMemo(() => getEntityVisuals(color, name), [color, name]);
@@ -84,14 +86,22 @@ export const EntityBadge = React.memo<EntityBadgeProps>(({
                 className
             )}
         >
-            {/* Semantic Indicator Dot - Only if hash is hidden */}
+            {/* Semantic Indicator Dot or Icon - Only if hash is hidden */}
             {!showHash && (
-                <span className={cn(
-                    "w-1.5 h-1.5 rounded-full shrink-0 transition-all duration-500 opacity-60",
-                    visuals.dot,
-                    visuals.style && "bg-[hsl(var(--brand-h),var(--brand-s),var(--brand-l))]",
-                    interactive && "group-hover:scale-125 group-hover:opacity-100"
-                )} />
+                Icon ? (
+                    <Icon className={cn(
+                        "w-3 h-3 shrink-0 stroke-[2.5px] opacity-70",
+                        visuals.text,
+                        visuals.style && "text-[hsl(var(--brand-h),var(--brand-s),calc(var(--brand-l)-10%))] dark:text-[hsl(var(--brand-h),var(--brand-s),calc(var(--brand-l)+20%))]"
+                    )} />
+                ) : (
+                    <span className={cn(
+                        "w-1.5 h-1.5 rounded-full shrink-0 transition-all duration-500 opacity-60",
+                        visuals.dot,
+                        visuals.style && "bg-[hsl(var(--brand-h),var(--brand-s),var(--brand-l))]",
+                        interactive && "group-hover:scale-125 group-hover:opacity-100"
+                    )} />
+                )
             )}
 
             <span className="flex items-center gap-0.5">

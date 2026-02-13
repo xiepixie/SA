@@ -1,0 +1,80 @@
+{
+    "actions": {
+        "save": "保存",
+        "cancel": "取消",
+        "confirm": "确认",
+        "close": "关闭",
+        "dismiss": "忽略",
+        "delete": "删除",
+        "retry": "重试",
+        "search": "搜索",
+        "copy": "复制",
+        "reset": "重置",
+        "add": "添加",
+        "exit": "退出",
+        "edit": "编辑",
+        "type": "类型",
+        "back": "返回",
+        "rename": "重命名",
+        "share": "分享",
+        "sync": "立即同步",
+        "actions": "更多操作",
+        "clear_all": "清除全部",
+        "undo": "撤销",
+        "remove": "移除",
+        "click_to_view": "点击处理",
+        "locate": "定位",
+        "collapse": "收起",
+        "expand": "展开",
+        "retry_failed": "重试失败项",
+        "back_to_dashboard": "返回控制面板",
+        "collapse_all": "精简模式",
+        "expand_all": "完整分析",
+        "more": "更多",
+        "pin_sidebar": "固定侧边栏",
+        "back_home": "返回首页"
+    },
+    "status": {
+        "loading": "加载中...",
+        "error": "操作失败",
+        "success": "已完成",
+        "ready": "就绪",
+        "copied": "已复制",
+        "synced": "已同步",
+        "in_progress": "进行中",
+        "completed": "已完成",
+        "abandoned": "已放弃",
+        "time_est": "预估用时",
+        "weak": "薄弱环节",
+        "items": "项",
+        "minutes_short": "分",
+        "locked": "已锁定",
+        "processing": "处理中",
+        "saving": "正在保存...",
+        "saved": "已保存",
+        "none": "无",
+        "more_queued": "更多项待处理"
+    },
+    "toast": {
+        "info": "系统通知",
+        "success": "操作成功",
+        "warning": "运行提示",
+        "error": "执行失败"
+    },
+    "search": {
+        "placeholder": "输入关键词搜索...",
+        "results": "搜索结果",
+        "no_results": "未找到匹配记录"
+    },
+    "theme": {
+        "toggle": "切换主题",
+        "switchToLight": "切换到浅色模式",
+        "switchToDark": "切换到深色模式"
+    },
+    "tags": {
+        "editor_label": "标签编辑器",
+        "list_label": "已添加标签",
+        "tag_with_name": "标签：{{name}}",
+        "remove_tag": "移除标签 {{name}}"
+    }
+}

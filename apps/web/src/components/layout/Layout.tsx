@@ -1,6 +1,7 @@
 import React, { Suspense, useEffect, useMemo, useRef } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
 import { GenericSkeleton } from './PageSkeletons';
+import { useTranslation } from 'react-i18next';
 import { useAppStore } from '../../app/state/useAppStore';
 import { AppSidebar, useSidebar, SidebarProvider } from './Sidebar';
 import { useUserSettings } from '../../app/state/useUserSettings';
@@ -20,6 +21,7 @@ const TTL: Record<Level, number> = {
 };
 
 const LayoutShell: React.FC = () => {
+    const { t } = useTranslation(['ui', 'common']);
     const isFetching = useIsFetching();
     const isMutating = useIsMutating();
     const isLoading = isFetching > 0 || isMutating > 0;
@@ -167,7 +169,7 @@ const LayoutShell: React.FC = () => {
                         <GlassCard variant="card" className="alert shadow-2xl border-l-4 border-base-content/20 animate-reveal-spring">
                             <Info className="w-5 h-5 opacity-70" />
                             <div className="flex-1">
-                                <h3 className="font-bold text-sm">+{hiddenCount} more queued</h3>
+                                <h3 className="font-bold text-sm">+{hiddenCount} {t('ui:status.more_queued', 'more queued')}</h3>
                                 <p className="text-[10px] uppercase tracking-widest opacity-60 font-black mt-0.5">
                                     Notifications overflow
                                 </p>

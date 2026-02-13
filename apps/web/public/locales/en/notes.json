@@ -1,0 +1,98 @@
+{
+    "notes": {
+        "editor": {
+            "untitled": "Untitled Note",
+            "placeholder": "Start recording your wisdom... (Markdown & LaTeX supported, use [[ for links)",
+            "saving": "Saving...",
+            "unsaved": "Unsaved",
+            "saved_at": "Saved at {{time}}",
+            "welcome_title": "Welcome to Notebook",
+            "welcome_desc": "Select a note from the sidebar or create a new one to get started.",
+            "preview_title": "Live Preview",
+            "loading_note": "Loading Note...",
+            "save_failed": "Save failed"
+        },
+        "sidebar": {
+            "title": "Notes Garden",
+            "search_placeholder": "Search notes or questions...",
+            "all_notes": "All Folders",
+            "recents": "Recents",
+            "new_note": "New Note",
+            "new_folder": "New Folder",
+            "rename": "Rename",
+            "delete": "Delete",
+            "delete_confirm": "Are you sure you want to delete this {{type}}? This action cannot be undone.",
+            "rename_prompt": "Rename to:",
+            "empty_folder": "Empty Folder",
+            "empty_library": "Library is empty",
+            "no_recent": "No recent records"
+        },
+        "panel": {
+            "hints": "Hints",
+            "notes": "Tools",
+            "backlinks": "Backlinks",
+            "hints_title": "Hints System",
+            "hints_desc": "Intelligent scaffolding and contextual hints will appear here as you study.",
+            "refresh": "Refresh Engine",
+            "backlinks_tip": "Tip: Global notes that mention this question will be linked automatically under the \"Backlinks\" tab.",
+            "more_soon": "More Note Features Coming Soon",
+            "no_hints": "No hints available for this unit",
+            "all_hints_revealed": "All hints revealed",
+            "revealed_count": "{{count}} / {{total}} REVEALED",
+            "logic_scaffolding": "Logic Scaffolding",
+            "hint_cta_start": "Unlock the first layer of logical scaffolding",
+            "hint_cta_next": "Reveal another dimension of the problem",
+            "hint_shortcut": "Shortcut",
+            "hint_scaffoling_title": "The Path to synthesis"
+        },
+        "quick_jot": {
+            "title": "Quick Jot",
+            "placeholder": "Type notes here... (LaTeX & Markdown supported)",
+            "double_click": "Double-click to edit",
+            "pop_out": "Pop out",
+            "save_hint": "Esc to save",
+            "save_hint_mac": "Ctrl+Enter to save",
+            "to_save": "save",
+            "click_outside": "click outside to save",
+            "chars": "chars"
+        },
+        "floating": {
+            "title": "Floating Jot",
+            "tooltip_theme": "Style Theme",
+            "tooltip_pin_locked": "Pinned to current question (locked)",
+            "tooltip_pin_dynamic": "Following active question (dynamic)",
+            "tooltip_dock": "Dock back to panel",
+            "tooltip_dismiss": "Dismiss"
+        },
+        "backlinks": {
+            "title": "Backlinks",
+            "fetching": "Fetching Connections",
+            "empty_title": "No Connections Found",
+            "empty_desc": "Cross-reference this question in a global notebook to establish a link.",
+            "linked_in": "Linked in {{count}} Note",
+            "linked_in_plural": "Linked in {{count}} Notes",
+            "untitled": "Untitled Note",
+            "context_snippet": "Contextual Evidence",
+            "type_notebook": "Notebook",
+            "type_observation": "Observation"
+        },
+        "tooltips": {
+            "hide_sidebar": "Hide Notes Sidebar",
+            "show_sidebar": "Show Notes Sidebar",
+            "open_floating": "Open Floating Note",
+            "toggle_preview": "Toggle Preview"
+        },
+        "toolbar": {
+            "h1": "Heading 1",
+            "h2": "Heading 2",
+            "h3": "Heading 3",
+            "bold": "Bold",
+            "italic": "Italic",
+            "list": "Bullet List",
+            "code": "Code",
+            "code_block": "Code Block",
+            "latex": "LaTeX Inline",
+            "wiki": "Wiki Link"
+        }
+    }
+}

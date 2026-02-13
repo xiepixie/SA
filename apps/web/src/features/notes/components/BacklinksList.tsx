@@ -3,15 +3,21 @@ import { useNoteReferences } from '../../../queries/notes';
 import { formatDistanceToNow } from 'date-fns';
 import { useTranslation } from 'react-i18next';
 import { FileText, Link as LinkIcon, ExternalLink, Calendar, Hash } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import { cn } from '../../../app/utils/cn';
 
 interface BacklinksListProps {
-    questionId: string;
+    questionId?: string;
+    noteId?: string;
 }
 
-export const BacklinksList: React.FC<BacklinksListProps> = ({ questionId }) => {
+export const BacklinksList: React.FC<BacklinksListProps> = ({ questionId, noteId }) => {
     const { t } = useTranslation();
-    const { data, isLoading } = useNoteReferences({ targetQuestionId: questionId });
+    const navigate = useNavigate();
+    const { data, isLoading } = useNoteReferences({
+        targetQuestionId: questionId,
+        targetNoteId: noteId
+    });
     const references = data?.items || [];
 
     if (isLoading) {
@@ -51,6 +57,13 @@ export const BacklinksList: React.FC<BacklinksListProps> = ({ questionId }) => {
                 {references.map((ref: any) => (
                     <div
                         key={ref.id}
+                        onClick={() => {
+                            const sourceId = ref.source_note_id;
+                            if (sourceId) {
+                                // Navigate to the notebook page with this note
+                                navigate(`/notebook?noteId=${sourceId}`);
+                            }
+                        }}
                         className={cn(
                             "group se-interactive bg-base-200/30 backdrop-blur-sm border border-base-content/5 p-4 rounded-2xl",
                             "hover:bg-primary/5 hover:border-primary/20 hover:scale-[1.02] transition-all duration-300",

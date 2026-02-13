@@ -237,5 +237,20 @@ export const REVALIDATE_ROUTES: Record<string, (api: any) => RevalidatePlan> = {
             entities.dashboard = entities.dashboard || {};
             entities.dashboard.auditLogs = data?.items || [];
         }
+    }),
+    "v:note_list": (api) => ({
+        queryKey: ["v", "notes"],
+        minIntervalMs: 10000,
+        priority: 50,
+        fetcher: (signal) => api.getNotes?.(signal) || Promise.resolve({ items: [] }),
+        mergeIntoEntities: (entities: any, data) => {
+            entities.notes = entities.notes || {};
+            (data?.items || []).forEach((it: any) => {
+                const id = String(it.id);
+                if (patchIfNewer(entities.notes[id], it)) {
+                    entities.notes[id] = { ...entities.notes[id], ...it };
+                }
+            });
+        }
     })
 };

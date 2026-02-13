@@ -104,10 +104,8 @@ export function createNoteEditorTheme(color: NoteColor, isDark: boolean): Extens
             color: palette.text,
             fontSize: '15px', // Slightly larger font for readability
             fontFamily: 'ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji"',
-            // ✅ P0 FIX: 移除固定 height: 100%，让编辑器自适应内容高度
-            // 父容器使用 flex 布局来控制整体高度
-            minHeight: '120px',
-            maxHeight: '100%',
+            // Let editor grow or fill parent based on layout
+            height: '100%',
         },
         '.cm-scroller': {
             overflow: 'auto',
@@ -115,7 +113,8 @@ export function createNoteEditorTheme(color: NoteColor, isDark: boolean): Extens
         },
         '.cm-content': {
             caretColor: palette.accent,
-            padding: '12px 16px', // Compact padding for better space utilization
+            // Add bottom padding to prevent content from being hidden behind the shortcut hint
+            padding: '12px 16px 40px 16px',
             lineHeight: '1.6',
             maxWidth: '100%',
             userSelect: 'text', // Force selection enabled (fix for shortcuts)

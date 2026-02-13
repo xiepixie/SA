@@ -28,6 +28,7 @@ import { type FilterChipType } from '../components/ui/FilterChip';
 import { cn } from '../app/utils/cn';
 import { DifficultyBadge } from '../components/ui/DifficultyBadge';
 import { EntityBadge } from '../components/ui/EntityBadge';
+import { getEntityVisuals } from '../app/utils/colorSystem';
 import { usePrefersReducedMotion } from '../app/hooks/usePrefersReducedMotion';
 
 /** 
@@ -114,7 +115,7 @@ const normalizeQuestionData = (q: any): Partial<InspectorQuestion> => {
 };
 
 const QuestionStateBadge = React.memo<{ q: AugmentedQuestion }>(function QuestionStateBadge({ q }) {
-    const { t } = useTranslation();
+    const { t } = useTranslation(['library', 'common']);
     const textStyle = "text-[8px] font-black uppercase tracking-widest leading-none";
     const containerStyle = "flex items-center gap-1.5 px-2 py-1 rounded-lg border shadow-sm shrink-0 whitespace-nowrap";
 
@@ -218,7 +219,7 @@ const QuestionCard = React.memo(({
     handleCardHover: (q: AugmentedQuestion) => void;
     setFilters: (f: any) => void;
 }) => {
-    const { t } = useTranslation();
+    const { t } = useTranslation(['library', 'common']);
     return (
         <div
             id={`question-${question.id}`}
@@ -265,6 +266,7 @@ const QuestionCard = React.memo(({
                     <EntityBadge
                         name={question.subject_name || "General"}
                         color={question.subject_color}
+                        icon={Layers}
                         onClick={(e) => {
                             e.stopPropagation();
                             if (question.subject_id) {
@@ -283,10 +285,10 @@ const QuestionCard = React.memo(({
 
             <div className="flex-1 relative z-10 py-3">
                 <h4 className="text-[15px] font-black leading-snug tracking-tight text-base-content group-hover:text-primary transition-colors">
-                    <MarkdownRenderer content={question.title} density="compact" />
+                    <MarkdownRenderer content={question.title} density="compact" showTexBadge={false} />
                 </h4>
                 <div className="mt-2 text-[13px] text-base-content/80 leading-relaxed [&_.katex]:text-[12px]">
-                    <MarkdownRenderer content={question.contentPreview} density="compact" />
+                    <MarkdownRenderer content={question.contentPreview} density="compact" showTexBadge={false} />
                 </div>
             </div>
 
@@ -298,6 +300,7 @@ const QuestionCard = React.memo(({
                             key={i}
                             name={tag.name}
                             color={tag.color}
+                            size="xs"
                             showHash
                             onClick={(e) => {
                                 e.stopPropagation();
@@ -319,7 +322,7 @@ const QuestionCard = React.memo(({
 
 
 export const QuestionBank: React.FC = () => {
-    const { t } = useTranslation();
+    const { t } = useTranslation(['library', 'common']);
     const navigate = useNavigate();
     useActiveView('v:question_list');
     useActiveView('v:asset'); // Load subjects and tags for sidebar
@@ -898,7 +901,7 @@ export const QuestionBank: React.FC = () => {
                         <div className="flex items-center justify-between px-1">
                             <div className="flex items-center gap-2">
                                 <div className="w-1 h-4 rounded-full bg-primary" />
-                                <h3 className="text-[10px] font-black uppercase tracking-[0.15em] text-base-content/40">{t('common.subjects')}</h3>
+                                <h3 className="text-[10px] font-black uppercase tracking-[0.15em] text-base-content/40">{t('common:common.subjects')}</h3>
                             </div>
                             <span className="text-[9px] font-bold text-base-content/20 tabular-nums">
                                 {subjects.length}
@@ -918,16 +921,16 @@ export const QuestionBank: React.FC = () => {
                                 )}
                             >
                                 <div className={cn(
-                                    "w-9 h-9 rounded-xl flex items-center justify-center transition-all duration-300",
+                                    "w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-300",
                                     (!filters.q && filters.subjectIds.length === 0)
                                         ? "bg-primary text-white shadow-md shadow-primary/30"
                                         : "bg-base-content/[0.06] text-base-content/40 group-hover:bg-base-content/10 group-hover:text-base-content/60"
                                 )}>
-                                    <Layers size={16} strokeWidth={2.5} />
+                                    <Layers size={20} strokeWidth={2.5} />
                                 </div>
                                 <div className="flex-1 text-left">
                                     <span className={cn(
-                                        "text-[11px] font-black uppercase tracking-wide transition-colors",
+                                        "text-[12px] font-black uppercase tracking-wide transition-colors",
                                         (!filters.q && filters.subjectIds.length === 0) ? "text-primary" : "text-base-content/70 group-hover:text-base-content"
                                     )}>
                                         {t('library.filters.all_subjects')}
@@ -948,6 +951,7 @@ export const QuestionBank: React.FC = () => {
                                 const count = s.questionCount || 0;
                                 const isSelected = filters.subjectIds.includes(s.id);
                                 const isZeroCount = count === 0;
+                                const visuals = getEntityVisuals(s.color || 'neutral', s.name);
 
                                 return (
                                     <button
@@ -960,11 +964,11 @@ export const QuestionBank: React.FC = () => {
                                             setFilters({ subjectIds: next, q: '' });
                                         }}
                                         className={cn(
-                                            "w-full flex items-center gap-3 px-3 h-11 rounded-xl transition-all duration-300 group relative overflow-hidden",
+                                            "w-full flex items-center gap-3 px-3 h-12 rounded-xl transition-all duration-300 group relative overflow-hidden text-left",
                                             isSelected
-                                                ? "bg-base-content/[0.08] shadow-sm"
-                                                : "hover:bg-base-content/[0.04]",
-                                            isZeroCount && !isSelected && "opacity-40 hover:opacity-70"
+                                                ? "bg-base-content/[0.04] shadow-sm border border-base-content/5"
+                                                : "hover:bg-base-content/[0.04] border border-transparent",
+                                            isZeroCount && !isSelected && "opacity-60 hover:opacity-100"
                                         )}
                                         aria-label={t('library.filters.subject_select', { name: s.name })}
                                         aria-pressed={isSelected}
@@ -972,44 +976,47 @@ export const QuestionBank: React.FC = () => {
                                         {/* Left Color Bar */}
                                         <div
                                             className={cn(
-                                                "absolute left-0 top-1/2 -translate-y-1/2 w-1 rounded-full transition-all duration-300",
-                                                isSelected ? "h-6" : "h-0 group-hover:h-4"
+                                                "absolute left-0 top-1/2 -translate-y-1/2 w-1 rounded-r-full transition-all duration-300",
+                                                isSelected ? "h-6 opacity-100" : "h-0 opacity-0 group-hover:h-3 group-hover:opacity-40",
+                                                visuals.dot,
+                                                visuals.style && "bg-[hsl(var(--brand-h),var(--brand-s),var(--brand-l))]"
                                             )}
-                                            style={{ backgroundColor: s.color || '#888' }}
+                                            style={visuals.style}
                                         />
 
                                         {/* Color Circle */}
                                         <div
                                             className={cn(
-                                                "w-8 h-8 rounded-lg flex items-center justify-center transition-all duration-300 shrink-0",
+                                                "w-8 h-8 rounded-lg flex items-center justify-center transition-all duration-300 shrink-0 border",
+                                                visuals.bg,
+                                                visuals.border,
+                                                visuals.style && "bg-[hsla(var(--brand-h),var(--brand-s),var(--brand-l),0.1)] border-[hsla(var(--brand-h),var(--brand-s),var(--brand-l),0.2)]",
                                                 isSelected
-                                                    ? "shadow-md"
-                                                    : "opacity-80 group-hover:opacity-100 group-hover:scale-105"
+                                                    ? "opacity-100 shadow-sm scale-100"
+                                                    : "opacity-80 group-hover:opacity-100 scale-95 group-hover:scale-100 border-transparent bg-base-content/5 group-hover:bg-base-content/10"
                                             )}
-                                            style={{
-                                                backgroundColor: `${s.color || '#888'}20`,
-                                                border: `1px solid ${s.color || '#888'}30`
-                                            }}
+                                            style={visuals.style}
                                         >
                                             <div
                                                 className={cn(
-                                                    "w-3.5 h-3.5 rounded-full transition-all duration-300",
-                                                    isSelected && "scale-110"
+                                                    "w-3.5 h-3.5 rounded-full transition-all duration-500",
+                                                    visuals.dot,
+                                                    visuals.style && "bg-[hsl(var(--brand-h),var(--brand-s),var(--brand-l))]",
+                                                    isSelected ? "scale-110" : "scale-100 group-hover:scale-110"
                                                 )}
                                                 style={{
-                                                    backgroundColor: s.color || '#888',
-                                                    boxShadow: isSelected ? `0 2px 8px ${s.color || '#888'}50` : 'none'
+                                                    boxShadow: isSelected && visuals.style ? '0 0 8px hsla(var(--brand-h),var(--brand-s),var(--brand-l),0.5)' : undefined
                                                 }}
                                             />
                                         </div>
 
                                         {/* Name */}
-                                        <div className="flex-1 text-left min-w-0">
+                                        <div className="flex-1 text-left min-w-0 flex flex-col justify-center">
                                             <span className={cn(
-                                                "text-[11px] font-bold truncate block transition-colors",
+                                                "text-[12px] font-bold truncate block transition-colors leading-tight",
                                                 isSelected
-                                                    ? "text-base-content"
-                                                    : "text-base-content/60 group-hover:text-base-content/90"
+                                                    ? "text-base-content opacity-100"
+                                                    : "text-base-content/70 group-hover:text-base-content group-hover:opacity-100"
                                             )}>
                                                 {s.name}
                                             </span>
@@ -1018,19 +1025,15 @@ export const QuestionBank: React.FC = () => {
                                         {/* Count Badge */}
                                         <span
                                             className={cn(
-                                                "text-[10px] font-bold px-2 py-0.5 rounded-md tabular-nums transition-all shrink-0",
+                                                "text-[10px] font-bold px-1.5 py-0.5 rounded-md tabular-nums transition-all shrink-0",
                                                 isSelected
-                                                    ? "text-white"
+                                                    ? "text-base-content bg-base-content/10"
                                                     : count > 0
-                                                        ? "bg-base-content/[0.06] text-base-content/50"
-                                                        : "text-base-content/20"
+                                                        ? "bg-base-content/[0.04] text-base-content/40"
+                                                        : "text-transparent"
                                             )}
-                                            style={isSelected ? {
-                                                backgroundColor: s.color || '#888',
-                                                boxShadow: `0 1px 4px ${s.color || '#888'}40`
-                                            } : undefined}
                                         >
-                                            {count > 0 ? count : '—'}
+                                            {count > 0 ? count : ''}
                                         </span>
                                     </button>
                                 );
@@ -1039,14 +1042,14 @@ export const QuestionBank: React.FC = () => {
                     </div>
 
                     {/* Divider */}
-                    <div className="h-px bg-gradient-to-r from-transparent via-base-content/10 to-transparent" />
+                    <div className="h-px bg-gradient-to-r from-transparent via-base-content/10 to-transparent my-1" />
 
                     {/* Tags Section */}
                     <div className="flex flex-col gap-3 flex-1 min-h-0">
                         <div className="flex items-center justify-between px-1">
                             <div className="flex items-center gap-2">
                                 <div className="w-1 h-4 rounded-full bg-secondary" />
-                                <h3 className="text-[10px] font-black uppercase tracking-[0.15em] text-base-content/40">{t('common.tags')}</h3>
+                                <h3 className="text-[10px] font-black uppercase tracking-[0.15em] text-base-content/40">{t('common:common.tags')}</h3>
                             </div>
                             <span className="text-[9px] font-bold text-base-content/20 tabular-nums">
                                 {tags.length}
@@ -1072,6 +1075,7 @@ export const QuestionBank: React.FC = () => {
                                             color={tag.color}
                                             showHash
                                             interactive
+                                            size="xs"
                                             onClick={() => {
                                                 const nextTags = isSelected
                                                     ? filters.tags.filter(t => t !== tag.name)
@@ -1311,20 +1315,20 @@ export const QuestionBank: React.FC = () => {
                             <button
                                 onClick={() => handleBulkUpdate({ is_archived: true })}
                                 disabled={isBulkUpdating}
-                                aria-label={t('common.archive')}
+                                aria-label={t('common:common.archive')}
                                 className="h-11 px-4 rounded-xl bg-base-content/5 font-black text-[10px] uppercase hover:bg-base-content/10 transition-all flex items-center gap-2"
-                                title={t('common.archive')}
+                                title={t('common:common.archive')}
                             >
-                                <Archive size={14} className={isBulkUpdating ? "animate-spin" : ""} /> {t('common.archive')}
+                                <Archive size={14} className={isBulkUpdating ? "animate-spin" : ""} /> {t('common:common.archive')}
                             </button>
 
-                            <button onClick={handleBulkDeleteRequest} aria-label={t('common.delete')} disabled={isBulkUpdating} className="h-11 px-4 rounded-xl bg-error/10 text-error font-black text-[10px] uppercase flex items-center gap-2 hover:bg-error hover:text-white transition-all">
-                                <Trash2 size={14} /> {t('common.delete')}
+                            <button onClick={handleBulkDeleteRequest} aria-label={t('common:common.delete')} disabled={isBulkUpdating} className="h-11 px-4 rounded-xl bg-error/10 text-error font-black text-[10px] uppercase flex items-center gap-2 hover:bg-error hover:text-white transition-all">
+                                <Trash2 size={14} /> {t('common:common.delete')}
                             </button>
                             <button onClick={() => setShowBulkInspector(true)} aria-label={t('library.bulk.edit')} className="h-11 px-4 rounded-xl bg-base-content/5 font-black text-[10px] uppercase hover:bg-base-content/10 transition-all flex items-center gap-2">
                                 <Edit3 size={14} /> {t('library.bulk.edit')}
                             </button>
-                            <button onClick={() => setSelection(s => ({ ...s, selectedIds: new Set(), isSelectMode: false }))} aria-label={t('common.actions.close')} className="w-11 h-11 rounded-full border border-base-content/10 flex items-center justify-center opacity-50 hover:opacity-100 hover:rotate-90 transition-all">
+                            <button onClick={() => setSelection(s => ({ ...s, selectedIds: new Set(), isSelectMode: false }))} aria-label={t('common:common.actions.close')} className="w-11 h-11 rounded-full border border-base-content/10 flex items-center justify-center opacity-50 hover:opacity-100 hover:rotate-90 transition-all">
                                 <X size={18} />
                             </button>
                         </div>

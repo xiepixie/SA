@@ -1,0 +1,419 @@
+{
+    "settings": {
+        "sidebar": {
+            "general": {
+                "title": "General",
+                "desc": "Profile & Time preference"
+            },
+            "algorithm": {
+                "title": "FSRS Engine",
+                "desc": "Memory model tuning"
+            },
+            "display": {
+                "title": "Appearance",
+                "desc": "Theme & Visual effects"
+            },
+            "security": {
+                "title": "Security",
+                "desc": "API & Authorization"
+            }
+        },
+        "health": {
+            "title": "System Status",
+            "core_sync": "Core Sync",
+            "storage": "Storage",
+            "cache": "Cache",
+            "status_operational": "Operational",
+            "status_degraded": "Degraded",
+            "status_storage_free": "{{percentage}} optimized"
+        },
+        "general": {
+            "title": "General Settings",
+            "profile": {
+                "title": "User Profile",
+                "desc": "How you appear in the system.",
+                "display_name": "Display Name",
+                "placeholder": "Enter your name"
+            },
+            "temporal": {
+                "title": "Time & Schedule",
+                "desc": "Configure how the daily cycle is calculated.",
+                "rollover": "Daily Reset Time",
+                "rollover_hint": "Determines when today's tasks refresh.",
+                "timezone": "Timezone",
+                "countdown": "Timer Mode",
+                "target_date": "Target Date",
+                "target_time": "Target Time",
+                "use_rollover": "Sync with daily reset"
+            },
+            "notifications": {
+                "title": "Notifications",
+                "desc": "Manage alerts and status updates.",
+                "push": "Push Notifications",
+                "push_desc": "Receive review reminders on your device.",
+                "drift": "Model Drift Alerts",
+                "drift_desc": "Notify if algorithm parameters change significantly.",
+                "sync": "Sync Completion",
+                "sync_desc": "Show toast when data sync finishes."
+            },
+            "language": {
+                "title": "Language",
+                "desc": "System-wide interface language.",
+                "label": "Selected Language"
+            }
+        },
+        "profiles": {
+            "page_title": "Memory Optimization Profiles",
+            "page_desc": "Configure specialized learning strategies for different knowledge domains.",
+            "back_to_settings": "Return to Settings",
+            "selector": {
+                "title": "Profiles",
+                "global_default": "Global Default",
+                "add_override": "+ Add Subject Override",
+                "status": {
+                    "inherited": "Inherited",
+                    "custom": "Custom",
+                    "low_confidence": "Learning"
+                }
+            },
+            "picker": {
+                "title": "Add Subject Override",
+                "desc": "Select a subject to create custom FSRS settings",
+                "search": "Search subjects...",
+                "no_match": "No subjects match your search",
+                "all_configured": "All subjects already have overrides"
+            },
+            "header": {
+                "inheritance": {
+                    "label": "Inheritance Mode",
+                    "inherit_all": "Follow Global Strategy",
+                    "customize": "Customize Parameters",
+                    "revert": "Reset to Inherited",
+                    "revert_confirm": "Revert to inherited state? All custom settings for this subject will be cleared."
+                },
+                "actions": {
+                    "reset": "Discard Changes",
+                    "delete": "Remove Override"
+                }
+            },
+            "tabs": {
+                "overview": "Overview",
+                "tuning": "Tuning",
+                "advanced": "Advanced Weights"
+            },
+            "overview": {
+                "metrics": {
+                    "daily_load": "Est. Daily Load",
+                    "peak_day": "Peak Intensity",
+                    "confidence": "AI Confidence"
+                },
+                "forecast": "14-Day Capacity Projection",
+                "data_sufficiency": "Based on {{count}} items in memory",
+                "unreliable_hint": "Projections may be unreliable due to low data volume.",
+                "empty": "Optimization engine requires active interaction logs.",
+                "empty_desc": "Start reviewing to generate workload predictions and map potential stability decay."
+            },
+            "tuning": {
+                "controls": {
+                    "retention": {
+                        "label": "Retention Target",
+                        "recommended": "Optimal: 90%"
+                    },
+                    "daily_cap": {
+                        "label": "Daily Review Cap",
+                        "unlimited": "Unlimited",
+                        "custom": "Manual Cap"
+                    },
+                    "style": {
+                        "label": "Review Style",
+                        "conservative": "Stable (High retention)",
+                        "balanced": "Balanced (Standard)",
+                        "aggressive": "Efficient (Low workload)"
+                    },
+                    "presets": {
+                        "label": "Quick Presets"
+                    }
+                },
+                "preview": {
+                    "title": "Live Simulation",
+                    "deep_dive": "Deep comparison",
+                    "status": {
+                        "estimating": "Estimating...",
+                        "updated": "Simulation Updated ✓"
+                    },
+                    "delta": {
+                        "daily_load": "Daily Load",
+                        "peak_day": "Peak Day",
+                        "intervals": "Interval Shift"
+                    },
+                    "risks": {
+                        "low_retention": "High risk of rapid forgetting",
+                        "high_retention": "Workload will increase significantly",
+                        "low_cap": "Risk of review backlog accumulation",
+                        "low_confidence": "Insufficient data for accurate simulation"
+                    }
+                }
+            },
+            "deep_dive": {
+                "title": "Change Impact Audit",
+                "comparison": "Detailed Comparison",
+                "digest": "Modification Summary",
+                "explain": "AI Logic Rationale",
+                "workload": "Overall Workload Change",
+                "peak": "Peak Shift",
+                "actions": {
+                    "back": "Back to tuning",
+                    "save": "Save Changes",
+                    "discard": "Discard Draft"
+                }
+            },
+            "advanced": {
+                "sandbox": {
+                    "label": "Sandbox Mode",
+                    "desc": "Changes made here are isolated until applied to production."
+                },
+                "weights": {
+                    "label": "FSRS Weight Matrix",
+                    "import": "Import Configuration",
+                    "export": "Export Configuration",
+                    "reset": "Restore Defaults"
+                },
+                "validation": {
+                    "title": "Diagnostic Panel",
+                    "schema_valid": "Schema Valid",
+                    "range_valid": "Parameters Safe",
+                    "run_simulation": "Execute High-Precision Simulation"
+                },
+                "diff": {
+                    "title": "Manual Tuning Warning",
+                    "confirm_risk": "I understand that manual weight tuning may lead to scheduling instability."
+                },
+                "versioning": {
+                    "undo": "Undo last change",
+                    "history": "Version History",
+                    "rollback": "Rollback"
+                }
+            },
+            "dirty_bar": {
+                "changed": "{{count}} parameters modified",
+                "uncommitted_desc": "Uncommitted modifications to scheduling parameters",
+                "save": "Save Changes",
+                "discard": "Discard",
+                "discard_confirm": "You have unsaved changes. Discard them?",
+                "save_apply": "Save & Apply"
+            },
+            "toast": {
+                "save_success": "Profile settings applied successfully.",
+                "delete_success": "Subject override removed. Fallback to global settings."
+            },
+            "modal": {
+                "unsaved_title": "Unsaved Changes",
+                "unsaved_desc": "You have uncommitted changes to the current profile. What would you like to do?",
+                "save_switch": "Save & Switch",
+                "discard_switch": "Discard & Switch"
+            }
+        },
+        "algorithm": {
+            "title": "Algorithm Settings (FSRS)",
+            "desc": "Algorithmic optimization of review intervals. 90% is the balanced optimum.",
+            "global_config_label": "Global Default Engine Configuration",
+            "retention": {
+                "title": "Retention Strategy",
+                "desc": "Configure the target recall probability for the FSRS model.",
+                "label": "Global Retention",
+                "global_config_label": "Global Default Engine Configuration"
+            },
+            "capacity": {
+                "title": "Load Management",
+                "desc": "Define daily volume constraints and intensity.",
+                "daily_cap": "Daily Cap",
+                "daily_cap_desc": "Limits daily review items to maintain a sustainable workload.",
+                "style": "Review Intensity",
+                "style_desc": "Adjusts spacing to prioritize mastery or efficiency."
+            },
+            "daily_cap_unlimited": "Unlimited",
+            "styles": {
+                "conservative": "Stable",
+                "balanced": "Optimized",
+                "aggressive": "Efficient"
+            },
+            "slider_labels": {
+                "speed": "Fast Pace",
+                "standard": "Balanced",
+                "stability": "Max Reten.",
+                "standard_desc": "Adaptive Tuning"
+            },
+            "presets": {
+                "title": "Model Presets",
+                "desc": "Select a pre-configured weight set for standard learning patterns."
+            },
+            "presets_data": {
+                "balanced": {
+                    "name": "Standard Equilibrium",
+                    "desc": "Default optimized parameters for general use."
+                },
+                "conservative": {
+                    "name": "Persistence Priority",
+                    "desc": "Higher frequency reviews for high-stakes recall."
+                },
+                "aggressive": {
+                    "name": "Efficiency Priority",
+                    "desc": "Extended intervals for maximum learning throughput."
+                }
+            },
+            "subject_config_title": "Advanced Subject Support",
+            "subject_config_desc": "Access per-subject profiles to manage specialized optimization strategies.",
+            "subject_config_btn": "Manage FSRS Profiles",
+            "isolation_status": "Multi-domain Isolation ready",
+            "locked_title": "Expert Mode Required",
+            "locked_desc": "Manual weight tuning is restricted to avoid model degradation.",
+            "btn_reset": "Restore Model Defaults",
+            "stats": {
+                "total_reviews": "Total Reviews",
+                "avg_stability": "Mean Stability",
+                "lapse_rate": "Lapse Rate",
+                "weight_status": "Parameter Status",
+                "custom": "Custom Tuning",
+                "default": "Standard",
+                "need_login": "Login Required",
+                "need_data": "Insufficient Data"
+            },
+            "expert": {
+                "title": "Expert Tuning",
+                "mode_label": "Enable Expert Mode",
+                "warning_title": "Advanced Tuning",
+                "custom_weights_detected": "Manual configuration detected. This overrides standard optimization algorithms.",
+                "groups": {
+                    "s0": "Initial Stability (S₀)",
+                    "d0": "Initial Complexity (D₀)",
+                    "stability": "Iterative Learning",
+                    "lapse": "Recovery Logic"
+                }
+            }
+        },
+        "display": {
+            "title": "Appearance",
+            "appearance": {
+                "title": "Theme Mode",
+                "desc": "Select how the interface adapts to your environment.",
+                "system": "System Sync",
+                "light": "Light Mode",
+                "dark": "Dark Mode"
+            },
+            "light": {
+                "title": "Daylight Theme",
+                "desc": "Theme for bright environments."
+            },
+            "dark": {
+                "title": "Night Theme",
+                "desc": "Theme for low light conditions."
+            },
+            "themes": {
+                "dark": "Industrial Dark",
+                "light": "Standard Light",
+                "liquid_light": "Liquid Glass (Light)",
+                "liquid_light_desc": "Minimalist High-Contrast",
+                "warm_paper": "Warm Matte",
+                "warm_paper_desc": "Low Blue Light",
+                "liquid_dark": "Liquid Glass (Dark)",
+                "liquid_dark_desc": "Balanced Navy Hues",
+                "midnight_oled": "Absolute Zero (OLED)",
+                "midnight_oled_desc": "True Black Efficiency"
+            },
+            "ux": {
+                "title": "VFX & Motion",
+                "desc": "Configure interface animations and visual polish.",
+                "reflections": "Glass Reflections",
+                "animations": "Enable Animations",
+                "reduced_motion": "Reduce Motion"
+            },
+            "theme": {
+                "toggle": "Switch Theme",
+                "switchToLight": "Switch to Light",
+                "switchToDark": "Switch to Dark"
+            }
+        },
+        "security": {
+            "title": "Security & Sync",
+            "keys": {
+                "title": "Access Keys",
+                "desc": "Manage your personal access tokens for API integrations.",
+                "primary_label": "Production Access Token",
+                "status_active": "Status: Active • Full Access",
+                "btn_generate": "Generate Key"
+            },
+            "sync": {
+                "title": "Device Sync",
+                "desc": "Manage cloud synchronization across your devices.",
+                "btn_revoke": "Revoke Access",
+                "last_sync": "Last Sync: {{time}}"
+            }
+        },
+        "preview": {
+            "rollover_label": "Cycle Reset",
+            "rollover_countdown": "({{hours}}h {{minutes}}m remaining)",
+            "rollover_impact": "Impacts current queue",
+            "countdown_daily": "Daily progression",
+            "countdown_daily_short": "Daily Progression",
+            "countdown_custom": "Deadline: {{time}}",
+            "countdown_custom_short": "Project Milestone"
+        },
+        "expert": {
+            "mode_label": "Expert Mode",
+            "enable": "Enable Expert Mode",
+            "disable": "Disable Expert Mode",
+            "exit": "Exit Expert Mode",
+            "warning": "Warning: Manual tuning may affect scheduling accuracy."
+        },
+        "theme": {
+            "title": "Theme",
+            "toggle": "Toggle Theme",
+            "switchToLight": "Light Mode",
+            "switchToDark": "Dark Mode",
+            "light": "Light",
+            "dark": "Dark",
+            "system": "Auto"
+        },
+        "shortcuts": {
+            "title": "Keyboard Shortcuts",
+            "desc": "Manage your keyboard shortcuts for efficiency.",
+            "global": {
+                "title": "Global Shortcuts",
+                "desc": "Available on any page",
+                "toggle_sidebar": "Toggle Sidebar",
+                "dismiss_toast": "Dismiss Notification"
+            },
+            "review": {
+                "title": "Review Session",
+                "desc": "Shortcuts during review mode",
+                "reveal": "Reveal Answer",
+                "choice_a": "Select A",
+                "choice_b": "Select B",
+                "choice_c": "Select C",
+                "choice_d": "Select D",
+                "rate_again": "Rate: Again",
+                "rate_hard": "Rate: Hard",
+                "rate_good": "Rate: Good",
+                "rate_easy": "Rate: Easy",
+                "undo": "Undo Rating"
+            },
+            "inspector": {
+                "title": "Question Inspector",
+                "desc": "Shortcuts in the library detail panel",
+                "mode_preview": "Preview Mode",
+                "mode_edit": "Edit Mode",
+                "mode_meta": "Metadata",
+                "toggle_answer": "Toggle Answer",
+                "toggle_preview": "Toggle Live Preview",
+                "save": "Save Changes"
+            },
+            "table": {
+                "key": "Key",
+                "action": "Action",
+                "context": "Context"
+            },
+            "recording": "Recording New Shortcut",
+            "press_keys": "Press keys combination..."
+        }
+    }
+}

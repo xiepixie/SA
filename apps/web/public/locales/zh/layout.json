@@ -1,0 +1,34 @@
+{
+    "nav": {
+        "sections": {
+            "main": "主要功能",
+            "systems": "系统管理"
+        },
+        "items": {
+            "welcome": "欢迎",
+            "dashboard": "控制台",
+            "review": "复习",
+            "notebook": "笔记本",
+            "exams": "试卷库",
+            "questions": "题目库",
+            "import": "导入向导",
+            "sync": "同步中心",
+            "manage": "档案管理",
+            "settings": "系统设置"
+        },
+        "sidebar": "侧边栏",
+        "startReview": "开始复习",
+        "openMenu": "打开菜单",
+        "collapse": "收起侧边栏（Cmd+B）",
+        "expand": "展开侧边栏（Cmd+B）",
+        "signOut": "退出登录",
+        "logout": {
+            "title": "确认退出？",
+            "description": "退出后，你需要重新验证身份才能访问你的数据。"
+        }
+    },
+    "footer": {
+        "active_nodes": "活跃题目",
+        "stability": "全局记忆稳定性"
+    }
+}

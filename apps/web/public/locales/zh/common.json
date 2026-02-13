@@ -1,0 +1,153 @@
+{
+    "common": {
+        "untitled": "未命名",
+        "actions": {
+            "save": "保存",
+            "cancel": "取消",
+            "confirm": "确认",
+            "close": "关闭",
+            "dismiss": "忽略",
+            "delete": "删除",
+            "retry": "重试",
+            "search": "搜索",
+            "copy": "复制",
+            "reset": "重置",
+            "add": "添加",
+            "exit": "退出",
+            "edit": "编辑",
+            "type": "类型",
+            "back": "返回",
+            "rename": "重命名",
+            "share": "分享",
+            "sync": "立即同步",
+            "actions": "更多操作",
+            "clear_all": "清除全部",
+            "undo": "撤销",
+            "remove": "移除",
+            "click_to_view": "点击处理",
+            "locate": "定位",
+            "collapse": "收起",
+            "expand": "展开",
+            "retry_failed": "重试失败项",
+            "back_to_dashboard": "返回控制面板",
+            "collapse_all": "精简模式",
+            "expand_all": "完整分析",
+            "more": "更多",
+            "pin_sidebar": "固定侧边栏",
+            "back_home": "返回首页"
+        },
+        "loading": "加载中...",
+        "status": {
+            "loading": "加载中...",
+            "error": "操作失败",
+            "success": "已完成",
+            "ready": "就绪",
+            "copied": "已复制",
+            "synced": "已同步",
+            "in_progress": "进行中",
+            "completed": "已完成",
+            "abandoned": "已放弃",
+            "time_est": "预估用时",
+            "weak": "薄弱环节",
+            "items": "项",
+            "minutes_short": "分",
+            "locked": "已锁定",
+            "processing": "处理中",
+            "saving": "正在保存...",
+            "saved": "已保存",
+            "none": "无",
+            "more_queued": "更多项待处理"
+        },
+        "errors": {
+            "save_failed": "保存失败，请重试",
+            "delete_failed": "删除失败，请重试",
+            "auth_failed": "身份验证已过期，请重新登录"
+        },
+        "units": {
+            "cards_per_day": "题/日",
+            "days_abbr": "天"
+        },
+        "search_placeholder": "输入关键词搜索...",
+        "search_results": "搜索结果",
+        "no_results": "未找到匹配记录",
+        "all": "全部类别",
+        "recommended": "推荐使用",
+        "experimental": "技术预览",
+        "standard": "标准规范",
+        "general": {
+            "all": "综合",
+            "unknown": "未分类",
+            "universal": "通用"
+        },
+        "continents": {
+            "asia_oceania": "亚洲与大洋洲",
+            "europe_africa": "欧洲与非洲",
+            "americas": "美洲",
+            "system": "系统默认"
+        },
+        "time": {
+            "just_now": "刚刚",
+            "mins_ago": "{{count}} 分钟前",
+            "hours_ago": "{{count}} 小时前",
+            "yesterday": "昨天",
+            "days_ago": "{{count}} 天前"
+        },
+        "time_left": "剩余 {{hours}} 小时 {{minutes}} 分钟",
+        "difficulty": {
+            "easy": "基础",
+            "medium": "中等",
+            "hard": "困难"
+        },
+        "type": {
+            "choice": "选择题",
+            "fill_blank": "填空题",
+            "short_answer": "简答题"
+        },
+        "toast": {
+            "info": "系统通知",
+            "success": "操作成功",
+            "warning": "运行提示",
+            "error": "执行失败"
+        },
+        "subjects": "学科",
+        "tags": "标签",
+        "archive": "归档"
+    },
+    "renderer": {
+        "sections": {
+            "stem_init": "题干",
+            "hints": "解题思路",
+            "explanation": "详解",
+            "analysis": "选项分析"
+        },
+        "hints": {
+            "get_hint": "显示提示",
+            "refine_logic": "深入提示",
+            "revealed_hints": "已显示的提示",
+            "fragment": "提示 {{n}}",
+            "unlock_msg": "解锁提示以辅助思考"
+        },
+        "header": {
+            "echo": "题干回顾",
+            "last_mistake": "上次错题"
+        },
+        "analysis": {
+            "title": "选项分析",
+            "valid": "合理",
+            "fallacy": "谬误",
+            "your_choice": "你的选择",
+            "no_analysis": "暂无分析"
+        },
+        "fill_blank": {
+            "placeholder": "在此输入...",
+            "enter_hint": "按回车键显示答案",
+            "blank_label": "填空 #{{index}}"
+        },
+        "short_answer": {
+            "placeholder": "在此输入..."
+        },
+        "empty": {
+            "title": "未找到相关内容"
+        }
+    }
+}

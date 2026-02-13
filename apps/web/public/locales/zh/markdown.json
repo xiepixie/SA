@@ -1,0 +1,30 @@
+{
+    "markdown": {
+        "notifications": {
+            "tex_copied": "TeX 公式已复制到剪贴板",
+            "code_copied": "代码已复制",
+            "code_lines_copied": "已复制选中的 {{count}} 行",
+            "latex_source_copied": "LaTeX 源码已复制",
+            "copy_failed": "复制失败",
+            "copy_failed_manual": "复制失败。请长按选择文本手动复制"
+        },
+        "action": {
+            "back_to_render": "返回渲染",
+            "back": "返回",
+            "copy_latex": "复制 LaTeX",
+            "copy": "复制",
+            "copy_code": "复制代码",
+            "copy_lines": "复制 {{count}} 行"
+        },
+        "panel": {
+            "latex_ref": "LaTeX 参考"
+        },
+        "aria": {
+            "math_label": "数学{{type}}，双击{{action}}查看源码",
+            "type_block": "公式块",
+            "type_inline": "公式",
+            "action_block": "或按回车",
+            "action_inline": ""
+        }
+    }
+}

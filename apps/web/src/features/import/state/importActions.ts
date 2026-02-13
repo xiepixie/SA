@@ -163,7 +163,17 @@ export interface FocusFieldAction {
 
 export interface RetryFailedAction {
     type: 'RETRY_FAILED';
-    payload: number[]; // row numbers
+    payload: { failedRows: number[] };
+}
+
+export interface SetDuplicatesAction {
+    type: 'SET_DUPLICATES';
+    payload: { duplicates: Record<string, string> };
+}
+
+export interface SetAllowDuplicatesAction {
+    type: 'SET_ALLOW_DUPLICATES';
+    payload: boolean;
 }
 
 // ========================================
@@ -198,7 +208,10 @@ export type ImportAction =
     | SetJsonErrorAction
     | ResetJsonErrorsAction
     | FocusFieldAction
-    | RetryFailedAction;
+    | FocusFieldAction
+    | RetryFailedAction
+    | SetDuplicatesAction
+    | SetAllowDuplicatesAction;
 
 // ========================================
 // Action Creators
@@ -302,8 +315,18 @@ export const importActions = {
         payload: field,
     }),
 
-    retryFailed: (failedRows: number[]): RetryFailedAction => ({
-        type: 'RETRY_FAILED',
-        payload: failedRows,
+    retryFailed: (failedRows: number[]) => ({
+        type: 'RETRY_FAILED' as const,
+        payload: { failedRows }
+    }),
+
+    setDuplicates: (duplicates: Record<string, string>) => ({
+        type: 'SET_DUPLICATES' as const,
+        payload: { duplicates }
+    }),
+
+    setAllowDuplicates: (allow: boolean): SetAllowDuplicatesAction => ({
+        type: 'SET_ALLOW_DUPLICATES',
+        payload: allow
     }),
 };

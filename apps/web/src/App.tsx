@@ -12,7 +12,7 @@ function App() {
   const queryClient = useQueryClient();
   const pushEffect = useAppStore(s => s.pushEffect);
   const { userId } = useSupabaseAuth();
-  const { t, i18n } = useTranslation();
+  const { t, i18n } = useTranslation(['common', 'auth', 'dashboard', 'review', 'import', 'library', 'exams', 'sync', 'settings', 'notes', 'markdown']);
 
   // 1) Global Unified Notification Listener
   useEffect(() => {

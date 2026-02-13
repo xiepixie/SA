@@ -1,0 +1,97 @@
+{
+    "notes": {
+        "editor": {
+            "untitled": "未命名笔记",
+            "placeholder": "开始记录你的灵感... (支持 Markdown & LaTeX, 使用 [[ 插入链接)",
+            "saving": "正在保存...",
+            "unsaved": "未保存",
+            "saved_at": "已保存于 {{time}}",
+            "welcome_title": "欢迎使用笔记本",
+            "welcome_desc": "在侧边栏选择一篇笔记，或者创建新笔记开始记录。",
+            "preview_title": "实时预览",
+            "loading_note": "正在加载笔记...",
+            "save_failed": "保存失败"
+        },
+        "sidebar": {
+            "title": "笔记园地",
+            "search_placeholder": "搜索笔记或题目...",
+            "all_notes": "全部文件夹",
+            "recents": "最近记录",
+            "new_note": "新建笔记",
+            "new_folder": "新建文件夹",
+            "rename": "重命名",
+            "delete": "彻底删除",
+            "delete_confirm": "确定要删除该{{type}}吗？此操作不可撤销。",
+            "rename_prompt": "请输入新名称：",
+            "empty_folder": "空文件夹",
+            "empty_library": "笔记本空空如也",
+            "no_recent": "暂无最近记录"
+        },
+        "panel": {
+            "hints": "提示",
+            "notes": "工具",
+            "backlinks": "链想",
+            "hints_title": "逻辑提示系统",
+            "hints_desc": "系统将根据您的学习进度，动态提供结构化的逻辑引导。",
+            "refresh": "刷新引擎",
+            "backlinks_tip": "建议：在全局笔记本中引用该题目，系统将自动在此处建立双向链接。",
+            "more_soon": "更多笔记增强功能开发中",
+            "no_hints": "该知识单元暂无进阶提示",
+            "all_hints_revealed": "提示已全部解锁",
+            "revealed_count": "已揭示 {{count}} / {{total}}",
+            "logic_scaffolding": "逻辑脉络脚手架",
+            "hint_cta_start": "解锁第一层逻辑脉络",
+            "hint_cta_next": "揭示多维度的思考路径",
+            "hint_shortcut": "快捷键",
+            "hint_scaffoling_title": "通往逻辑的核心路径"
+        },
+        "quick_jot": {
+            "title": "速记便签",
+            "placeholder": "记录您的思考过程... (支持 LaTeX 公式与 Markdown 语法)",
+            "double_click": "双击进入编辑模式",
+            "pop_out": "弹出悬浮窗口",
+            "save_hint": "Esc 快速保存",
+            "save_hint_mac": "Ctrl+Enter 保存",
+            "to_save": "保存",
+            "click_outside": "点击外部保存",
+            "chars": "字符"
+        },
+        "floating": {
+            "title": "浮动便签",
+            "tooltip_theme": "配色方案",
+            "tooltip_pin_locked": "已锁定（固定显示此题目笔记）",
+            "tooltip_pin_dynamic": "动态模式（跟随当前题目切换）",
+            "tooltip_dock": "停靠回侧边栏",
+            "tooltip_dismiss": "忽略"
+        },
+        "backlinks": {
+            "title": "反向链接",
+            "fetching": "正在检索关联网络",
+            "empty_title": "暂无双向链接",
+            "empty_desc": "在笔记本或其他文档中提及此题目，即可在此处查看其上下文关系。",
+            "linked_in": "在 {{count}} 篇笔记中被引用",
+            "untitled": "未命名笔记",
+            "context_snippet": "引用上下文",
+            "type_notebook": "笔记本",
+            "type_observation": "观察日志"
+        },
+        "tooltips": {
+            "hide_sidebar": "隐藏侧边栏",
+            "show_sidebar": "显示侧边栏",
+            "open_floating": "打开悬浮便签",
+            "toggle_preview": "切换预览模式"
+        },
+        "toolbar": {
+            "h1": "一级标题",
+            "h2": "二级标题",
+            "h3": "三级标题",
+            "bold": "加粗",
+            "italic": "斜体",
+            "list": "无序列表",
+            "code": "行内代码",
+            "code_block": "代码块",
+            "latex": "LaTeX 公式",
+            "wiki": "双向链接"
+        }
+    }
+}

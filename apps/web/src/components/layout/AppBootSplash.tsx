@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Database, Zap, Sparkles } from 'lucide-react';
 
 export const AppBootSplash: React.FC = () => {
-    const { t } = useTranslation();
+    const { t } = useTranslation(['app']);
 
     return (
         /* 
@@ -30,10 +30,10 @@ export const AppBootSplash: React.FC = () => {
                     </div>
                     <div>
                         <h1 className="text-2xl font-black tracking-tight text-base-content">
-                            {t('boot.title', 'Preparing Study Environment')}
+                            {t('app:boot.title', 'Preparing Study Environment')}
                         </h1>
                         <p className="text-sm font-bold opacity-40 uppercase tracking-[0.2em] mt-1">
-                            {t('boot.subtitle', 'Neural Sync Interface v2')}
+                            {t('app:boot.subtitle', 'Neural Sync Interface v2')}
                         </p>
                     </div>
                 </div>
@@ -42,18 +42,18 @@ export const AppBootSplash: React.FC = () => {
                 <div className="space-y-6">
                     <BootStep
                         icon={<Sparkles className="w-4 h-4" />}
-                        label={t('boot.steps.renderer', 'Initializing Liquid Graphics')}
+                        label={t('app:boot.steps.renderer', 'Initializing Liquid Graphics')}
                         status="done"
                     />
                     <BootStep
                         icon={<Database className="w-4 h-4" />}
-                        label={t('boot.steps.sync', 'Synchronizing Error Entities')}
+                        label={t('app:boot.steps.sync', 'Synchronizing Error Entities')}
                         status="active"
                         delay="0.1s"
                     />
                     <BootStep
                         icon={<Zap className="w-4 h-4" />}
-                        label={t('boot.steps.review', 'Preparing Review Queue')}
+                        label={t('app:boot.steps.review', 'Preparing Review Queue')}
                         status="waiting"
                         delay="0.2s"
                     />
@@ -64,7 +64,7 @@ export const AppBootSplash: React.FC = () => {
                     <div className="flex items-center gap-3">
                         <span className="flex h-1.5 w-1.5 rounded-full bg-success animate-ping" />
                         <span className="uppercase tracking-widest leading-none">
-                            {t('boot.status', 'System Online - Ready for Sync')}
+                            {t('app:boot.status', 'System Online - Ready for Sync')}
                         </span>
                     </div>
                     <span className="opacity-60 tabular-nums font-mono">EST: 0.8s</span>

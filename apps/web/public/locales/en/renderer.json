@@ -1,0 +1,55 @@
+{
+    "renderer": {
+        "header": {
+            "echo": "Echo",
+            "last_mistake": "Last Wrong Response"
+        },
+        "hints": {
+            "fragment": "Hint Segment {{n}}",
+            "get_hint": "Request Logical Hint",
+            "refine_logic": "Refine Solution Logic"
+        },
+        "analysis": {
+            "title": "Option Diagnostics",
+            "reconstruction_complete": "Analysis Synchronized",
+            "valid": "Correct logic",
+            "fallacy": "Incorrect logic",
+            "your_choice": "My Choice",
+            "no_analysis": "No diagnostic data available for this option."
+        },
+        "fill_blank": {
+            "placeholder": "Input variable…",
+            "blank_label": "Blank #{{index}}",
+            "correct": "Correct Answer",
+            "match": "Correct",
+            "miss": "Incorrect",
+            "expected": "Expected",
+            "enter_hint": "Press Enter to check"
+        },
+        "short_answer": {
+            "placeholder": "Commit descriptive response…",
+            "your_answer": "Your Answer",
+            "model_answer": "Model Answer",
+            "no_reference": "No reference answer available"
+        },
+        "question": "Question",
+        "answer_explanation": "Answer & Explanation",
+        "empty": {
+            "title": "No Content"
+        },
+        "sections": {
+            "content": "Question Content",
+            "interactive_preview": "Interactive Preview",
+            "explanation": "Detailed Explanation",
+            "expert_insight": "In-depth Analysis",
+            "hints": "Solution Logic",
+            "answer_visual": "Reference Visual",
+            "stem_init": "Question Content",
+            "mastery": "Stability"
+        },
+        "answer": {
+            "reveal": "Reveal Solution",
+            "reset": "Reset Interaction"
+        }
+    }
+}

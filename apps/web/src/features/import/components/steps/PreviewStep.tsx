@@ -78,20 +78,18 @@ export const PreviewStep: React.FC<PreviewStepProps> = ({
     onSetPreviewRevealed,
     wizard,
 }) => {
-    const { t } = useTranslation();
+    const { t } = useTranslation(['import', 'common']);
     const { state, dispatch, actions } = wizard;
 
     return (
         <div className="relative h-screen flex flex-col overflow-hidden bg-base-300 text-base-content selection:bg-primary/30">
-            {/* Immersive Cinematic Background */}
-            <div className="fixed inset-0 z-0 pointer-events-none">
+            {/* Refined Page Background */}
+            <div className="fixed inset-0 z-0 pointer-events-none overflow-hidden">
                 <div className="absolute inset-0 bg-base-300" />
-                <div className="absolute top-[-10%] right-[-10%] w-[80%] h-[80%] bg-primary/5 rounded-full blur-[200px]" />
-                <div className="absolute inset-0 opacity-[0.03] dark:opacity-[0.1] bg-[url('data:image/svg+xml,%3Csvg viewBox=\'0 0 200 200\' xmlns=\'http://www.w3.org/2000/svg\'%3E%3Cfilter id=\'noiseFilter\'%3E%3CfeTurbulence type=\'fractalNoise\' baseFrequency=\'0.65\' numOctaves=\'3\' stitchTiles=\'stitch\'/%3E%3C/filter%3E%3Crect width=\'100%25\' height=\'100%25\' filter=\'url(%23noiseFilter)\'/%3E%3C/svg%3E')]" />
                 <div className="absolute h-px w-full top-0 left-0 bg-gradient-to-r from-transparent via-base-content/10 to-transparent" />
             </div>
 
-            <div className="flex-1 flex overflow-hidden relative z-10">
+            <div className="flex-1 flex overflow-hidden relative z-10 w-full max-w-[1920px] mx-auto bg-base-300 shadow-2xl">
                 {/* Sidebar */}
                 <ItemSidebar
                     filteredItems={filteredItems}
@@ -146,8 +144,8 @@ export const PreviewStep: React.FC<PreviewStepProps> = ({
                         <div className="flex-1 flex flex-col items-center justify-center p-32 text-center opacity-[0.03] select-none grayscale cursor-default hover:opacity-10 transition-all duration-2000 ease-spring">
                             <LayoutPanelLeft size={160} strokeWidth={0.2} className="animate-spin-slow" />
                             <div className="mt-16 space-y-6">
-                                <h4 className="text-4xl font-black uppercase tracking-[0.8em]">{t('import.preview.untitled_object')}</h4>
-                                <p className="text-sm font-bold tracking-[0.5em] uppercase opacity-60 animate-pulse">{t('common.search_placeholder').split('…')[0]}</p>
+                                <h4 className="text-4xl font-black uppercase tracking-[0.8em]">{t('import:import.preview.untitled_object')}</h4>
+                                <p className="text-sm font-bold tracking-[0.5em] uppercase opacity-60 animate-pulse">{t('common:common.search_placeholder').split('…')[0]}</p>
                             </div>
                         </div>
                     )}

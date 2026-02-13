@@ -1,0 +1,212 @@
+{
+    "exams": {
+        "header": {
+            "title": "测验中心",
+            "subtitle": "从题库生成测验并追踪结果",
+            "btn_create": "创建测验"
+        },
+        "stats": {
+            "total_exams": "累计测验",
+            "total_exams_tooltip": "自加入以来完成的全部测验数量",
+            "avg_score": "平均分",
+            "avg_score_tooltip": "基于所有已完成测验计算的平均得分",
+            "streak": "连续学习",
+            "streak_tooltip": "连续学习天数",
+            "total_time": "累计用时",
+            "total_time_tooltip": "在测验中累计耗时",
+            "weak_subjects": "薄弱学科",
+            "weak_subjects_tooltip": "按错误率分析的薄弱学科"
+        },
+        "create": {
+            "quick_start": "快速开始",
+            "custom_config": "自定义配置",
+            "title": "创建测验",
+            "step_info": "第 {{current}} / {{total}} 步",
+            "btn_generate": "生成试卷"
+        },
+        "milestone": {
+            "title": "里程碑",
+            "desc": "掌握情况概览",
+            "streak_unit": "{{count}} 天",
+            "excellent": "表现优秀"
+        },
+        "generate_title": {
+            "general": "综合测验",
+            "practice": "练习测验",
+            "comprehensive": "综合练习"
+        },
+        "modes": {
+            "eval": {
+                "title": "考试模式",
+                "desc": "完成后统一出分，结果将被锁定。"
+            },
+            "drill": {
+                "title": "练习模式",
+                "desc": "即时反馈，适合边做边学。"
+            }
+        },
+        "list": {
+            "title": "历史记录",
+            "search": "搜索记录…",
+            "filter": "筛选",
+            "col_id": "测验 ID",
+            "col_subject": "学科",
+            "col_metrics": "指标",
+            "col_score": "得分",
+            "col_actions": "操作",
+            "remaining": "剩余 {{count}} 题",
+            "elapsed": "已用时 {{time}}",
+            "empty_title": "暂无历史记录",
+            "empty_desc": "完成第一次测验后即可追踪进度",
+            "btn_continue": "继续答题",
+            "btn_retry": "重新开始"
+        },
+        "history": {
+            "search_placeholder": "搜索测验记录…",
+            "stats": {
+                "questions": "题目",
+                "correct": "正确",
+                "time": "用时"
+            },
+            "efficiency": "效率",
+            "efficiency_unit": "秒/题",
+            "grade": "等级"
+        },
+        "banner": {
+            "remaining": "剩余时间 {{time}}",
+            "abandon": "放弃测验",
+            "confirm_abandon": "确定放弃当前测验吗？",
+            "confirm": "确定放弃",
+            "cancel": "返回"
+        },
+        "timer": {
+            "pause": "暂停",
+            "resume": "继续",
+            "paused": "测验已暂停",
+            "paused_desc": "你可以休息一下，准备好后点击继续。",
+            "tab_warning": "切换标签页不会暂停计时",
+            "abandon_warning": "放弃后本次进度不会保存，需要重新开始。"
+        },
+        "filters": {
+            "title": "高级筛选",
+            "active": "已启用 {{count}} 个筛选条件",
+            "desc": "用于精确定位历史记录",
+            "status": "测验状态",
+            "mode": "测验模式",
+            "time_range": "时间范围",
+            "time_today": "今天",
+            "time_week": "最近一周",
+            "time_month": "最近一月",
+            "score_range": "得分区间",
+            "sort_by": "排序",
+            "sort_date": "最新",
+            "sort_score": "最高得分",
+            "sort_duration": "用时最短",
+            "sort_questions": "题目数量"
+        },
+        "wizard": {
+            "nav": {
+                "prev": "上一步",
+                "next": "下一步"
+            },
+            "step1": {
+                "title": "选择学科",
+                "desc": "选择要练习的学科（可多选）",
+                "search": "搜索学科…",
+                "all": "全选",
+                "clear": "清空",
+                "available": "可用题目",
+                "show_more": "显示更多（{{count}}）",
+                "show_less": "收起",
+                "error": "请至少选择一个学科",
+                "search_placeholder": "输入学科名称…"
+            },
+            "step2": {
+                "title": "筛选条件",
+                "desc": "可选，用于进一步限定题目范围",
+                "tags": "标签",
+                "tags_desc": "可选，按标签筛选",
+                "mastery": "掌握度范围",
+                "difficulty": "难度",
+                "type": "题型",
+                "clear": "清空"
+            },
+            "step3": {
+                "title": "抽题策略",
+                "desc": "选择抽题方式",
+                "question_count": "题目数量",
+                "question_types": "题型",
+                "unit": "题",
+                "recommended": "推荐",
+                "available_hint": "当前条件下仅有 {{count}} 道题目可用",
+                "shuffle": "随机打乱",
+                "shuffle_desc": "打乱题目顺序",
+                "archived": "包含归档题目",
+                "archived_desc": "将已归档题目纳入抽取范围"
+            },
+            "step4": {
+                "title": "确认开始",
+                "desc": "确认配置并开始测验",
+                "mode": "模式",
+                "overview": "配置概览",
+                "overview_desc": "确认信息无误后开始测验",
+                "stats_count": "题目数量",
+                "stats_subjects": "学科数",
+                "stats_time": "预计用时",
+                "time_limit": "限时",
+                "enable_limit": "启用限时",
+                "mins": "分钟",
+                "more_subjects": " 等 {{count}} 个学科"
+            }
+        },
+        "strategies": {
+            "weakness": {
+                "title": "薄弱优先",
+                "desc": "优先抽取错误率较高的题目"
+            },
+            "due_first": {
+                "title": "到期优先",
+                "desc": "优先抽取需要复习的题目"
+            },
+            "new_first": {
+                "title": "新题优先",
+                "desc": "优先抽取尚未学习的题目"
+            },
+            "random": {
+                "title": "随机抽取",
+                "desc": "随机抽取题目"
+            }
+        },
+        "live_stats": {
+            "title": "实时预览",
+            "desc": "根据当前筛选条件实时估算",
+            "realtime_config": "当前配置",
+            "intensity_high": "强度较高",
+            "ready": "准备就绪",
+            "configuring": "配置中…",
+            "coverage": "题目数量",
+            "coverage_unit": "/ 目标 {{count}}",
+            "est_time": "预计用时",
+            "time_unit": "分钟",
+            "time_avg": "平均 2 分钟/题",
+            "time_value": "{{count}} 分钟",
+            "selected_subjects": "已选学科",
+            "no_subjects": "请先选择学科",
+            "distribution": "难度分布",
+            "strategy": "抽题策略",
+            "not_found": "未找到题目",
+            "not_found_desc": "请选择学科或放宽筛选条件",
+            "insufficient": "题目数量不足",
+            "insufficient_tip": "当前条件下暂无可用题目",
+            "ready_btn": "已就绪",
+            "ready_tip": "点击「生成试卷」开始练习"
+        },
+        "grades": {
+            "excellent": "优秀",
+            "good": "良好",
+            "average": "中等",
+            "pass": "及格",
+            "poor": "有待提高"
+        }
+    }
+}

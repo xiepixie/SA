@@ -13,12 +13,10 @@ export interface ParseResult {
     has_code: boolean;
     /** Whether the document contains tables */
     has_table: boolean;
-    /**
-     * Whether the document contains **clickable** wiki-links.
-     * [[...]] inside code/pre/a blocks are NOT counted (they remain as literal text).
-     * This semantic is intentional: frontend only cares about interactive links.
-     */
+    /** Whether the document contains interactive, clickable wiki-links ([[Page]]) */
     has_wiki_links: boolean;
+    /** Whether the document contains embedded assets or transcluded notes (![[...]]) */
+    has_wiki_embeds: boolean;
 }
 
 

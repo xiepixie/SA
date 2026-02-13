@@ -7,19 +7,19 @@ import { useAppStore } from '../app/state/useAppStore';
 import { v2Api } from '../app/api/views';
 import {
     CheckCircle2, Brain, ArrowLeft,
-    Layers, Target, Zap,
+    Layers, Target, Zap, AlertTriangle,
     RotateCcw, Award, Flame,
-    Hash, Sparkles, Clock, BookOpen,
+    Hash, Clock, BookOpen, Search,
     Pin, PinOff
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { MarkdownRenderer } from '../components/LatexRenderer';
 import { QuestionRenderer } from '../components/review/QuestionRenderer';
 import { ReviewStrategyPanel } from '../components/review/ReviewStrategyPanel';
 import { sortCards } from '../app/utils/reviewSortUtils';
 import type { ReviewSortMode } from '../app/utils/reviewSortUtils';
 import { ReviewSkeleton } from '../components/layout/PageSkeletons';
 import { cn } from '../app/utils/cn';
+import { MarkdownRenderer } from '../components/LatexRenderer';
 import { NotesPanel } from '../features/notes/components/NotesPanel';
 import { FloatingNotes } from '../features/notes/components/FloatingNotes';
 import { useReviewWizard } from '../features/review/hooks/useReviewWizard';
@@ -37,17 +37,69 @@ interface SessionStats {
     maxStreak: number;
 }
 
-const RATING_LABELS: Record<Rating, string> = { 1: 'again', 2: 'hard', 3: 'good', 4: 'easy' };
 
-const formatInterval = (days: number): string => {
-    if (days < 1) {
-        const mins = Math.round(days * 24 * 60);
-        return mins < 60 ? `${mins}m` : `${Math.round(mins / 60)}h`;
+
+// Format exact due date for display - shows precise FSRS calculation results
+// Returns a display function that uses i18n
+const createFormatDueDate = (t: (key: string, options?: Record<string, any>) => string) => (date: Date): string => {
+    const now = new Date();
+    const diffMs = date.getTime() - now.getTime();
+    const diffMinutes = diffMs / (1000 * 60);
+
+    // Within 1 hour: show minutes (e.g., "10分钟")
+    if (diffMinutes < 60) {
+        const count = Math.max(1, Math.round(diffMinutes));
+        return t('review.interval.minutes', { count });
     }
-    return `${Math.round(days)}d`;
+
+    // Within 24 hours: show hours (e.g., "6小时")
+    const diffHours = diffMinutes / 60;
+    if (diffHours < 24) {
+        const hours = Math.round(diffHours);
+        return t('review.interval.hours', { count: hours });
+    }
+
+    // Calculate days difference
+    const diffDays = Math.round(diffMs / (1000 * 60 * 60 * 24));
+    const month = date.getMonth() + 1;
+    const day = date.getDate();
+
+    // Tomorrow
+    if (diffDays === 1) {
+        return t('review.interval.tomorrow', { month, day });
+    }
+
+    // Day after tomorrow
+    if (diffDays === 2) {
+        return t('review.interval.day_after_tomorrow', { month, day });
+    }
+
+    // Within a week: show date clearly (e.g., "2月5日")
+    if (diffDays <= 7) {
+        return t('review.interval.date_short', { month, day, count: diffDays });
+    }
+
+    // Beyond a week: show date with days count
+    return t('review.interval.date_long', { month, day, count: diffDays });
 };
 
-const DEFAULT_INTERVALS = { again: '5m', hard: '1d', good: '3d', easy: '7d' };
+interface IntervalInfo {
+    interval: number; // in days
+    dueDate: Date;
+    display: string;
+}
+
+// Default intervals - will be replaced with actual FSRS calculations
+const createDefaultIntervals = (t: (key: string, options?: Record<string, any>) => string): Record<string, IntervalInfo> => {
+    const now = new Date();
+    const formatDueDate = createFormatDueDate(t);
+    return {
+        again: { interval: 0.007, dueDate: new Date(now.getTime() + 10 * 60 * 1000), display: formatDueDate(new Date(now.getTime() + 10 * 60 * 1000)) },
+        hard: { interval: 0.5, dueDate: new Date(now.getTime() + 12 * 60 * 60 * 1000), display: formatDueDate(new Date(now.getTime() + 12 * 60 * 60 * 1000)) },
+        good: { interval: 1, dueDate: new Date(now.getTime() + 24 * 60 * 60 * 1000), display: formatDueDate(new Date(now.getTime() + 24 * 60 * 60 * 1000)) },
+        easy: { interval: 4, dueDate: new Date(now.getTime() + 4 * 24 * 60 * 60 * 1000), display: formatDueDate(new Date(now.getTime() + 4 * 24 * 60 * 60 * 1000)) }
+    };
+};
 
 const SIDEBAR_CONSTRAINTS = {
     queue: { min: 240, max: 480 },
@@ -78,58 +130,70 @@ const ReviewQueueList: React.FC<{
     questions: Record<string, QuestionMeta>;
     currentIndex: number;
     completedIndices: Set<number>;
+    searchQuery: string;
+    onSearchChange: (val: string) => void;
     onSelect: (index: number) => void;
     onToggleCollapse?: () => void;
     isCollapsed?: boolean;
-}> = ({ cards, questions, currentIndex, completedIndices, onSelect, onToggleCollapse, isCollapsed = false }) => {
-    const { t } = useTranslation();
+    indexMapping?: number[];  // Maps filteredCards index to dueCards index
+}> = ({ cards, questions, currentIndex, completedIndices, searchQuery, onSearchChange, onSelect, onToggleCollapse, isCollapsed = false, indexMapping }) => {
+    const { t } = useTranslation(['review', 'common']);
     return (
         <div className="flex flex-col h-full">
-            <div className="p-4 border-b border-base-content/5 flex items-center justify-between group/header shrink-0 h-16 bg-base-100/50 backdrop-blur-md">
-                <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
-                        <Layers size={16} />
-                    </div>
-                    <div>
-                        <h3 className="text-[12px] font-black uppercase tracking-wider text-base-content/80 leading-none">
-                            {t('review.queue.title', 'Question List')}
-                        </h3>
-                        <div className="flex items-center gap-2 mt-1">
-                            <span className="text-[10px] font-bold text-base-content/40">{cards.length} items</span>
+            <div className="p-4 border-b border-base-content/5 flex flex-col gap-4 shrink-0 transition-all bg-base-100/50 backdrop-blur-md">
+                <div className="flex items-center justify-between group/header">
+                    <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center text-primary">
+                            <Layers size={16} />
+                        </div>
+                        <div>
+                            <h3 className="text-[12px] font-black uppercase tracking-wider text-base-content/80 leading-none">
+                                {t('review.queue.title', 'Question List')}
+                            </h3>
+                            <div className="flex items-center gap-2 mt-1">
+                                <span className="text-[10px] font-bold text-base-content/40">{cards.length} items</span>
+                            </div>
                         </div>
                     </div>
+
+                    {onToggleCollapse && (
+                        <button
+                            onClick={onToggleCollapse}
+                            className="btn btn-ghost btn-xs btn-square opacity-0 group-hover/header:opacity-100 transition-opacity"
+                            title={isCollapsed ? t('common:common.actions.pin_sidebar', 'Pin Sidebar') : t('common:common.actions.collapse', 'Unpin Sidebar')}
+                        >
+                            {isCollapsed ? (
+                                <Pin size={16} className="text-base-content/40 hover:text-primary transition-colors" />
+                            ) : (
+                                <PinOff size={16} className="text-base-content/40 hover:text-primary transition-colors" />
+                            )}
+                        </button>
+                    )}
                 </div>
 
-                {onToggleCollapse && (
-                    <button
-                        onClick={onToggleCollapse}
-                        className="btn btn-ghost btn-xs btn-square opacity-0 group-hover/header:opacity-100 transition-opacity"
-                        title={isCollapsed ? t('common.actions.pin_sidebar', 'Pin Sidebar') : t('common.actions.collapse', 'Unpin Sidebar')}
-                    >
-                        {/* 
-                            Logic:
-                            - isCollapsed = true (Floating mode): Show Pin icon (Click to Pin/Expand)
-                            - isCollapsed = false (Pinned mode): Show PinOff icon (Click to Unpin/Collapse)
-                         */}
-                        {isCollapsed ? (
-                            <Pin size={16} className="text-base-content/40 hover:text-primary transition-colors" />
-                        ) : (
-                            <PinOff size={16} className="text-base-content/40 hover:text-primary transition-colors" />
-                        )}
-
-                    </button>
+                {!isCollapsed && (
+                    <div className="relative group">
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-base-content/20 group-focus-within:text-primary transition-colors" />
+                        <input
+                            value={searchQuery}
+                            onChange={e => onSearchChange(e.target.value)}
+                            placeholder={t('import.preview.search_ph', 'Search...')}
+                            className="w-full h-9 bg-base-content/5 border border-base-content/5 rounded-xl pl-9 pr-3 text-[11px] font-bold outline-none focus:bg-base-content/10 focus:border-primary/20 transition-all text-base-content placeholder:opacity-40"
+                        />
+                    </div>
                 )}
             </div>
             <div className="flex-1 overflow-y-auto custom-scrollbar p-3 space-y-1">
-                {cards.map((card, idx) => {
+                {cards.map((card, filteredIdx) => {
                     const question = questions[card.question_id];
-                    const isCurrent = idx === currentIndex;
-                    const isCompleted = completedIndices.has(idx);
+                    const originalIdx = indexMapping ? indexMapping[filteredIdx] : filteredIdx;
+                    const isCurrent = originalIdx === currentIndex;
+                    const isCompleted = completedIndices.has(originalIdx);
 
                     return (
                         <button
                             key={card.card_id}
-                            onClick={() => onSelect(idx)}
+                            onClick={() => onSelect(originalIdx)}
                             className={cn(
                                 "w-full flex items-center gap-3 p-3 rounded-2xl transition-all duration-300 group",
                                 isCurrent
@@ -145,26 +209,31 @@ const ReviewQueueList: React.FC<{
                                         ? "bg-success/10 border-success/20 text-success"
                                         : "bg-base-content/5 border-base-content/5"
                             )}>
-                                {isCompleted ? <CheckCircle2 size={14} /> : idx + 1}
+                                {isCompleted ? <CheckCircle2 size={14} /> : originalIdx + 1}
                             </div>
                             <div className="flex-1 text-left min-w-0">
-                                <p className={cn(
+                                <div className={cn(
                                     "text-xs font-bold truncate",
                                     isCurrent ? "text-primary-content" : "text-base-content/80"
                                 )}>
-                                    {question?.title || t('common.untitled', 'Untitled')}
-                                </p>
+                                    <MarkdownRenderer
+                                        content={question?.title || t('common:common.untitled', 'Untitled')}
+                                        density="compact"
+                                        showTexBadge={false}
+                                        className="prose-none"
+                                    />
+                                </div>
                                 <div className="flex items-center gap-2 mt-0.5">
                                     <span className={cn(
                                         "text-[8px] font-black uppercase tracking-widest px-1.5 py-0.5 rounded-md",
                                         isCurrent ? "bg-white/20 text-primary-content" : "bg-base-content/5 text-base-content/30"
                                     )}>
-                                        {question?.question_type ? t(`common.type.${question.question_type}`) : 'N/A'}
+                                        {question?.question_type ? String(t(`common:common.type.${question.question_type}`)) : 'N/A'}
                                     </span>
                                     {question?.subject_name && (
                                         <div className="flex items-center gap-1.5">
-                                            <div className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: question.subject_color }} />
-                                            <span className={cn("text-[9px] font-bold truncate", isCurrent ? "text-primary-content/64" : "text-base-content/30")}>
+                                            <div className="w-1 h-1 rounded-full" style={{ backgroundColor: question.subject_color }} />
+                                            <span className={cn("text-[8px] font-bold truncate", isCurrent ? "text-primary-content/64" : "text-base-content/30")}>
                                                 {question.subject_name}
                                             </span>
                                         </div>
@@ -180,7 +249,7 @@ const ReviewQueueList: React.FC<{
 };
 
 const SessionStatsPanel: React.FC<{ stats: SessionStats; total: number; current: number }> = ({ stats, total, current }) => {
-    const { t } = useTranslation();
+    const { t } = useTranslation(['review', 'common']);
     const accuracy = stats.ratings[3] + stats.ratings[4];
     const reviewed = Object.values(stats.ratings).reduce((a, b) => a + b, 0);
     return (
@@ -221,7 +290,7 @@ const SessionStatsPanel: React.FC<{ stats: SessionStats; total: number; current:
 };
 
 export const ReviewSession: React.FC = () => {
-    const { t } = useTranslation();
+    const { t } = useTranslation(['review', 'common', 'notes']);
     const navigate = useNavigate();
     const prefersReducedMotion = usePrefersReducedMotion();
     useActiveView('v:due_list');
@@ -231,7 +300,7 @@ export const ReviewSession: React.FC = () => {
     const commit = useAppStore(s => s.commit);
     const markStale = useAppStore(s => s.markStale);
     const { cardsPulse, questions } = entities;
-
+    const [searchQuery, setSearchQuery] = useState('');
     const [isLoadingMode] = useState(false);
 
     const rawCards = useMemo(() => Object.values(cardsPulse)
@@ -243,8 +312,44 @@ export const ReviewSession: React.FC = () => {
     );
 
     const dueCards = useMemo(() => sortCards(rawCards, localSortMode), [rawCards, localSortMode]);
+
+    const filteredCards = useMemo(() => {
+        if (!searchQuery.trim()) return dueCards;
+        const query = searchQuery.toLowerCase();
+        return dueCards.filter(card => {
+            const q = questions[card.question_id];
+            if (!q) return false;
+            return (
+                q.title?.toLowerCase().includes(query) ||
+                q.subject_name?.toLowerCase().includes(query) ||
+                q.content?.toLowerCase().includes(query)
+            );
+        });
+    }, [dueCards, searchQuery, questions]);
+
     const wizard = useReviewWizard(dueCards);
     const { step, currentIndex, completedIndices, userAnswer, visibleHints, activeNotesTab, showNotesPanel, isStrategyConfirmed, actions } = wizard;
+
+    // Create index mapping: filteredCards index -> dueCards index
+    const filteredToOriginalIndex = useMemo(() => {
+        if (!searchQuery.trim()) return dueCards.map((_, i) => i);
+        const mapping: number[] = [];
+        dueCards.forEach((card, originalIdx) => {
+            const q = questions[card.question_id];
+            if (q) {
+                const query = searchQuery.toLowerCase();
+                const matches = (
+                    q.title?.toLowerCase().includes(query) ||
+                    q.subject_name?.toLowerCase().includes(query) ||
+                    q.content?.toLowerCase().includes(query)
+                );
+                if (matches) {
+                    mapping.push(originalIdx);
+                }
+            }
+        });
+        return mapping;
+    }, [dueCards, searchQuery, questions]);
     const { submitReview } = useReviewMutations();
 
     const currentCard = useMemo(() => dueCards[currentIndex], [dueCards, currentIndex]);
@@ -254,7 +359,12 @@ export const ReviewSession: React.FC = () => {
     const cardStartTime = useRef<number>(Date.now());
     const [sessionStats, setSessionStats] = useState<SessionStats>({ ratings: { 1: 0, 2: 0, 3: 0, 4: 0 }, totalTime: 0, streak: 0, maxStreak: 0 });
     const [hasStartedSession, setHasStartedSession] = useState(false);
-    const [nextIntervals, setNextIntervals] = useState(DEFAULT_INTERVALS);
+
+    // Create i18n-aware interval formatting
+    const formatDueDate = useMemo(() => createFormatDueDate(t), [t]);
+    const defaultIntervals = useMemo(() => createDefaultIntervals(t), [t]);
+    const [nextIntervals, setNextIntervals] = useState<Record<string, IntervalInfo>>(defaultIntervals);
+
     const [isFloatingNoteOpen, setIsFloatingNoteOpen] = useState(false);
     const [pinnedNoteId, setPinnedNoteId] = useState<string | null>(null);
 
@@ -270,7 +380,11 @@ export const ReviewSession: React.FC = () => {
 
     const handleSidebarEnter = () => {
         if (hoverTimeoutRef.current) clearTimeout(hoverTimeoutRef.current);
-        if (reviewUi.isQueueCollapsed) setIsSidebarHovered(true);
+        if (reviewUi.isQueueCollapsed) {
+            hoverTimeoutRef.current = setTimeout(() => {
+                setIsSidebarHovered(true);
+            }, 150); // 150ms delay to prevent accidental trigger
+        }
     };
 
     const handleSidebarLeave = () => {
@@ -374,62 +488,119 @@ export const ReviewSession: React.FC = () => {
     const isCompleted = hasStartedSession && rawCards.length > 0 && completedIndices.size === rawCards.length;
 
     // Handlers
-    const handleReveal = useCallback(async () => {
+    // --- Interval Pre-fetching ---
+    useEffect(() => {
+        if (!currentCard || isCompleted) return;
+
+        // Reset intervals for the new card to avoid flickering previous data
+        setNextIntervals({});
+
+        const fetchPreview = async () => {
+            try {
+                const baseDate = currentCard.last_review ? new Date(currentCard.last_review) : (currentCard.created_at ? new Date(currentCard.created_at) : new Date());
+                const daysElapsed = Math.max(0, Math.floor((Date.now() - baseDate.getTime()) / (1000 * 60 * 60 * 24)));
+                const preview = await v2Api.previewReview({
+                    card_id: currentCard.card_id,
+                    stability: currentCard.stability || 0,
+                    difficulty: currentCard.difficulty || 5,
+                    days_elapsed: daysElapsed,
+                    subject_id: currentCard.subject_id || undefined
+                });
+
+                const now = new Date();
+                const createIntervalInfo = (intervalDays: number): IntervalInfo => {
+                    const dueDate = new Date(now.getTime() + intervalDays * 24 * 60 * 60 * 1000);
+                    return {
+                        interval: intervalDays,
+                        dueDate,
+                        display: formatDueDate(dueDate)
+                    };
+                };
+
+                setNextIntervals({
+                    again: createIntervalInfo(preview.intervals.again || 0),
+                    hard: createIntervalInfo(preview.intervals.hard || 0),
+                    good: createIntervalInfo(preview.intervals.good || 0),
+                    easy: createIntervalInfo(preview.intervals.easy || 0)
+                });
+            } catch (err: any) {
+                console.error('[Review] Interval pre-fetch failed:', err);
+                // Fail silently as this is a background optimization, 
+                // but console it for debugging.
+            }
+        };
+
+        fetchPreview();
+    }, [currentCard, isCompleted, formatDueDate]);
+
+    const handleReveal = useCallback(() => {
         if (viewState !== 'QUESTION' || !currentCard) return;
         actions.revealAnswer();
-        try {
-            const baseDate = currentCard.last_review ? new Date(currentCard.last_review) : (currentCard.created_at ? new Date(currentCard.created_at) : new Date());
-            const daysElapsed = Math.max(0, Math.floor((Date.now() - baseDate.getTime()) / (1000 * 60 * 60 * 24)));
-            const preview = await v2Api.previewReview({ card_id: currentCard.card_id, stability: currentCard.stability || 0, difficulty: currentCard.difficulty || 5, days_elapsed: daysElapsed });
-            setNextIntervals({
-                again: formatInterval(preview.intervals.again || 0),
-                hard: formatInterval(preview.intervals.hard || 1),
-                good: formatInterval(preview.intervals.good || 1),
-                easy: formatInterval(preview.intervals.easy || 2)
-            });
-        } catch (err: any) {
-            console.error(err);
-            useAppStore.getState().pushEffect({
-                type: 'toast',
-                level: 'error',
-                message: t('review.errors.preview_failed', 'Failed to calculate intervals'),
-            });
-        }
-    }, [viewState, currentCard, actions, t]);
+    }, [viewState, currentCard, actions]);
 
-    const handleRate = useCallback(async (rating: Rating) => {
-        if (submitReview.isPending || !currentCard) return;
+    const handleRate = useCallback((rating: Rating) => {
+        if (!currentCard) return;
+
+        // 1. Capture current context for background task
+        const targetCard = { ...currentCard };
         const durationMs = Date.now() - cardStartTime.current;
-        const baseDate = currentCard.last_review ? new Date(currentCard.last_review) : (currentCard.created_at ? new Date(currentCard.created_at) : new Date());
+        const baseDate = targetCard.last_review ? new Date(targetCard.last_review) : (targetCard.created_at ? new Date(targetCard.created_at) : new Date());
         const daysElapsed = Math.max(0, Math.floor((Date.now() - baseDate.getTime()) / (1000 * 60 * 60 * 24)));
+
+        // 2. Optimistic UI: Update state immediately
         setHasStartedSession(true);
-        try {
-            const result = await submitReview.mutateAsync({ card_id: currentCard.card_id, rating, stability: currentCard.stability || 0, difficulty: currentCard.difficulty || 5, days_elapsed: daysElapsed, duration_ms: durationMs });
-            commit({ type: 'entity_patch', slice: 'cardsPulse', id: currentCard.card_id, patch: { state: result.new_state.state, stability: result.new_state.stability, difficulty: result.new_state.difficulty, due: result.new_state.due }, updatedAt: new Date().toISOString(), seq: Date.now() });
-            markStale('v:due_list', 'review', 90);
+        setSessionStats(prev => {
+            const isGood = rating >= 3;
+            const newStreak = isGood ? prev.streak + 1 : 0;
+            return {
+                ...prev,
+                ratings: { ...prev.ratings, [rating]: prev.ratings[rating] + 1 },
+                streak: newStreak,
+                maxStreak: Math.max(prev.maxStreak, newStreak)
+            };
+        });
 
-            setSessionStats(prev => {
-                const isGood = rating >= 3;
-                const newStreak = isGood ? prev.streak + 1 : 0;
-                return {
-                    ...prev,
-                    ratings: { ...prev.ratings, [rating]: prev.ratings[rating] + 1 },
-                    streak: newStreak,
-                    maxStreak: Math.max(prev.maxStreak, newStreak)
-                };
-            });
+        // 3. Fluid Transition: Move to next question immediately
+        actions.rateSuccess();
+        cardStartTime.current = Date.now();
 
-            actions.rateSuccess();
-            cardStartTime.current = Date.now();
-        } catch (err: any) {
-            console.error(err);
-            useAppStore.getState().pushEffect({
-                type: 'toast',
-                level: 'error',
-                message: t('review.errors.submit_failed', 'Failed to submit review'),
-            });
-        }
-    }, [submitReview.isPending, currentCard, actions, commit, markStale, t]);
+        // 4. Background Communication: Ensure it's robust and idempotent
+        submitReview.mutate({
+            card_id: targetCard.card_id,
+            rating,
+            stability: targetCard.stability || 0,
+            difficulty: targetCard.difficulty || 5,
+            days_elapsed: daysElapsed,
+            duration_ms: durationMs,
+            client_request_id: `rev_${targetCard.card_id}_${Date.now()}` // Idempotency key
+        }, {
+            onSuccess: (result) => {
+                // Background cache update
+                commit({
+                    type: 'entity_patch',
+                    slice: 'cardsPulse',
+                    id: targetCard.card_id,
+                    patch: {
+                        state: result.new_state.state,
+                        stability: result.new_state.stability,
+                        difficulty: result.new_state.difficulty,
+                        due: result.new_state.due
+                    },
+                    updatedAt: new Date().toISOString(),
+                    seq: Date.now()
+                });
+                markStale('v:due_list', 'review', 90);
+            },
+            onError: (err: any) => {
+                console.error('[Review] Background submission failed:', err);
+                useAppStore.getState().pushEffect({
+                    type: 'toast',
+                    level: 'error',
+                    message: t('review.errors.submit_failed', 'Background sync failed. Progress may be lost.'),
+                });
+            }
+        });
+    }, [currentCard, actions, commit, markStale, t, submitReview]);
 
     const handleExit = useCallback(() => {
         if (completedIndices.size > 0 && completedIndices.size < dueCards.length) {
@@ -489,7 +660,7 @@ export const ReviewSession: React.FC = () => {
                 onClick={() => navigate('/dashboard')}
                 className="btn btn-primary btn-wide rounded-2xl gap-2 focus-visible:ring-offset-2"
             >
-                <ArrowLeft size={18} /> {t('common.actions.back_to_dashboard', 'Back to Dashboard')}
+                <ArrowLeft size={18} /> {t('common:common.actions.back_to_dashboard', 'Back to Dashboard')}
             </button>
         </div>
     );
@@ -513,7 +684,7 @@ export const ReviewSession: React.FC = () => {
                             <div className="w-8 h-8 rounded-lg bg-base-content/5 flex items-center justify-center group-hover:bg-primary/10 group-hover:text-primary transition-all">
                                 <ArrowLeft size={16} />
                             </div>
-                            <span className="text-[11px] font-black uppercase tracking-[0.2em]">{t('common.actions.back_to_dashboard', 'Back to Dashboard')}</span>
+                            <span className="text-[11px] font-black uppercase tracking-[0.2em]">{t('common:common.actions.back_to_dashboard', 'Back to Dashboard')}</span>
                         </div>
 
                         <div className="space-y-2">
@@ -566,7 +737,7 @@ export const ReviewSession: React.FC = () => {
                     ))}
                 </div>
                 <div className="flex gap-4 w-full">
-                    <button onClick={() => navigate('/dashboard')} className="flex-1 btn btn-ghost btn-lg h-20 rounded-3xl gap-3 border-2 border-base-content/5 hover:bg-base-200" aria-label={t('common.actions.back_home')}>
+                    <button onClick={() => navigate('/dashboard')} className="flex-1 btn btn-ghost btn-lg h-20 rounded-3xl gap-3 border-2 border-base-content/5 hover:bg-base-200" aria-label={t('common:common.actions.back_home')}>
                         <ArrowLeft size={20} /> <span className="font-black italic">{t('review.back_home', 'Home')}</span>
                     </button>
                     <button onClick={() => { actions.startSession(localSortMode); setHasStartedSession(false); setSessionStats({ ratings: { 1: 0, 2: 0, 3: 0, 4: 0 }, totalTime: 0, streak: 0, maxStreak: 0 }); }} className="flex-[2] btn btn-primary btn-lg h-20 rounded-3xl gap-3 shadow-xl shadow-primary/20" aria-label={t('review.re_review')}>
@@ -585,15 +756,23 @@ export const ReviewSession: React.FC = () => {
                 onMouseEnter={handleSidebarEnter}
                 onMouseLeave={handleSidebarLeave}
             >
-                {/* Trigger Zone (Invisible when collapsed, but detects hover) - Width increased for better hit target */}
+                {/* Trigger Zone (Invisible when collapsed, but detects hover) */}
                 {reviewUi.isQueueCollapsed && !isSidebarHovered && (
-                    <div className="fixed left-0 top-20 bottom-0 w-6 z-[60] bg-transparent hover:bg-primary/5 transition-colors cursor-e-resize" />
+                    <div
+                        onMouseEnter={handleSidebarEnter}
+                        onMouseLeave={handleSidebarLeave}
+                        className="fixed left-0 top-20 bottom-0 w-4 z-[60] bg-transparent group cursor-e-resize"
+                    >
+                        <div className="absolute inset-y-0 left-0 w-0.5 bg-primary/0 group-hover:bg-primary/20 transition-all duration-500" />
+                    </div>
                 )}
 
                 <aside
                     id="review-queue-sidebar"
+                    onMouseEnter={handleSidebarEnter}
+                    onMouseLeave={handleSidebarLeave}
                     className={cn(
-                        "h-full border-base-content/5 bg-base-100/30 backdrop-blur-2xl flex flex-col overflow-hidden transition-all duration-300 cubic-bezier(0.4, 0, 0.2, 1)",
+                        "h-full border-base-content/5 bg-base-100/30 backdrop-blur-lg flex flex-col overflow-hidden transition-[width,opacity,transform] duration-300",
                         // Layout Logic:
                         // - Expanded: relative positioning, part of flow
                         // - Collapsed: absolute positioning (overlay), slides in/out
@@ -616,13 +795,16 @@ export const ReviewSession: React.FC = () => {
                 >
                     <div className="h-full flex flex-col w-full">
                         <ReviewQueueList
-                            cards={dueCards}
+                            cards={filteredCards}
                             questions={questions}
                             currentIndex={currentIndex}
                             completedIndices={completedIndices}
-                            onSelect={(idx) => actions.nextQuestion(idx)}
+                            searchQuery={searchQuery}
+                            onSearchChange={setSearchQuery}
+                            onSelect={(originalIdx) => actions.nextQuestion(originalIdx)}
                             onToggleCollapse={toggleQueue}
                             isCollapsed={reviewUi.isQueueCollapsed}
+                            indexMapping={filteredToOriginalIndex}
                         />
                     </div>
                 </aside>
@@ -644,20 +826,62 @@ export const ReviewSession: React.FC = () => {
             <div className="flex-1 flex flex-col relative min-w-0 bg-gradient-to-br from-base-100 to-base-200/50">
                 <header className="h-20 border-b border-base-content/5 flex items-center justify-between px-8 bg-base-100/40 backdrop-blur-3xl z-20 shrink-0">
                     <div className="flex-1 flex items-center gap-6 min-w-0">
-                        <button onClick={handleExit} className="btn btn-ghost btn-sm btn-circle hover:bg-base-200 shrink-0" title={t('common.actions.back', 'Back')}>
+                        <button onClick={handleExit} className="btn btn-ghost btn-sm btn-circle hover:bg-base-200 shrink-0" title={t('common:common.actions.back', 'Back')}>
                             <ArrowLeft size={18} />
                         </button>
-                        <div className="flex-1 min-w-0">
-                            <h2 className="text-lg font-black tracking-tight flex items-center gap-2.5 truncate text-base-content/90">
-                                {currentQuestion?.subject_name && (
-                                    <span className="w-2 h-2 rounded-full shrink-0 shadow-sm" style={{ backgroundColor: currentQuestion.subject_color }} title={currentQuestion.subject_name} />
-                                )}
-                                <span className="truncate">{currentQuestion?.title || t('common.untitled', 'Untitled')}</span>
-                            </h2>
+                        <div className="flex-1 min-w-0 flex items-center gap-4">
+                            {/* Subject Pill */}
+                            {currentQuestion?.subject_name && (
+                                <div
+                                    className="hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-full border shadow-sm shrink-0"
+                                    style={{
+                                        backgroundColor: `oklch(from ${currentQuestion.subject_color || 'var(--color-primary)'} l c h / 0.08)`,
+                                        borderColor: `oklch(from ${currentQuestion.subject_color || 'var(--color-primary)'} l c h / 0.15)`
+                                    }}
+                                >
+                                    <div className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: currentQuestion.subject_color }} />
+                                    <span
+                                        className="text-[10px] font-black uppercase tracking-wider"
+                                        style={{ color: currentQuestion.subject_color }}
+                                    >
+                                        {currentQuestion.subject_name}
+                                    </span>
+                                </div>
+                            )}
+
+                            <div className="min-w-0">
+                                <h2 className="text-[15px] font-black tracking-tight text-base-content/90 truncate leading-none mb-1">
+                                    {currentQuestion?.title || t('common:common.untitled', 'Untitled')}
+                                </h2>
+                                <div className="flex items-center gap-2">
+                                    <span className="text-[9px] font-bold uppercase tracking-[0.2em] text-base-content/30 italic">
+                                        {currentQuestion?.id ? `#${currentQuestion.id.slice(-6).toUpperCase()}` : 'N/A'}
+                                    </span>
+                                    <span className="w-1 h-1 rounded-full bg-base-content/10" />
+                                    <span className="text-[9px] font-black uppercase tracking-widest text-primary/60">
+                                        {currentQuestion?.question_type ? t(`common:common.type.${currentQuestion.question_type}`) : 'N/A'}
+                                    </span>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
                     <div className="flex items-center gap-8 pl-6">
+                        {/* Status Sync Indicator */}
+                        <AnimatePresence>
+                            {submitReview.isPending && (
+                                <motion.div
+                                    initial={{ opacity: 0, scale: 0.9 }}
+                                    animate={{ opacity: 1, scale: 1 }}
+                                    exit={{ opacity: 0, scale: 0.9 }}
+                                    className="hidden md:flex items-center gap-2 px-3 py-1.5 rounded-xl bg-primary/5 border border-primary/10"
+                                >
+                                    <div className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
+                                    <span className="text-[9px] font-black uppercase tracking-widest text-primary/60">Cloud Syncing</span>
+                                </motion.div>
+                            )}
+                        </AnimatePresence>
+
                         <SessionStatsPanel stats={sessionStats} total={dueCards.length} current={currentIndex + 1} />
                         <div className="flex items-center gap-2">
                             <button
@@ -684,102 +908,124 @@ export const ReviewSession: React.FC = () => {
                     </div>
                 </header>
 
-                <main className="flex-1 overflow-y-auto overflow-x-hidden relative custom-scrollbar flex flex-col items-center py-12 px-6">
+                <main className="flex-1 overflow-y-auto overflow-x-hidden relative custom-scrollbar flex flex-col items-center py-8 px-4 md:py-12 md:px-8">
                     <AnimatePresence mode="wait">
                         <motion.div
                             key={currentIndex}
-                            initial={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: 15, filter: 'blur(8px)' }}
-                            animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
-                            exit={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: -10, filter: 'blur(8px)' }}
-                            transition={{ duration: 0.3, ease: 'easeOut' }}
-                            className="w-full max-w-4xl space-y-12"
+                            layout="position"
+                            initial={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: 15, filter: 'blur(8px)', scale: 0.99 }}
+                            animate={{ opacity: 1, y: 0, filter: 'blur(0px)', scale: 1 }}
+                            exit={prefersReducedMotion ? { opacity: 0 } : { opacity: 0, y: -15, scale: 0.99 }}
+                            transition={{ duration: 0.3, ease: [0.23, 1, 0.32, 1] }} // Snappier expo easing
+                            className="w-full max-w-3xl space-y-10 md:space-y-14 pb-24"
                         >
-                            <section className="relative group">
-                                <div className="absolute -left-4 top-0 bottom-0 w-1 bg-primary/10 rounded-full group-hover:bg-primary/30 transition-colors" />
-                                <div className="flex items-center gap-3 mb-6 opacity-40 group-hover:opacity-100 transition-opacity">
-                                    <span className="text-[10px] font-black bg-primary/10 text-primary px-2 py-0.5 rounded-md uppercase tracking-wider italic">{t('renderer.question', 'Question')}</span>
-                                    <div className="h-px flex-1 bg-gradient-to-r from-primary/20 to-transparent" />
-                                </div>
+                            <section className="relative">
                                 {currentQuestion && (
                                     <QuestionRenderer
-                                        question={currentQuestion}
+                                        question={currentQuestion ? { ...currentQuestion, stability: currentCard?.stability } : null}
                                         userAnswer={userAnswer}
                                         setUserAnswer={actions.setUserAnswer}
                                         isRevealed={viewState === 'ANSWER'}
                                         onReveal={handleReveal}
-                                        hideExplanation={true}
+                                        showHints={false}
+                                        hideExplanation={false}
                                     />
                                 )}
                             </section>
 
-                            {viewState === 'QUESTION' ? (
-                                <div className="flex justify-center py-12">
-                                    <button onClick={handleReveal} className="group btn btn-primary btn-lg h-24 px-12 rounded-[32px] gap-4 shadow-2xl shadow-primary/20 border-none relative overflow-hidden">
-                                        <div className="absolute inset-0 bg-gradient-to-r from-primary-focus to-primary opacity-0 group-hover:opacity-100 transition-opacity" />
-                                        <Brain size={24} className="relative z-10 motion-safe:animate-pulse" />
-                                        <span className="text-xl font-black italic tracking-tight relative z-10 uppercase">{t('review.reveal_answer', 'Show Answer')}</span>
-                                        <kbd className="absolute right-4 bottom-4 opacity-20 z-10 kbd kbd-sm bg-primary-content/20 border-none text-[10px]">Space</kbd>
-                                    </button>
-                                </div>
-                            ) : (
-                                <div className="space-y-12">
-                                    <section className="relative group/answer">
-                                        <div className="absolute -left-4 top-0 bottom-0 w-1 bg-success/10 rounded-full group-hover/answer:bg-success/30 transition-colors" />
-                                        <div className="flex items-center gap-3 mb-6">
-                                            <span className="text-[10px] font-black bg-success/10 text-success px-2 py-0.5 rounded-md uppercase tracking-wider italic">{t('renderer.answer_explanation', 'Answer & Explanation')}</span>
-                                            <div className="h-px flex-1 bg-gradient-to-r from-success/20 to-transparent" />
+                            {/* Answer/Explanation section - QuestionRenderer now handles internal explanation rendering */}
+                            {viewState === 'ANSWER' && (
+                                <motion.section
+                                    initial={{ opacity: 0, y: 20 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    transition={{ duration: 0.8, delay: 0.2 }}
+                                    className="pt-12 pb-24 border-t border-base-content/5"
+                                >
+                                    <div className="max-w-4xl mx-auto">
+                                        {/* Unified Section Header */}
+                                        <div className="flex items-center gap-3 mb-10 group/sec">
+                                            <div className="flex items-center gap-2.5 px-3 py-1.5 rounded-xl bg-base-content/5 border border-base-content/5 group-hover/sec:bg-primary/10 group-hover/sec:border-primary/20 transition-all duration-500">
+                                                <Target size={14} className="text-primary/60" />
+                                                <span className="text-[10px] font-black text-base-content/60 group-hover/sec:text-primary uppercase tracking-[0.2em]">{t('review.rate_memory', 'Knowledge Assessment')}</span>
+                                            </div>
+                                            <div className="h-px flex-1 bg-gradient-to-r from-base-content/10 via-base-content/5 to-transparent" />
                                         </div>
-                                        <div className="bg-success/[0.02] p-8 rounded-[40px] border border-success/5 shadow-inner">
-                                            {currentQuestion?.explanation ? (
-                                                <div className="prose prose-lg max-w-none prose-success">
-                                                    <MarkdownRenderer content={currentQuestion.explanation} />
-                                                </div>
-                                            ) : (
-                                                <div className="flex flex-col items-center justify-center py-12 text-base-content/20 italic font-medium">
-                                                    <Sparkles size={32} className="mb-4 opacity-50" />
-                                                    <p>No explanation provided. Rely on your internal neural pathways.</p>
-                                                </div>
-                                            )}
-                                        </div>
-                                    </section>
 
-                                    <footer className="sticky bottom-12 z-30 flex flex-col items-center gap-8 py-8">
-                                        <div className="bg-base-100/50 backdrop-blur-2xl p-4 rounded-full border border-base-content/5 shadow-2xl flex gap-3">
-                                            {(Object.keys(RATING_LABELS) as unknown as Rating[]).map((rating) => {
-                                                const isPending = submitReview.isPending && rating === 3; // Simplified, in real use we'd track specific rating
-                                                return (
+                                        {/* Integrated Selector Strip - Refined Pro */}
+                                        <div className="relative p-1.5 md:p-2.5 rounded-[2.5rem] bg-base-content/[0.03] border border-base-content/5 backdrop-blur-xl">
+                                            <div className="grid grid-cols-2 lg:grid-cols-4 gap-1.5 md:gap-2">
+                                                {[
+                                                    { id: 1 as Rating, key: 'again', color: 'error', icon: <RotateCcw size={18} />, shortcut: '1' },
+                                                    { id: 2 as Rating, key: 'hard', color: 'warning', icon: <AlertTriangle size={18} />, shortcut: '2' },
+                                                    { id: 3 as Rating, key: 'good', color: 'success', icon: <CheckCircle2 size={18} />, shortcut: '3' },
+                                                    { id: 4 as Rating, key: 'easy', color: 'primary', icon: <Zap size={18} />, shortcut: '4' }
+                                                ].map((r) => (
                                                     <button
-                                                        key={rating}
-                                                        onClick={() => handleRate(rating)}
-                                                        disabled={submitReview.isPending}
-                                                        aria-label={t('review.rating.aria', {
-                                                            rating: t(`review.rating.${RATING_LABELS[rating]}`),
-                                                            interval: nextIntervals[RATING_LABELS[rating] as keyof typeof nextIntervals]
-                                                        })}
-                                                        aria-keyshortcuts={String(rating)}
-                                                        className={cn("relative btn btn-lg h-20 rounded-[28px] px-8 flex flex-col gap-0.5 border-none transition-all hover:scale-105 active:scale-95 shadow-lg",
-                                                            rating === 1 && "bg-error/10 hover:bg-error text-error hover:text-white shadow-error/10",
-                                                            rating === 2 && "bg-warning/10 hover:bg-warning text-warning hover:text-white shadow-warning/10",
-                                                            rating === 3 && "bg-info/10 hover:bg-info text-info hover:text-white shadow-info/10",
-                                                            rating === 4 && "bg-success/10 hover:bg-success text-success hover:text-white shadow-success/10",
-                                                            submitReview.isPending && "opacity-50 cursor-not-allowed pointer-events-none"
-                                                        )}>
-                                                        <span className="text-[10px] font-black uppercase tracking-widest leading-none opacity-60 mb-1">{t(`review.rating.${RATING_LABELS[rating]}`)}</span>
-                                                        <div className="flex items-center gap-2">
-                                                            {isPending && <span className="loading loading-spinner loading-xs" />}
-                                                            <span className="text-xl font-black italic tracking-tighter leading-none">{nextIntervals[RATING_LABELS[rating] as keyof typeof nextIntervals]}</span>
+                                                        key={r.id}
+                                                        onClick={() => handleRate(r.id)}
+                                                        className={cn(
+                                                            "group relative flex flex-col items-center justify-center gap-4 p-5 md:p-7 rounded-[2.25rem] transition-all duration-500",
+                                                            "bg-transparent border border-transparent outline-none hover:bg-base-content/[0.04] active:scale-95",
+                                                            r.color === 'error' && "text-error hover:border-error/30",
+                                                            r.color === 'warning' && "text-warning hover:border-warning/30",
+                                                            r.color === 'success' && "text-success hover:border-success/30",
+                                                            r.color === 'primary' && "text-primary hover:border-primary/30"
+                                                        )}
+                                                    >
+                                                        {/* Icon Box */}
+                                                        <div className="w-11 h-11 rounded-2xl bg-base-content/5 flex items-center justify-center transition-all duration-500 group-hover:bg-current/10 group-hover:scale-110">
+                                                            {r.icon}
                                                         </div>
-                                                        <kbd className="absolute bottom-2 right-4 opacity-20 text-[8px] font-bold z-10">{rating}</kbd>
+
+                                                        <div className="flex flex-col items-center text-center gap-0.5 min-w-[4rem]">
+                                                            <span className="text-[10px] font-black uppercase tracking-[0.2em] opacity-30 group-hover:opacity-60 transition-opacity">
+                                                                {t(`review.rating.${r.key}`)}
+                                                            </span>
+                                                            <span className="text-xl md:text-2xl font-black tracking-tight text-base-content group-hover:scale-105 transition-transform duration-500">
+                                                                {nextIntervals[r.key]?.display || '...'}
+                                                            </span>
+                                                        </div>
+
+                                                        {/* Discrete Shortcut Tag */}
+                                                        <div className="absolute top-4 right-4 w-5 h-5 rounded-lg border border-base-content/5 bg-base-content/[0.02] flex items-center justify-center opacity-10 group-hover:opacity-100 transition-all duration-300">
+                                                            <span className="text-[9px] font-bold font-mono text-base-content/40 group-hover:text-current">{r.shortcut}</span>
+                                                        </div>
                                                     </button>
-                                                );
-                                            })}
+                                                ))}
+                                            </div>
                                         </div>
-                                    </footer>
-                                </div>
+
+                                        {/* Contextual Hint */}
+                                        <div className="mt-12 flex flex-col items-center">
+                                            <div className="flex items-center gap-2 px-4 py-2 rounded-2xl bg-base-content/[0.02] border border-base-content/5 opacity-60 hover:opacity-100 transition-opacity">
+                                                <span className="text-[9px] font-black text-base-content/30 uppercase tracking-[0.3em]">{t('review.keyboard_hint', 'Rating Shortcuts')}</span>
+                                                <div className="flex gap-1.5 ml-1">
+                                                    {[1, 2, 3, 4].map(k => (
+                                                        <kbd key={k} className="w-4 h-4 flex items-center justify-center rounded bg-base-content/10 text-[9px] font-bold text-base-content/40 border-b border-base-content/20">{k}</kbd>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </motion.section>
                             )}
                         </motion.div>
                     </AnimatePresence>
                 </main>
+
+                {/* Fixed Bottom Action Bar - Only for "Show Answer" button */}
+                {viewState === 'QUESTION' && (
+                    <div className="absolute bottom-0 left-0 right-0 z-30 flex justify-center pb-6 pt-16 bg-gradient-to-t from-base-100 from-40% to-transparent pointer-events-none">
+                        <button
+                            onClick={handleReveal}
+                            className="pointer-events-auto group btn btn-primary h-12 md:h-14 px-6 md:px-8 rounded-xl md:rounded-2xl gap-2 md:gap-3 shadow-xl border-none relative overflow-hidden hover:scale-[1.02] active:scale-[0.98] transition-all"
+                        >
+                            <Brain size={18} className="text-primary-content" />
+                            <span className="text-sm md:text-base font-bold tracking-wide text-primary-content">{t('review.reveal_answer', 'Show Answer')}</span>
+                            <kbd className="hidden sm:flex ml-1 h-5 px-1.5 rounded-md bg-white/20 border-0 text-[9px] font-bold text-primary-content/60 items-center">Space</kbd>
+                        </button>
+                    </div>
+                )}
             </div>
 
             {/* Notes Resizer */}
@@ -801,7 +1047,7 @@ export const ReviewSession: React.FC = () => {
             <aside
                 id="review-notes-sidebar"
                 className={cn(
-                    "relative border-l border-base-content/5 bg-base-100/30 backdrop-blur-2xl flex flex-col z-40 overflow-hidden transition-all",
+                    "relative border-l border-base-content/5 bg-base-100/30 backdrop-blur-lg flex flex-col z-40 overflow-hidden transition-[width,opacity] ease-out",
                     UI_CONFIG.TRANSITION_DURATION,
                     UI_CONFIG.TRANSITION_EASE,
                     !showNotesPanel ? "w-0 opacity-0" : "opacity-100"
@@ -817,9 +1063,8 @@ export const ReviewSession: React.FC = () => {
                         activeTab={activeNotesTab}
                         onTabChange={(tab: any) => actions.setNotesTab(tab)}
                         onPopOutJot={() => {
-                            // ✅ P0: 弹出窗口与右侧便签互斥 - 弹出时关闭右侧面板
                             setIsFloatingNoteOpen(true);
-                            actions.toggleNotes(); // 关闭右侧面板
+                            actions.toggleNotes();
                             updateReviewUi({ isNotesCollapsed: true });
                         }}
                     />
@@ -834,7 +1079,6 @@ export const ReviewSession: React.FC = () => {
                     isPinned={!!pinnedNoteId}
                     onTogglePin={() => setPinnedNoteId(pinnedNoteId ? null : currentQuestion?.id || null)}
                     onDock={() => {
-                        // ✅ P0: 关闭弹出窗口并恢复右侧面板
                         setIsFloatingNoteOpen(false);
                         if (!showNotesPanel) {
                             actions.toggleNotes();

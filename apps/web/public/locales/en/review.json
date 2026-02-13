@@ -1,0 +1,150 @@
+{
+    "review": {
+        "exit": "Exit",
+        "rate_memory": "Evaluation",
+        "keyboard_hint": "Shortcut",
+        "exit_confirm": "You've reviewed {{reviewed}} items with {{remaining}} remaining. Are you sure you want to exit?",
+        "undo": "Undo Last Rating",
+        "queue": {
+            "title": "Question List",
+            "pending": "Queued",
+            "remaining": "{{count}} items remaining"
+        },
+        "card": {
+            "badge": "Review Active",
+            "status": "Inquiry",
+            "btn_reveal": "Display Solution (Space)",
+            "no_explanation": "No supplementary analysis available."
+        },
+        "answer": {
+            "divider": "Analysis",
+            "title": "Reference Solution",
+            "no_explanation": "No detailed technical analysis provided."
+        },
+        "rating": {
+            "again": "Again",
+            "hard": "Hard",
+            "good": "Good",
+            "easy": "Easy",
+            "footer": "Engagement feedback will optimize the next exposure interval."
+        },
+        "action": {
+            "confirm_choice": "Confirm Selection",
+            "evaluate": "Verify Response",
+            "show_answer": "Reveal Solution",
+            "reveal_answer": "Reveal Answer"
+        },
+        "shortcut": {
+            "reveal": "Reveal",
+            "rate": "Assess"
+        },
+        "setup": {
+            "badge": "Review Planner",
+            "title": "Choose Your Review Strategy",
+            "desc": "Select a prioritization method based on the FSRS spaced repetition algorithm to study more efficiently.",
+            "mode_selection": "Algorithm Strategy",
+            "items": "Due for Review",
+            "start_prefix": "Ready",
+            "start_btn": "Start Review",
+            "estimated": "Estimated time",
+            "intel_title": "Session Intelligence",
+            "pending_items": "Pending Units",
+            "workload": "Memory Burden",
+            "forecast_7d": "7D Forecast",
+            "tip": "Pro Tip: 'Optimal' mode uses the FSRS engine to prioritize items with the highest projected decay."
+        },
+        "sort": {
+            "optimal": {
+                "label": "Recommended",
+                "desc": "Balances urgency and difficulty to prioritize items that need the most attention."
+            },
+            "overdue": {
+                "label": "Overdue First",
+                "desc": "Sorts by how long items are past due, tackling the most delayed ones first."
+            },
+            "weakness": {
+                "label": "Weakest First",
+                "desc": "Focuses on items with the lowest retention, helping you strengthen weak spots."
+            },
+            "challenge": {
+                "label": "Hardest First",
+                "desc": "Tackles the most difficult items first while your focus is sharpest."
+            },
+            "fresh": {
+                "label": "Newest First",
+                "desc": "Reviews recently added items first to reinforce new learning."
+            },
+            "random": {
+                "label": "Random Order",
+                "desc": "Shuffles the order to simulate real test conditions and improve flexibility."
+            }
+        },
+        "hints": {
+            "need_hint": "Request Hint?",
+            "all_revealed": "All hints exposed",
+            "reveal_next": "Expose Hint {{n}}"
+        },
+        "complete": {
+            "title": "Session Mastered",
+            "subtitle": "Knowledge points have been consolidated into your long-term memory.",
+            "badge": "Session Complete",
+            "analysis_title": "Retention Insights",
+            "analysis_subtitle": "Memory Distribution",
+            "engine_tag": "FSRS v4.0 Algorithm",
+            "health_label": "Session Health",
+            "health_value": "EXCELLENT",
+            "quote": "Consistency is the catalyst for long-term retention.",
+            "streak_title": "Level Up!",
+            "next_session_hint": "Next session in 4 hours",
+            "accuracy": "Accuracy",
+            "reviewed": "Reviewed",
+            "streak": "Max Streak",
+            "time": "Total Time",
+            "btn_again": "Review Again",
+            "btn_dashboard": "Return to Dashboard"
+        },
+        "progress_label": "Progress",
+        "progress_count": "{{current}} / {{total}}",
+        "loading": {
+            "title": "Loading Review Queue",
+            "desc": "Fetching your study data...",
+            "insight_1": "Loading review algorithm...",
+            "insight_2": "Analyzing memory state...",
+            "insight_3": "Calculating optimal order...",
+            "insight_4": "Preparing review content..."
+        },
+        "empty": {
+            "title": "All Caught Up",
+            "desc": "Excellent! No cards are due for review right now. You can add new questions to your library or check back later.",
+            "btn_dashboard": "Return to Dashboard",
+            "btn_library": "Visit Library",
+            "hint": "New reviews will be scheduled automatically by the FSRS algorithm"
+        },
+        "early": {
+            "title": "Want to keep studying?",
+            "upcoming": "Next 3 Days",
+            "all": "All Cards",
+            "warning": "Early review may affect optimal FSRS scheduling"
+        },
+        "mode": {
+            "due": "Due Reviews",
+            "upcoming": "Next 3 Days",
+            "all": "All",
+            "reset": "Return to due reviews"
+        },
+        "state": {
+            "new": "New",
+            "learning": "Learning",
+            "review": "Review",
+            "relearning": "Relearning"
+        },
+        "interval": {
+            "minutes": "{{count}}m",
+            "hours": "{{count}}h",
+            "tomorrow": "Tomorrow",
+            "day_after_tomorrow": "In 2 days",
+            "date_short": "{{month}}/{{day}}",
+            "date_long": "{{month}}/{{day}}"
+        }
+    }
+}

@@ -11,13 +11,14 @@ interface QuickImportModalProps {
 }
 
 // 简单校验
-function validateQuestions(questions: any[]): { valid: any[]; errors: string[] } {
+function validateQuestions(questions: any[], t?: (k: string, options?: any) => string): { valid: any[]; errors: string[] } {
     const valid: any[] = [];
     const errors: string[] = [];
 
     questions.forEach((q, i) => {
         if (!q.title?.trim()) {
-            errors.push(`Row ${i + 1}: Missing title`);
+            const error = t ? t('import:quick_import.error_row', { row: i + 1, error: t('import:quick_import.error_missing_title', 'Missing title') }) : `Row ${i + 1}: Missing title`;
+            errors.push(error);
         } else {
             valid.push({
                 title: q.title,
@@ -45,7 +46,7 @@ function validateQuestions(questions: any[]): { valid: any[]; errors: string[] }
  * 一步完成：粘贴 → 校验并导入
  */
 export const QuickImportModal: React.FC<QuickImportModalProps> = ({ onClose, onNavigateToFullImport }) => {
-    const { t } = useTranslation();
+    const { t } = useTranslation(['import', 'common']);
     const [jsonInput, setJsonInput] = useState('');
     const [status, setStatus] = useState<'idle' | 'validating' | 'importing' | 'done' | 'error'>('idle');
     const [result, setResult] = useState<{ success: number; errors: string[] }>({ success: 0, errors: [] });
@@ -61,11 +62,11 @@ export const QuickImportModal: React.FC<QuickImportModalProps> = ({ onClose, onN
             const parsed = JSON.parse(jsonInput);
             const questions = Array.isArray(parsed) ? parsed : [parsed];
 
-            // 2. 校验
-            const { valid, errors } = validateQuestions(questions);
+            // 2. 校验 (Pass t for translated errors)
+            const { valid, errors } = validateQuestions(questions, t);
 
             if (valid.length === 0) {
-                setResult({ success: 0, errors: errors.length > 0 ? errors : ['No valid data found'] });
+                setResult({ success: 0, errors: errors.length > 0 ? errors : [t('import:quick_import.error_no_data', 'No valid data found')] });
                 setStatus('error');
                 return;
             }
@@ -74,7 +75,7 @@ export const QuickImportModal: React.FC<QuickImportModalProps> = ({ onClose, onN
             setStatus('importing');
             const { data: { user } } = await supabase.auth.getUser();
             if (!user) {
-                setResult({ success: 0, errors: ['Authentication check failed'] });
+                setResult({ success: 0, errors: [t('import:quick_import.error_auth', 'Authentication check failed')] });
                 setStatus('error');
                 return;
             }
@@ -112,7 +113,7 @@ export const QuickImportModal: React.FC<QuickImportModalProps> = ({ onClose, onN
             if (response.failed > 0 && response.success === 0) {
                 setResult({
                     success: 0,
-                    errors: [...errors, ...(response.rowErrors?.map((re: any) => `Row ${re.row + 1}: ${re.error}`) || ['Import failed'])]
+                    errors: [...errors, ...(response.rowErrors?.map((re: any) => t('import:quick_import.error_row', { row: re.row + 1, error: re.error })) || [t('common:common.status.error', 'Import failed')])]
                 });
                 setStatus('error');
                 return;
@@ -120,17 +121,21 @@ export const QuickImportModal: React.FC<QuickImportModalProps> = ({ onClose, onN
 
             setResult({
                 success: response.success,
-                errors: [...errors, ...(response.rowErrors?.map((re: any) => `Row ${re.row + 1}: ${re.error}`) || [])]
+                errors: [...errors, ...(response.rowErrors?.map((re: any) => t('import:quick_import.error_row', { row: re.row + 1, error: re.error })) || [])]
             });
             setStatus('done');
 
             // 触发全局刷新同步
             window.dispatchEvent(new CustomEvent('push_effect', {
-                detail: { type: 'success', message: t('quick_import.success', { count: response.success }) }
+                detail: {
+                    type: 'toast',
+                    level: 'success',
+                    message: t('import:quick_import.success', { count: response.success })
+                }
             }));
 
         } catch (err: any) {
-            setResult({ success: 0, errors: [err.message || 'JSON Parse Failed'] });
+            setResult({ success: 0, errors: [err.message || t('import:quick_import.error_json', 'JSON Parse Failed')] });
             setStatus('error');
         }
     };

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Bookmark, Edit3, Trash2, Plus, ArrowRight } from 'lucide-react';
+import { Layers, Edit3, Trash2, Plus, ArrowRight } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { cn } from '../../app/utils/cn';
 import { getEntityVisuals } from '../../app/utils/colorSystem';
@@ -133,7 +133,7 @@ const SubjectCard: React.FC<{
                 )}>
                     {/* Inner Glow Effect */}
                     <div className="absolute inset-0 bg-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
-                    <Bookmark className="w-6 h-6 relative z-10" />
+                    <Layers className="w-8 h-8 relative z-10" strokeWidth={1.5} />
                 </div>
 
                 {/* Quick Actions & Palette */}
@@ -179,22 +179,26 @@ const SubjectCard: React.FC<{
 
             <div className="relative z-10 space-y-6">
                 <div>
-                    <h3 className={cn(
-                        "text-2xl font-black tracking-tighter leading-none transition-colors duration-700",
-                        visuals.text,
-                        visuals.style && "text-[hsl(var(--brand-h),var(--brand-s),calc(var(--brand-l)-10%))]"
-                    )}>
-                        {subject.name}
-                    </h3>
-                    <div className="flex items-center gap-2.5 mt-3">
-                        <div className={cn(
-                            "w-2 h-2 rounded-full transition-colors duration-700",
-                            visuals.dot,
-                            visuals.style && "bg-[hsl(var(--brand-h),var(--brand-s),var(--brand-l))]"
-                        )} />
-                        <p className="text-[10px] font-black text-base-content/25 uppercase tracking-[0.2em]">
-                            REF: {subject.id.slice(0, 8)}
-                        </p>
+                    {/* Replaced manual dot and text with EntityBadge logic for consistent visuals using the Layers icon */}
+                    <div className="flex flex-col gap-3">
+                        <h3 className={cn(
+                            "text-2xl font-black tracking-tighter leading-none transition-colors duration-700",
+                            visuals.text,
+                            visuals.style && "text-[hsl(var(--brand-h),var(--brand-s),calc(var(--brand-l)-10%))]"
+                        )}>
+                            {subject.name}
+                        </h3>
+                        <div className="flex items-center gap-2 opacity-60">
+                            {/* We can use a small EntityBadge or just keep the text ref, let's keep it simple for now as per user request to fix colors/icons */}
+                            <div className={cn(
+                                "w-2 h-2 rounded-full transition-colors duration-700",
+                                visuals.dot,
+                                visuals.style && "bg-[hsl(var(--brand-h),var(--brand-s),var(--brand-l))]"
+                            )} />
+                            <p className="text-[10px] font-black text-base-content/40 uppercase tracking-[0.2em]">
+                                REF: {subject.id.slice(0, 8)}
+                            </p>
+                        </div>
                     </div>
                 </div>
 

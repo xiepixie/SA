@@ -1,0 +1,161 @@
+{
+    "review": {
+        "exit": "退出",
+        "exit_confirm": "你已复习 {{reviewed}} 题，还有 {{remaining}} 题未完成。确定要退出吗？",
+        "rate_memory": "复习评价",
+        "keyboard_hint": "快捷键",
+        "exit_modal": {
+            "title": "结束复习？"
+        },
+        "undo": "撤销上一次评分",
+        "queue": {
+            "title": "题目列表",
+            "desc": "基于 FSRS 算法选择最适合当前状态的复习策略。",
+            "mode_selection": "出题策略",
+            "mode_selection_panel": "算法策略",
+            "items": "待复习"
+        },
+        "card": {
+            "badge": "正在复习",
+            "status": "当前题目",
+            "btn_reveal": "显示解析（空格）",
+            "no_explanation": "该题暂无详细解析。"
+        },
+        "answer": {
+            "divider": "解析",
+            "title": "解析",
+            "no_explanation": "暂无解析。"
+        },
+        "rating": {
+            "again": "重来",
+            "hard": "困难",
+            "good": "良好",
+            "easy": "轻松",
+            "footer": "评分将影响下次复习时间"
+        },
+        "action": {
+            "confirm_choice": "确认选择",
+            "evaluate": "检验答案",
+            "show_answer": "显示答案",
+            "reveal_answer": "揭晓答案"
+        },
+        "shortcut": {
+            "reveal": "显示",
+            "rate": "评分"
+        },
+        "setup": {
+            "badge": "复习规划",
+            "title": "选择今日复习策略",
+            "desc": "根据 FSRS 间隔重复算法，选择最适合当前学习状态的复习顺序，高效巩固记忆。",
+            "items": "待复习",
+            "start_prefix": "准备就绪",
+            "start_btn": "开始复习",
+            "estimated": "预计耗时",
+            "intel_title": "复习数据分析",
+            "pending_items": "待复习总量",
+            "workload": "遗忘曲线分布",
+            "forecast_7d": "7日遗忘预测",
+            "tip": "建议：智能推荐模式将优先处理最容易衰减的内容，以获得最佳巩固效果。",
+            "mode_selection": "算法策略"
+        },
+        "session_active": "正在复习",
+        "reveal_answer": "查看解析",
+        "sort": {
+            "optimal": {
+                "label": "智能推荐",
+                "desc": "综合考量遗忘风险和难度，优先复习最需要巩固的内容。"
+            },
+            "overdue": {
+                "label": "逾期优先",
+                "desc": "按逾期时长排序，优先处理拖延最久、遗忘风险最高的题目。"
+            },
+            "weakness": {
+                "label": "薄弱优先",
+                "desc": "优先复习掌握度最低的内容，集中攻克薄弱环节。"
+            },
+            "challenge": {
+                "label": "难题优先",
+                "desc": "先处理最难的题目，趁精力充沛时攻克难关。"
+            },
+            "fresh": {
+                "label": "新题优先",
+                "desc": "优先复习最近添加的内容，趁热打铁巩固新知。"
+            },
+            "random": {
+                "label": "随机顺序",
+                "desc": "打乱题目顺序，模拟真实考试环境，提升应变能力。"
+            }
+        },
+        "hints": {
+            "need_hint": "需要提示？",
+            "all_revealed": "提示已全部显示",
+            "reveal_next": "显示第 {{n}} 条提示"
+        },
+        "complete": {
+            "title": "复习任务达成",
+            "subtitle": "核心知识点已得到巩固，继续保持。",
+            "badge": "复习完成",
+            "analysis_title": "记忆留存洞察",
+            "analysis_subtitle": "FSRS 预测分布",
+            "engine_tag": "FSRS v4.0 算法",
+            "health_label": "本次复习状态",
+            "health_value": "表现优异",
+            "quote": "持之以恒是长效记忆的关键。",
+            "streak_title": "持续进阶",
+            "next_session_hint": "下一次复习建议在 4 小时后",
+            "accuracy": "准确率",
+            "reviewed": "已复习",
+            "streak": "最高连击",
+            "time": "总用时",
+            "btn_again": "再练一次",
+            "btn_dashboard": "返回控制台",
+            "back_home": "返回首页"
+        },
+        "progress_label": "进度",
+        "progress_count": "{{current}} / {{total}}",
+        "loading": {
+            "title": "正在载入队列",
+            "desc": "加载中...",
+            "insight_1": "准备复习引擎...",
+            "insight_2": "分析记忆状态...",
+            "insight_3": "计算复习顺序...",
+            "insight_4": "准备复习内容..."
+        },
+        "empty": {
+            "title": "今日复习已完成",
+            "desc": "太棒了！当前没有需要复习的题目。你可以去题库添加新题目，或者稍后再来。",
+            "btn_dashboard": "返回仪表盘",
+            "btn_library": "前往题库",
+            "hint": "新的待复习题目将根据 FSRS 算法自动安排"
+        },
+        "early": {
+            "title": "想继续学习？",
+            "upcoming": "未来 3 天",
+            "all": "全部复习",
+            "warning": "提前复习可能影响 FSRS 算法的最佳调度"
+        },
+        "mode": {
+            "due": "到期复习",
+            "upcoming": "未来3天",
+            "all": "全部",
+            "reset": "返回到期复习"
+        },
+        "state": {
+            "new": "新卡片",
+            "learning": "学习中",
+            "review": "复习中",
+            "relearning": "重学中"
+        },
+        "interval": {
+            "minutes": "{{count}}分钟",
+            "hours": "{{count}}小时",
+            "tomorrow": "明天",
+            "day_after_tomorrow": "后天",
+            "date_short": "{{month}}月{{day}}日",
+            "date_long": "{{month}}月{{day}}日"
+        },
+        "errors": {
+            "submit_failed": "同步失败。进度可能丢失，请点击重试。"
+        }
+    }
+}

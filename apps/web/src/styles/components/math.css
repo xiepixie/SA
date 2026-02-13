@@ -35,10 +35,10 @@
     .prose :where(code):not(:where([class~="not-prose"], [class~="not-prose"] *)):where(.math-block),
     .prose :where(code):not(:where([class~="not-prose"], [class~="not-prose"] *)):where(.math-display) {
         display: block !important;
-        border: 1px solid var(--glass-border-color) !important;
-        background: oklch(from var(--color-base-content) l c h / 0.03) !important;
-        padding: 0.75rem 1rem !important;
-        margin: 0.75rem 0 !important;
+        border: 1px solid transparent !important;
+        background: transparent !important;
+        padding: 0.25rem 0.5rem !important;
+        margin: 0.5rem 0 !important;
         text-align: center !important;
     }
 }
@@ -69,22 +69,49 @@
 
     .math-block {
         display: block;
-        margin: 2.5rem 0;
+        margin: 1rem 0;
         text-align: center;
         counter-increment: equation;
         position: relative;
         min-height: 1.8em;
-        padding: 2.5rem 4rem;
-        border-radius: 24px;
-        background: var(--glass-bg-reading);
-        backdrop-filter: blur(var(--glass-blur));
-        -webkit-backdrop-filter: blur(var(--glass-blur));
-        border: 1px solid var(--glass-border-color);
-        box-shadow: var(--shadow-premium-sm);
+        padding: 0.5rem 1rem;
+        border-radius: 16px;
+        background: transparent;
+        backdrop-filter: none;
+        -webkit-backdrop-filter: none;
+        border: 1px solid transparent;
+        box-shadow: none;
         transition:
             transform var(--dur-2) var(--ease-spring),
             box-shadow var(--dur-2) var(--ease-smooth),
             border-color var(--dur-1) var(--ease-smooth);
+    }
+
+    /* 密度适配：紧凑模式 */
+    [data-density="compact"] .math-block {
+        margin: 1.5rem 0;
+        padding: 1.5rem 2rem;
+        border-radius: 16px;
+    }
+
+    [data-density="compact"] .math-block::before {
+        right: 1rem;
+        font-size: 0.75em;
+        padding: 2px 8px;
+    }
+
+    /* 移动端适配 */
+    @media (max-width: 768px) {
+        .math-block {
+            padding: 2rem 1.5rem;
+            margin: 1.5rem 0;
+            border-radius: 16px;
+        }
+
+        .math-block::before {
+            display: none;
+            /* 移动端隐藏编号以节省空间 */
+        }
     }
 
     /* Equation Numbering Styling */
@@ -110,32 +137,30 @@
     }
 
     .math-block:hover {
-        border-color: oklch(from var(--color-primary) l c h / 0.2);
-        transform: translateY(var(--hover-raise-sm));
+        border-color: var(--glass-border-color);
+        background: var(--glass-bg-reading);
+        backdrop-filter: blur(var(--glass-blur));
+        -webkit-backdrop-filter: blur(var(--glass-blur));
         box-shadow: var(--shadow-premium-md);
-
-        /* Subtle Shimmer Effect using background-image */
-        background-image:
-            linear-gradient(120deg, transparent 33%, oklch(100% 0 0 / 0.05) 50%, transparent 66%);
-        background-size: 300% 100%;
-        animation: math-shimmer 3s infinite linear;
+        transform: scale(1.005);
     }
 
     .math-block:hover::before {
-        opacity: 0.9;
-        background: oklch(from var(--color-primary) l c h / 0.1);
-        border-color: oklch(from var(--color-primary) l c h / 0.15);
-        transform: translateY(-50%) scale(1.05);
+        opacity: 0.5;
+        background: oklch(from var(--color-primary) l c h / 0.08);
+        border-color: oklch(from var(--color-primary) l c h / 0.1);
+        transform: translateY(-50%) scale(1);
     }
 
     .math-inline {
         display: inline-block;
         min-width: 0.8em;
-        /* ✅ FIX: 使用 middle 并微调偏移，确保与文本垂直居中 */
+        /* ✅ FIX: 使用 middle 配合 translate 微调，适配不同高度的公式/源码框 */
         vertical-align: middle;
-        margin-top: -0.15em;
-        padding: 0 4px;
-        border-radius: 6px;
+        position: relative;
+        transform: translateY(-0.05em);
+        padding: 0 3px;
+        border-radius: 4px;
         transition: all var(--dur-1) ease;
     }
 
@@ -271,6 +296,14 @@
         padding: 5px 14px !important;
     }
 
+    /* Hide TEX badge when showTexBadge=false OR when showing source */
+    [data-hide-tex-badge] .math-inline::after,
+    [data-hide-tex-badge] .math-block::after,
+    .math-block.show-source::after,
+    .math-inline.show-source::after {
+        display: none !important;
+    }
+
     /* Hover State: Container Transformation */
     @media (hover: hover) {
 
@@ -385,26 +418,54 @@
    LATEX SOURCE VIEW — Unified with Code Block Styling
    ========================================================= */
 
-.math-block.show-source,
-.math-inline.show-source {
+/* Separated styling for inline vs block source view to prevent layout jumps */
+.math-block.show-source {
     display: block;
+    text-align: left;
     padding: 0;
+    margin: 1rem 0;
     background: transparent;
     border: none;
     box-shadow: none;
-    text-align: left;
-    animation: source-reveal 0.3s var(--ease-spring);
+    animation: source-mode-pop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.math-inline.show-source {
+    display: inline-block;
+    vertical-align: middle;
+    position: relative;
+    transform: translateY(-0.05em);
+    padding: 0;
+    margin: 0 2px;
+    background: transparent;
+    border: none;
+    box-shadow: none;
+    animation: source-mode-pop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes source-mode-pop {
+    0% {
+        transform: scale(0.92);
+        opacity: 0;
+        filter: blur(2px);
+    }
+
+    100% {
+        transform: scale(1);
+        opacity: 1;
+        filter: blur(0);
+    }
 }
 
 @keyframes source-reveal {
     from {
         opacity: 0;
-        transform: translateY(6px) scale(0.99);
+        transform: translateY(4px);
     }
 
     to {
         opacity: 1;
-        transform: translateY(0) scale(1);
+        transform: translateY(0);
     }
 }
 
@@ -490,17 +551,39 @@
 
 .math-source-content {
     display: inline-block;
-    padding: 0.5rem 0.75rem;
-    background: var(--code-bg, oklch(from var(--color-base-300) l c h / 0.8));
-    border: 1px solid var(--code-border, var(--glass-border-color));
-    border-radius: var(--radius-field, 0.75rem);
+    vertical-align: middle;
+    /* Remove gap to fix the "large word spacing" issue caused by flex layout on highlighted spans */
+    padding: 0.25rem 0.65rem;
+    background: var(--glass-bg-reading);
+    backdrop-filter: blur(12px) saturate(1.5);
+    -webkit-backdrop-filter: blur(12px) saturate(1.5);
+    border: 1px solid var(--color-primary);
+    border-radius: 8px;
+    box-shadow:
+        0 4px 12px -2px oklch(from var(--color-primary) l c h / 0.15),
+        0 1px 2px oklch(from var(--color-primary) l c h / 0.1);
     font-family: var(--font-mono);
     font-size: 0.85em;
-    color: var(--code-fg);
+    color: var(--color-primary-dark);
     user-select: text;
     -webkit-user-select: text;
-    overflow-x: auto;
+    white-space: pre-wrap;
+    /* Enable wrapping for long formulas */
+    word-break: break-all;
     max-width: 100%;
+    margin: 0;
+    line-height: 1.4;
+}
+
+.math-block.show-source .math-source-content {
+    width: 100%;
+    justify-content: space-between;
+}
+
+.math-inline.show-source .math-source-content {
+    max-width: 90vw;
+    padding: 0.3rem 0.6rem;
+    font-size: 0.8em;
 }
 
 /* =========================================================

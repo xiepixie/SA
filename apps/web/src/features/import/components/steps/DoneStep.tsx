@@ -39,13 +39,13 @@ export const DoneStep: React.FC<DoneStepProps> = ({
     // Handle mutation error state (Critical System Errors)
     if (error) {
         return (
-            <div className="flex-1 min-h-full p-4 md:p-12 lg:p-16 pb-24 bg-mesh-surface reveal-smooth relative">
-                <div className="max-w-5xl mx-auto w-full relative z-10 space-y-8">
+            <div className="h-full w-full flex flex-col items-center justify-center p-6 md:p-12 bg-base-300 relative overflow-hidden">
+                <div className="max-w-[1440px] w-full relative z-10 space-y-8 animate-in fade-in zoom-in-95 duration-700">
                     <div className="flex justify-center">
                         <ImportStepper currentStep="done" />
                     </div>
 
-                    <div className="glass-card p-8 md:p-16 rounded-[2.5rem] text-center space-y-10 animate-in zoom-in-95 fade-in duration-700 shadow-premium-xl">
+                    <div className="glass-card p-8 md:p-16 rounded-[2.5rem] text-center space-y-10 shadow-premium-xl">
                         <div className="w-32 h-32 rounded-full flex items-center justify-center mx-auto ring-[16px] bg-error/10 ring-error/5">
                             <XCircle size={64} className="text-error" strokeWidth={1} />
                         </div>
@@ -97,17 +97,19 @@ export const DoneStep: React.FC<DoneStepProps> = ({
     const StatusIcon = statusConfig.icon;
 
     return (
-        <div className="flex-1 min-h-full p-4 md:p-12 lg:p-16 pb-24 bg-mesh-surface reveal-smooth relative">
+        <div className="h-full w-full flex flex-col items-center justify-center p-6 md:p-12 bg-base-300 relative overflow-hidden font-sans">
             {/* Confetti celebration for successful imports */}
             <Confetti trigger={!allFailed && result.success > 0} />
 
+            {/* Professional Background */}
             <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden">
-                <div className={cn("absolute top-1/4 left-1/4 w-[500px] h-[500px] rounded-full blur-[150px] animate-blob-drift", statusConfig.blobColor)} />
+                <div className="absolute top-0 left-0 w-full h-full opacity-40 bg-[radial-gradient(at_0%_0%,rgba(var(--p),0.03)_0,transparent_50%),radial-gradient(at_100%_0%,rgba(var(--s),0.03)_0,transparent_50%)]" />
+                <div className={cn("absolute bottom-0 right-0 w-[600px] h-[600px] rounded-full blur-[150px] opacity-10", statusConfig.blobColor)} />
             </div>
 
-            <div className="max-w-5xl mx-auto w-full relative z-10 space-y-8">
+            <div className="max-w-[1440px] w-full relative z-10 space-y-12 animate-in fade-in zoom-in-95 duration-1000 ease-spring">
                 {/* Step indicator */}
-                <div className="flex justify-center">
+                <div className="flex justify-center opacity-70">
                     <ImportStepper currentStep="done" />
                 </div>
 
@@ -165,10 +167,20 @@ export const DoneStep: React.FC<DoneStepProps> = ({
                             <div className="max-h-72 overflow-y-auto custom-scrollbar space-y-3 pr-2">
                                 {result.rowErrors.map((err, idx) => (
                                     <div key={idx} className="flex items-start gap-4 p-5 bg-base-100/50 rounded-2xl text-base ring-1 ring-base-content/5 group/erroritem hover:bg-base-100 transition-colors">
-                                        <span className="shrink-0 px-3 py-1 bg-error/10 text-error rounded-xl font-mono text-xs font-black">
+                                        <span className={cn(
+                                            "shrink-0 px-3 py-1 rounded-xl font-mono text-xs font-black",
+                                            err.error.includes('Derivative') || err.error.includes('Server-side') ? "bg-amber-500/10 text-amber-500" : "bg-error/10 text-error"
+                                        )}>
                                             {t('import.done.row', { count: err.row })}
                                         </span>
-                                        <span className="text-base-content/70 font-medium break-all">{err.error}</span>
+                                        <span className="text-base-content/70 font-medium break-all">
+                                            {err.error.includes('Exists in Database')
+                                                ? t('import.preview.errors.duplicate_db', err.error)
+                                                : err.error.includes('Duplicate in Batch')
+                                                    ? t('import.preview.errors.duplicate_batch', err.error)
+                                                    : err.error
+                                            }
+                                        </span>
                                     </div>
                                 ))}
                             </div>

@@ -1,6 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { X, BookOpen, Hash, Search, Gauge, FileText } from 'lucide-react';
+import { X, Layers, Hash, Search, Gauge, FileText } from 'lucide-react';
 import { cn } from '../../app/utils/cn';
 import { getEntityVisuals } from '../../app/utils/colorSystem';
 
@@ -22,11 +22,11 @@ export interface FilterChipProps {
 }
 
 const TYPE_ICONS: Record<FilterChipType, React.ReactNode> = {
-    subject: <BookOpen size={10} strokeWidth={2.5} />,
-    tag: <Hash size={10} strokeWidth={2.5} />,
-    search: <Search size={10} strokeWidth={2.5} />,
-    difficulty: <Gauge size={10} strokeWidth={2.5} />,
-    type: <FileText size={10} strokeWidth={2.5} />,
+    subject: <Layers size={13} strokeWidth={2.5} />,
+    tag: <Hash size={13} strokeWidth={2.5} />,
+    search: <Search size={13} strokeWidth={2.5} />,
+    difficulty: <Gauge size={13} strokeWidth={2.5} />,
+    type: <FileText size={13} strokeWidth={2.5} />,
 };
 
 /**

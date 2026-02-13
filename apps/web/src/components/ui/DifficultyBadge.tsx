@@ -19,7 +19,7 @@ export const DifficultyBadge = React.memo<DifficultyBadgeProps>(function Difficu
     size = 'xs',
     className
 }) {
-    const { t } = useTranslation();
+    const { t } = useTranslation(['common']);
 
     const configs = {
         easy: {

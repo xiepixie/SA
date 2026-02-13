@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { ErrorScreen } from '../components/ErrorScreen';
 
 export const NotFound: React.FC = () => {
-    const { t } = useTranslation();
+    const { t } = useTranslation(['common']);
 
     return (
         <div className="sea">

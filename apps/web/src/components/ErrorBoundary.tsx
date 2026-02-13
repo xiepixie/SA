@@ -10,7 +10,7 @@ import { ErrorScreen, type ErrorKind } from './ErrorScreen';
  */
 export const ErrorBoundary: React.FC = () => {
     const error = useRouteError();
-    const { t } = useTranslation();
+    const { t } = useTranslation(['common']);
 
     // Classify the error
     let kind: ErrorKind = 'recoverable';

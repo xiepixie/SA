@@ -139,6 +139,41 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({
                 </div>
             </div>
 
+            {/* Validation Banner (for general issues like duplicates) */}
+            {validationErrors.length > 0 && (
+                <div className="px-6 pt-6 pb-0 animate-in fade-in slide-in-from-top-2">
+                    <div className="flex flex-col gap-2">
+                        {validationErrors.map((issue, idx) => (
+                            <div key={idx} className={cn(
+                                "flex items-start gap-3 p-4 rounded-2xl border backdrop-blur-md transition-all",
+                                issue.level === 'error'
+                                    ? "bg-rose-500/10 border-rose-500/20 text-rose-600 dark:text-rose-400"
+                                    : "bg-amber-500/10 border-amber-500/20 text-amber-600 dark:text-amber-400"
+                            )}>
+                                <div className={cn(
+                                    "mt-1.5 w-1.5 h-1.5 rounded-full shrink-0",
+                                    issue.level === 'error' ? "bg-rose-500" : "bg-amber-500"
+                                )} />
+                                <div className="flex-1 space-y-0.5">
+                                    <p className="text-[10px] font-black uppercase tracking-widest opacity-60">
+                                        {issue.field === 'checksum' ? t('import.preview.issue_duplicate_title', 'Duplicate Content') : (
+                                            issue.field ? `${t('import.preview.field_' + issue.field + '.self', t('import.preview.field_' + issue.field, issue.field))}` : t('import.preview.issue_generic_title', 'Validation Issue')
+                                        )}
+                                    </p>
+                                    <p className="text-xs font-bold leading-tight">
+                                        {issue.message.includes('Exists in Database')
+                                            ? t('import.preview.errors.duplicate_db', issue.message)
+                                            : issue.message.includes('Duplicate in Batch')
+                                                ? t('import.preview.errors.duplicate_batch', issue.message)
+                                                : issue.message}
+                                    </p>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            )}
+
             {/* Sub-Header: Tabs */}
             <div className="px-6 py-4 flex items-center justify-between border-b border-base-content/5 bg-base-100/10">
                 <div className="flex items-center bg-base-content/5 p-1 rounded-xl gap-1">
@@ -159,33 +194,36 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({
                     ))}
                 </div>
 
-                <div className="flex items-center bg-base-content/5 p-1 rounded-xl gap-1">
-                    <button
-                        onClick={() => setEditorMode('guided')}
-                        className={cn(
-                            "flex items-center gap-2 px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all",
-                            editorMode === 'guided'
-                                ? "bg-base-100 text-primary shadow-sm"
-                                : "text-base-content/40 hover:text-base-content/60"
-                        )}
-                    >
-                        <Layout size={12} />
-                        <span className="hidden sm:inline-block">{t('import.preview.editor_mode_guided', 'Visual')}</span>
-                    </button>
-                    <button
-                        onClick={() => setEditorMode('source')}
-                        className={cn(
-                            "flex items-center gap-2 px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all",
-                            editorMode === 'source'
-                                ? "bg-base-100 text-primary shadow-sm"
-                                : "text-base-content/40 hover:text-base-content/60"
-                        )}
-                        title={t('import.preview.editor_mode_source', 'Source')}
-                    >
-                        <Code2 size={12} />
-                        <span className="hidden sm:inline-block">{t('import.preview.editor_mode_source', 'Source')}</span>
-                    </button>
-                </div>
+                {/* Editor mode toggle - only shown on 'logic' tab where JSON editing is needed */}
+                {propertyTab === 'logic' && (
+                    <div className="flex items-center bg-base-content/5 p-1 rounded-xl gap-1">
+                        <button
+                            onClick={() => setEditorMode('guided')}
+                            className={cn(
+                                "flex items-center gap-2 px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all",
+                                editorMode === 'guided'
+                                    ? "bg-base-100 text-primary shadow-sm"
+                                    : "text-base-content/40 hover:text-base-content/60"
+                            )}
+                        >
+                            <Layout size={12} />
+                            <span className="hidden sm:inline-block">{t('import.preview.editor_mode_guided')}</span>
+                        </button>
+                        <button
+                            onClick={() => setEditorMode('source')}
+                            className={cn(
+                                "flex items-center gap-2 px-3 py-1.5 rounded-lg text-[10px] font-black uppercase tracking-wider transition-all",
+                                editorMode === 'source'
+                                    ? "bg-base-100 text-primary shadow-sm"
+                                    : "text-base-content/40 hover:text-base-content/60"
+                            )}
+                            title={t('import.preview.editor_mode_source')}
+                        >
+                            <Code2 size={12} />
+                            <span className="hidden sm:inline-block">{t('import.preview.editor_mode_source')}</span>
+                        </button>
+                    </div>
+                )}
             </div>
 
             <div className="flex-1 overflow-y-auto custom-scrollbar px-6 py-8 space-y-8 animate-in fade-in slide-in-from-bottom-2 duration-500">
@@ -207,7 +245,7 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({
                                             { value: 'fill_blank', label: t('common.type.fill_blank') },
                                             { value: 'short_answer', label: t('common.type.short_answer') },
                                         ]}
-                                        className="h-11 rounded-2xl bg-white/40 border-base-content/5"
+                                        className="h-11 rounded-2xl bg-base-100/40 border-base-content/5"
                                     />
                                 </FieldGroup>
                                 <FieldGroup label={t('import.preview.field_difficulty')} id="import-item-difficulty">
@@ -219,7 +257,7 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({
                                             { value: 'medium', label: t('common.difficulty.medium') },
                                             { value: 'hard', label: t('common.difficulty.hard') },
                                         ]}
-                                        className="h-11 rounded-2xl bg-white/40 border-base-content/5"
+                                        className="h-11 rounded-2xl bg-base-100/40 border-base-content/5"
                                     />
                                 </FieldGroup>
                             </div>
@@ -232,7 +270,7 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({
                                         value={activeItem.subject_name || ''}
                                         onChange={val => onUpdateItemField(itemId, 'subject_name', val)}
                                         placeholder={t('import.preview.ph_subject')}
-                                        className="w-full h-11 bg-white/40 border border-base-content/5 rounded-2xl pl-10 pr-4 text-[11px] font-bold outline-none focus:bg-white focus:border-primary/20 transition-all font-mono"
+                                        className="w-full h-11 bg-base-100/40 border border-base-content/5 rounded-2xl pl-10 pr-4 text-[11px] font-bold outline-none focus:bg-base-100 focus:border-primary/20 transition-all font-mono"
                                     />
                                 </div>
                             </FieldGroup>
@@ -251,7 +289,7 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({
                                     value={(question.title as string) || ''}
                                     onChange={val => onUpdateItem(itemId, { title: val })}
                                     placeholder={t('import.preview.ph_title')}
-                                    className="w-full h-12 bg-white/60 border border-base-content/10 rounded-2xl px-5 text-base font-bold outline-none focus:bg-base-100 focus:border-primary/20 transition-all shadow-premium-sm"
+                                    className="w-full h-12 bg-base-100/60 border border-base-content/10 rounded-2xl px-5 text-base font-bold outline-none focus:bg-base-100 focus:border-primary/20 transition-all shadow-premium-sm"
                                 />
                             </FieldGroup>
                             <FieldGroup label={t('import.preview.ph_content')} id="import-item-content" error={getFieldError('content')?.message}>
@@ -261,7 +299,7 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({
                                     value={(question.content as string) || ''}
                                     onChange={val => onUpdateItem(itemId, { content: val })}
                                     placeholder={t('import.preview.ph_content')}
-                                    className="w-full h-64 bg-white/40 border border-base-content/5 rounded-[2rem] p-6 text-sm font-medium leading-relaxed outline-none focus:bg-white focus:border-primary/20 transition-all custom-scrollbar shadow-inner"
+                                    className="w-full h-64 bg-base-100/40 border border-base-content/5 rounded-[2rem] p-6 text-sm font-medium leading-relaxed outline-none focus:bg-base-100 focus:border-primary/20 transition-all custom-scrollbar shadow-inner"
                                 />
                             </FieldGroup>
                         </div>
@@ -327,7 +365,7 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({
                                 value={(question.explanation as string) || ''}
                                 onChange={val => onUpdateItem(itemId, { explanation: val })}
                                 placeholder={t('import.preview.ph_explanation')}
-                                className="w-full h-40 bg-white/40 border border-base-content/5 rounded-2xl p-4 text-sm font-medium leading-relaxed outline-none focus:bg-white focus:border-primary/20 transition-all custom-scrollbar shadow-inner"
+                                className="w-full h-40 bg-base-100/40 border border-base-content/5 rounded-2xl p-4 text-sm font-medium leading-relaxed outline-none focus:bg-base-100 focus:border-primary/20 transition-all custom-scrollbar shadow-inner"
                             />
                         </div>
                     </div>
@@ -344,7 +382,7 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({
                                         value={(question.image_url as string) || ''}
                                         onChange={val => onUpdateItem(itemId, { image_url: val })}
                                         placeholder="https://..."
-                                        className="w-full h-11 bg-white/40 border border-base-content/5 rounded-2xl px-4 text-[11px] font-bold outline-none focus:bg-white focus:border-primary/20 transition-all font-mono"
+                                        className="w-full h-11 bg-base-100/40 border border-base-content/5 rounded-2xl px-4 text-[11px] font-bold outline-none focus:bg-base-100 focus:border-primary/20 transition-all font-mono"
                                     />
                                 </FieldGroup>
                                 <FieldGroup label={t('import.preview.field_explanation_image_url')} id="import-item-exp-image">
@@ -353,7 +391,7 @@ export const PropertyPanel: React.FC<PropertyPanelProps> = ({
                                         value={(question.explanation_image_url as string) || ''}
                                         onChange={val => onUpdateItem(itemId, { explanation_image_url: val })}
                                         placeholder="https://..."
-                                        className="w-full h-11 bg-white/40 border border-base-content/5 rounded-2xl px-4 text-[11px] font-bold outline-none focus:bg-white focus:border-primary/20 transition-all font-mono"
+                                        className="w-full h-11 bg-base-100/40 border border-base-content/5 rounded-2xl px-4 text-[11px] font-bold outline-none focus:bg-base-100 focus:border-primary/20 transition-all font-mono"
                                     />
                                 </FieldGroup>
                             </div>

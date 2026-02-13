@@ -1,0 +1,110 @@
+{
+    "sync": {
+        "hero": {
+            "badge": "Community Network",
+            "title": "Collaborative Library",
+            "desc": "Access high-quality shared repositories and maintain bidirectional synchronization."
+        },
+        "features": {
+            "discover": "Explore",
+            "discover_desc": "Discover peer-reviewed data",
+            "save": "Initialize Sync",
+            "save_desc": "Commit to local repository",
+            "sync": "Automated Updates",
+            "sync_desc": "Real-time version control"
+        },
+        "status": {
+            "integrity": "Network Integrity",
+            "version": "v2.4"
+        },
+        "tabs": {
+            "discover": "Discovery",
+            "my_forks": "Subscribed",
+            "activity": "Telemetry"
+        },
+        "controls": {
+            "search": "Filter hub…",
+            "refine": "Parameters",
+            "scan": "Re-scan"
+        },
+        "filter": {
+            "subject": "Domain",
+            "tags": "Metadata",
+            "difficulty": "Complexity",
+            "type": "Logic",
+            "forked": {
+                "all": "All Records",
+                "forked": "Subscribed",
+                "not_forked": "Available"
+            }
+        },
+        "discover": {
+            "empty": "No remote records identified",
+            "empty_desc": "Refine network filters.",
+            "already_forked": "Subscribed",
+            "go_to_fork": "Inspect Local Copy"
+        },
+        "feed": {
+            "title": "Network Activity",
+            "activity": "Inspect stream",
+            "sync_required": "Revision Available",
+            "author": "{{name}}",
+            "forks": "{{count}} Subscriptions",
+            "forks_count": "subscriptions",
+            "btn_details": "Inspect",
+            "btn_fork": "Subscribe to Repository",
+            "btn_load_more": "Load more"
+        },
+        "my_forks": {
+            "title": "Managed Subscriptions",
+            "empty": "No active subscriptions detected.",
+            "empty_cta": "Browse network",
+            "last_synced": "Last Contact",
+            "source_deleted_hint": "Origin de-provisioned",
+            "status": {
+                "up_to_date": "Synchronized",
+                "outdated": "Revision Pending",
+                "source_deleted": "Disconnected"
+            },
+            "diff": {
+                "title_changed": "Identifier Revision",
+                "content_changed": "Content Mutation",
+                "answer_changed": "Logic Update"
+            },
+            "actions": {
+                "view_diff": "Inspect Revision",
+                "pull": "Update Local",
+                "pull_all": "Global Sync"
+            },
+            "confirm": {
+                "title": "Confirm Operational Update",
+                "warning": "This procedure will overwrite local modifications with the remote master version. This is irreversible.",
+                "checkbox": "I acknowledge and authorize the overwrite procedure.",
+                "btn_pull": "Authorize Sync"
+            }
+        },
+        "activity": {
+            "title": "Network Log",
+            "empty": "Log clear",
+            "events": {
+                "fork_success": "Record Subscribed",
+                "sync_success": "State Synchronized",
+                "sync_failed": "Sync Error",
+                "source_updated": "Remote Update Identified"
+            }
+        },
+        "matrix": {
+            "title": "Connectivity Status",
+            "active_links": "Active Channels",
+            "protocol": "Transport Protocol",
+            "notifications": "Revision Alerts",
+            "btn_settings": "Manage Connectivity",
+            "propagation": "Sync Progress"
+        },
+        "auth": {
+            "required_title": "Authentication Mandatory",
+            "required_desc": "Please authorize to access high-frequency network features.",
+            "login_btn": "Authorize"
+        }
+    }
+}

@@ -167,6 +167,10 @@ export interface ImportState {
     previewRevealed: boolean;
     jsonErrors: JsonFieldErrors;
     focusTrigger: string | null;
+
+    // ======== Validation State ========
+    duplicates: Record<string, string>; // rowId -> duplicateQuestionId
+    allowDuplicates: boolean; // [V3.3] Allow importing duplicates
 }
 
 /**
@@ -201,6 +205,10 @@ export const initialImportState: ImportState = {
         metadata: null,
     },
     focusTrigger: null,
+
+    // Validation
+    duplicates: {},
+    allowDuplicates: false,
 };
 
 /**

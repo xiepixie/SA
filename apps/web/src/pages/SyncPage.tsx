@@ -122,7 +122,7 @@ const ACTIVITY_TYPE_FALLBACKS: Record<SyncActivity['type'], string> = {
 // ============================================================
 
 export const SyncPage: React.FC = () => {
-    const { t } = useTranslation();
+    const { t } = useTranslation(['sync', 'auth', 'common']);
     const [activeTab, setActiveTab] = useState<SyncTab>('discover');
     const [search, setSearch] = useState('');
     const [filterStatus, setFilterStatus] = useState<'all' | 'forked' | 'not_forked'>('all');
@@ -437,7 +437,7 @@ export const SyncPage: React.FC = () => {
 // ============================================================
 
 function SidebarStats({ total, outdated }: { total: number; outdated: number }) {
-    const { t } = useTranslation();
+    const { t } = useTranslation(['sync', 'auth', 'common']);
     return (
         <div className="glass-card p-4">
             <h3 className="text-xs font-bold text-base-content/40 uppercase tracking-wide mb-3">
@@ -458,7 +458,7 @@ function SidebarStats({ total, outdated }: { total: number; outdated: number }) 
 }
 
 function SidebarActivity({ activities }: { activities: SyncActivity[] }) {
-    const { t } = useTranslation();
+    const { t } = useTranslation(['sync', 'auth', 'common']);
     return (
         <div className="glass-card p-4">
             <h3 className="text-xs font-bold text-base-content/40 uppercase tracking-wide mb-3">
@@ -485,7 +485,7 @@ function SidebarActivity({ activities }: { activities: SyncActivity[] }) {
 }
 
 function SidebarConfig() {
-    const { t } = useTranslation();
+    const { t } = useTranslation(['sync', 'auth', 'common']);
     return (
         <div className="glass-card p-4 space-y-3">
             <div className="flex items-center justify-between">
@@ -515,7 +515,7 @@ interface DiscoverTabProps {
 }
 
 function DiscoverTab({ questions, isLoading, onFork, forkingId }: DiscoverTabProps) {
-    const { t } = useTranslation();
+    const { t } = useTranslation(['sync', 'auth', 'common']);
 
     if (isLoading) {
         return (
@@ -573,7 +573,7 @@ interface QuestionCardProps {
 }
 
 function QuestionCard({ question: q, onFork, isForking }: QuestionCardProps) {
-    const { t } = useTranslation();
+    const { t } = useTranslation(['sync', 'auth', 'common']);
     const isForked = q.my_fork_id !== null;
 
     return (
@@ -646,7 +646,7 @@ interface MyForksTabProps {
 }
 
 function MyForksTab({ forks, isLoading, onSync, syncingId }: MyForksTabProps) {
-    const { t } = useTranslation();
+    const { t } = useTranslation(['sync', 'auth', 'common']);
 
     if (isLoading) {
         return (
@@ -704,7 +704,7 @@ interface ForkCardProps {
 }
 
 function ForkCard({ fork, onSync, isSyncing }: ForkCardProps) {
-    const { t } = useTranslation();
+    const { t } = useTranslation(['sync', 'auth', 'common']);
 
     return (
         <article className="glass-card p-4 flex flex-col md:flex-row md:items-center justify-between gap-3 hover:bg-base-200/40 transition-all group">
@@ -776,7 +776,7 @@ interface ActivityTabProps {
 }
 
 function ActivityTab({ activities, isLoading }: ActivityTabProps) {
-    const { t } = useTranslation();
+    const { t } = useTranslation(['sync', 'auth', 'common']);
 
     if (isLoading) {
         return (
@@ -842,7 +842,7 @@ function SyncStatusIcon({ status }: { status: ForkSyncStatus }) {
 }
 
 function ForkStatusBadge({ status }: { status: ForkSyncStatus }) {
-    const { t } = useTranslation();
+    const { t } = useTranslation(['sync', 'auth', 'common']);
     const config: Record<ForkSyncStatus, { bg: string; text: string; icon: typeof CheckCircle2; label: string; pulse?: boolean }> = {
         up_to_date: { bg: 'bg-success/15', text: 'text-success', icon: CheckCircle2, label: t('sync.my_forks.status.up_to_date', '最新') },
         outdated: { bg: 'bg-warning/15', text: 'text-warning', icon: AlertCircle, label: t('sync.my_forks.status.outdated', '有更新'), pulse: true },

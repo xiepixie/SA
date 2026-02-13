@@ -1,0 +1,80 @@
+{
+    "actions": {
+        "save": "Save",
+        "cancel": "Cancel",
+        "confirm": "Confirm",
+        "close": "Close",
+        "dismiss": "Dismiss",
+        "delete": "Delete",
+        "retry": "Retry",
+        "search": "Search",
+        "copy": "Copy",
+        "reset": "Reset",
+        "add": "Add",
+        "exit": "Exit",
+        "edit": "Edit",
+        "type": "Type",
+        "back": "Back",
+        "rename": "Rename",
+        "share": "Share",
+        "sync": "Sync Now",
+        "actions": "Actions",
+        "clear_all": "Clear All",
+        "undo": "Undo",
+        "remove": "Remove",
+        "click_to_view": "Resolve",
+        "locate": "Locate",
+        "collapse": "Collapse",
+        "expand": "Expand",
+        "retry_failed": "Retry Failed",
+        "back_to_dashboard": "Back to Dashboard",
+        "collapse_all": "Focus Mode",
+        "expand_all": "Full Analysis",
+        "more": "More",
+        "pin_sidebar": "Pin Sidebar",
+        "back_home": "Back to Home"
+    },
+    "status": {
+        "loading": "Loading...",
+        "error": "Error",
+        "success": "Complete",
+        "ready": "Ready",
+        "copied": "Copied",
+        "synced": "Synced",
+        "in_progress": "In Progress",
+        "completed": "Completed",
+        "abandoned": "Abandoned",
+        "time_est": "EST. TIME",
+        "weak": "WEAKNESS",
+        "items": "items",
+        "minutes_short": "m",
+        "locked": "Locked",
+        "processing": "Processing",
+        "saving": "Saving...",
+        "saved": "Saved",
+        "none": "None",
+        "more_queued": "more queued"
+    },
+    "toast": {
+        "info": "Notification",
+        "success": "Success",
+        "warning": "Warning",
+        "error": "Error"
+    },
+    "search": {
+        "placeholder": "Type to filter results...",
+        "results": "Search Results",
+        "no_results": "No records match your search"
+    },
+    "theme": {
+        "toggle": "Switch Theme",
+        "switchToLight": "Switch to Light",
+        "switchToDark": "Switch to Dark"
+    },
+    "tags": {
+        "editor_label": "Tag editor",
+        "list_label": "Added tags",
+        "tag_with_name": "Tag: {{name}}",
+        "remove_tag": "Remove tag {{name}}"
+    }
+}

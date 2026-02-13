@@ -12,6 +12,7 @@ export const useReviewMutations = () => {
             difficulty: number;
             days_elapsed: number;
             duration_ms?: number;
+            client_request_id?: string;
             subject_id?: string;
         }) => v2Api.submitReview(params),
         onSuccess: () => {

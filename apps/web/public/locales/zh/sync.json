@@ -1,0 +1,110 @@
+{
+    "sync": {
+        "hero": {
+            "badge": "社区题库",
+            "title": "题库广场",
+            "desc": "浏览社区共享的优质题目，一键加入题库并保持同步。"
+        },
+        "features": {
+            "discover": "发现题目",
+            "discover_desc": "浏览社区精选内容",
+            "save": "一键收藏",
+            "save_desc": "快速加入你的题库",
+            "sync": "自动同步",
+            "sync_desc": "原题更新时提醒"
+        },
+        "status": {
+            "integrity": "系统完整性",
+            "version": "版本 v2.4"
+        },
+        "tabs": {
+            "discover": "发现",
+            "my_forks": "已收藏",
+            "activity": "动态"
+        },
+        "controls": {
+            "search": "搜索题目…",
+            "refine": "筛选",
+            "scan": "扫描"
+        },
+        "filter": {
+            "subject": "学科",
+            "tags": "标签",
+            "difficulty": "难度",
+            "type": "题型",
+            "forked": {
+                "all": "全部",
+                "forked": "已收藏",
+                "not_forked": "未收藏"
+            }
+        },
+        "discover": {
+            "empty": "暂无题目",
+            "empty_desc": "可尝试调整筛选条件",
+            "already_forked": "已收藏",
+            "go_to_fork": "查看副本"
+        },
+        "feed": {
+            "title": "社区题目",
+            "activity": "查看动态",
+            "sync_required": "需要同步",
+            "author": "{{name}}",
+            "forks": "{{count}} 人收藏",
+            "forks_count": "人收藏",
+            "btn_details": "详情",
+            "btn_fork": "加入题库",
+            "btn_load_more": "加载更多"
+        },
+        "my_forks": {
+            "title": "已收藏",
+            "empty": "你还没有收藏任何题目",
+            "empty_cta": "去发现题目",
+            "last_synced": "同步于",
+            "source_deleted_hint": "原题已删除",
+            "status": {
+                "up_to_date": "已是最新",
+                "outdated": "有更新",
+                "source_deleted": "已删除"
+            },
+            "diff": {
+                "title_changed": "标题",
+                "content_changed": "内容",
+                "answer_changed": "答案"
+            },
+            "actions": {
+                "view_diff": "查看变更",
+                "pull": "更新",
+                "pull_all": "全部更新"
+            },
+            "confirm": {
+                "title": "确认更新",
+                "warning": "更新将覆盖你对该题的本地修改，且不可撤销。",
+                "checkbox": "我已了解更新会覆盖我的修改",
+                "btn_pull": "确认更新"
+            }
+        },
+        "activity": {
+            "title": "最近动态",
+            "empty": "暂无动态",
+            "events": {
+                "fork_success": "已收藏",
+                "sync_success": "已更新",
+                "sync_failed": "更新失败",
+                "source_updated": "原题有更新"
+            }
+        },
+        "matrix": {
+            "title": "同步状态",
+            "active_links": "已连接",
+            "protocol": "自动同步",
+            "notifications": "更新提醒",
+            "btn_settings": "设置",
+            "propagation": "同步进度"
+        },
+        "auth": {
+            "required_title": "需要登录",
+            "required_desc": "请先登录后再使用题库广场功能",
+            "login_btn": "去登录"
+        }
+    }
+}

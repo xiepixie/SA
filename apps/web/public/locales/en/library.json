@@ -1,0 +1,335 @@
+{
+    "library": {
+        "question": "Question",
+        "question_list": "Question List",
+        "select_question": "Select Question: {{title}}",
+        "status": {
+            "overdue": "Overdue",
+            "due": "Due Today",
+            "new": "New Unit",
+            "mastery": "Mastered"
+        },
+        "search_placeholder": "Query repository or metadata…",
+        "stats": {
+            "count": "{{count}} records",
+            "total": "Total"
+        },
+        "toolbar": {
+            "select_mode": "Select Mode",
+            "exit_select": "Cancel",
+            "bulk_inspector": "Batch Diagnostic",
+            "select_all": "Select All",
+            "tags": "Metadata Filters…",
+            "batch_actions": "BATCH OPERATIONS ENABLED"
+        },
+        "filters": {
+            "all": "All Units",
+            "all_types": "All Classifications",
+            "choice": "Selective",
+            "fill_blank": "Cloze",
+            "short_answer": "Open",
+            "status": {
+                "all": "Global Status",
+                "overdue": "Critical Latency",
+                "due": "Due Today",
+                "new": "Uninitialized"
+            },
+            "type": "Classification",
+            "subject_select": "Select Subject",
+            "all_subjects": "All Subjects",
+            "no_tags": "No Tags Found",
+            "active": "Active Filters",
+            "clear_all": "Clear All"
+        },
+        "sort": {
+            "smart": "Cognitive Priority",
+            "smart_desc": "Latency → Due → Uninitialized",
+            "due_soonest": "Chronological Due",
+            "lowest_mastery": "Lowest Proficiency",
+            "least_stable": "Lowest Stability",
+            "most_reviewed": "Exposure Count"
+        },
+        "select_hints": {
+            "range": "Select Interval",
+            "multi": "Multi-selection",
+            "exit": "Deactivate Select Mode"
+        },
+        "bulk": {
+            "scope": "Current view selection",
+            "select_all": "Select All",
+            "deselect_all": "Deselect All",
+            "confirm_delete": "Delete",
+            "items": "items",
+            "items_count": "{{count}} items selected",
+            "edit": "Edit"
+        },
+        "grid": {
+            "empty": "No matching records found",
+            "empty_desc": "Modify filter parameters or ingest new data.",
+            "selection_banner": {
+                "active": "Batch Operations Active",
+                "hint": "Click to select · Shift + Click for range · Esc to abort",
+                "clear": "Clear Selection"
+            },
+            "selection_count": "Selected {{count}} of {{total}}"
+        },
+        "card": {
+            "untitled": "Unidentified Unit",
+            "no_content": "No descriptor provided",
+            "due": {
+                "in": "In {{days}} days",
+                "ago": "{{days}} days latent",
+                "overdue": "Overdue",
+                "today": "Today",
+                "tomorrow": "Tomorrow"
+            },
+            "metrics": {
+                "stability": "Stability",
+                "mastery": "Proficiency",
+                "reviews": "Exposures"
+            }
+        },
+        "inspector": {
+            "badge": "Question Details",
+            "content": "Inquiry Content",
+            "logic": "Rational Analysis",
+            "logic_pending": "No analysis committed",
+            "btn_evaluate": "Trigger Review",
+            "interactive_preview": "Operational Preview",
+            "ready_to_inspect": "Ready to Inspect",
+            "select_guide": "Select any item from the grid to view its details.",
+            "modes": {
+                "preview": "Verification",
+                "edit": "Modification",
+                "meta": "Learning Data"
+            },
+            "mode_switcher": "View mode",
+            "navigation": {
+                "prev": "Previous",
+                "next": "Next"
+            },
+            "meta": {
+                "title": "Study Metrics",
+                "type": "Classification",
+                "stability": "Memory Stability",
+                "stability_unit": "(days)",
+                "half_life": "Half-life",
+                "reviews": "Review Count",
+                "reps": "Total Repetitions",
+                "lapses": "Forgotten Count",
+                "state": "Study State",
+                "mastery": "Mastery",
+                "next_session": "Scheduled For",
+                "not_scheduled": "Not Scheduled",
+                "ready_now": "Ready for Review",
+                "history": "Recent Activity",
+                "estimated_recall": "Estimated time until retention drops to 90%",
+                "lifecycle": "Card Lifecycle",
+                "created_at": "Created On",
+                "last_review": "Last Studied",
+                "never_reviewed": "Never Reviewed",
+                "technical": "Metadata",
+                "content_hash": "Data Fingerprint",
+                "last_synced_hash": "Sync Hash",
+                "integrity_check": "Data Integrity",
+                "integrity_match": "VALIDATED",
+                "history_hint": "Detailed logs coming soon"
+            },
+            "edit": {
+                "title": "Edit Question",
+                "advanced": "Advanced Fields",
+                "unsaved": "Unsaved changes",
+                "synced": "Changes Synced",
+                "label_title": "Title",
+                "label_answers": "Answers",
+                "ph_title": "Question identifier",
+                "ph_correct": "Correct answer (multi-line supported)…",
+                "ph_wrong": "Common misconceptions…",
+                "ph_md": "# Use Markdown structure…",
+                "ph_explain": "Enter final solution, strategy, and comprehensive explanation...",
+                "ph_model_answer": "Reference standard answer...",
+                "label_correct": "Correct Answer",
+                "label_mistake": "Option Analysis",
+                "label_type": "Classification",
+                "label_tags": "Metadata",
+                "label_content": "Question Content (Markdown)",
+                "label_meta": "Metadata (JSON)",
+                "label_explanation": "Explanation",
+                "explanation_title": "Analysis & Explanation",
+                "choices_title": "Choice Options",
+                "choices_hint": "Toggle number to mark correct",
+                "choice_placeholder": "Option content...",
+                "why_choice": "Explain why this option is correct/wrong...",
+                "add_choice": "Add Choice",
+                "hints_title": "Logic Hints",
+                "hints_hint": "Step-by-step guidance",
+                "hint_placeholder": "Hint content...",
+                "add_hint": "Add Step Hint",
+                "no_correct_warning": "Please mark at least one correct answer",
+                "blanks_title": "Fill-in Answers",
+                "blanks_hint": "One answer per blank in order",
+                "blank_placeholder": "Answer...",
+                "add_blank": "Add Blank",
+                "short_answer_title": "Reference Answer",
+                "mark_correct": "Mark as Correct",
+                "unmark_correct": "Unmark Correct",
+                "swap": "Swap",
+                "live_preview": "Live Preview",
+                "edit_source": "Source Editor",
+                "btn_save": "Save Changes",
+                "btn_saved": "Saved"
+            },
+            "bulk": {
+                "title": "Bulk Actions",
+                "selected": "{{count}} items selected",
+                "composition": "Distribution",
+                "common_state": "Common State",
+                "avg_stability": "Average Stability",
+                "mixed": "Mixed Types",
+                "batch_ops": "Quick Update",
+                "update_difficulty": "Update Difficulty",
+                "manage_tags": "Manage Tags",
+                "tags_append_hint": "Tags will be added to existing ones",
+                "warning": "Applying change to {{count}} items. This action is irreversible.",
+                "apply": "Apply Changes"
+            }
+        },
+        "unsaved_modal": {
+            "title": "Unsaved Changes",
+            "description": "The current question has unsaved modifications. Leaving will discard your work.",
+            "fields_label": "Changed Fields",
+            "btn_cancel": "Go Back",
+            "btn_discard": "Discard Changes",
+            "btn_save": "Save & Continue"
+        },
+        "filter_by_subject": "Filter by this subject",
+        "filter_by_tag": "Filter by this tag"
+    },
+    "detail": {
+        "header": {
+            "exit": "Return to Repository",
+            "btn_share": "Export/Share"
+        },
+        "main": {
+            "asset_watermark": "QUESTION",
+            "state_watermark": "LEARNING DATA",
+            "tab_asset": "Logic Unit",
+            "tab_state": "Telemetry"
+        },
+        "actions": {
+            "edit": "Modify Record",
+            "fork": "Incorporate into Workspace"
+        },
+        "metrics": {
+            "success": "Recall Rate",
+            "forks": "Usage Count",
+            "time": "Mean Response Latency",
+            "integrity": "Data Integrity"
+        },
+        "lineage": {
+            "title": "Provenance & Versioning",
+            "created_by": "Originator",
+            "last_update": "Last Committed",
+            "revision": "Version Index",
+            "legal_status": "Legal Protocol",
+            "license": "Governed by Creative Commons (CC BY 4.0) attribution standards."
+        },
+        "fsrs": {
+            "title": "FSRS Stability Tier",
+            "due_date": "Next Scheduled Exposure",
+            "stability_index": "Stability",
+            "retention": "Retention"
+        },
+        "history": {
+            "title": "interaction Logs",
+            "btn_audit": "Inspect Audit Trail"
+        },
+        "matrix": {
+            "title": "Advanced Analytics",
+            "desc": "Performance variance modeling.",
+            "benefit": "Visualize cognitive trends over temporal cycles."
+        },
+        "focus": {
+            "title": "Manual Intervention",
+            "desc": "Bypass scheduling for immediate review."
+        }
+    },
+    "manage": {
+        "header": {
+            "title": "Management",
+            "subtitle": "Configure subjects, tags, and track system logs",
+            "btn_bulk": "Merge Assets",
+            "btn_new": "Add New"
+        },
+        "tabs": {
+            "subjects": "Subjects",
+            "tags": "Tags",
+            "audit": "System Log"
+        },
+        "search": "Search {{tab}}...",
+        "types": {
+            "subject": "subject",
+            "tag": "tag",
+            "question": "question"
+        },
+        "subjects": {
+            "questions": "Questions",
+            "cards": "Cards",
+            "add_hint": "Define a new area of expertise"
+        },
+        "tags": {
+            "col_name": "Name",
+            "col_count": "Associated Items",
+            "empty": "No tags found"
+        },
+        "modals": {
+            "portal": "Management Config",
+            "create_subject": "Create Subject",
+            "edit_subject": "Edit Subject",
+            "create_tag": "Create Tag",
+            "edit_tag": "Edit Tag",
+            "name_label": "Name",
+            "name_ph": "Enter unique name...",
+            "color_label": "Theme Color",
+            "btn_deploy": "Create Item",
+            "btn_save": "Save Changes",
+            "preview_title": "Visual Preview",
+            "preview_mode": "Preview Mode",
+            "new_asset": "New Item",
+            "propagate_hint": "Changes will be applied to all associated items upon saving."
+        },
+        "delete": {
+            "title": "Confirm Delete",
+            "desc": "Are you sure you want to permanently delete the {{type}} \"{{name}}\"? This action is recorded in logs and cannot be easily undone."
+        },
+        "merge": {
+            "title": "Merge Assets",
+            "subtitle": "Consolidate duplicate {{type}}s into a target item",
+            "filter": "Filter {{type}}s...",
+            "source": "Source",
+            "target": "Target",
+            "pipeline": "Merge Flow",
+            "deleted_hint": "Will be removed",
+            "absorb_hint": "Will absorb data",
+            "select_source": "Select Source",
+            "select_target": "Select Target",
+            "critical_warning": "Important: The source item will be deleted. All associated items will be remapped immediately.",
+            "btn_initiate": "Start Merging"
+        },
+        "audit_tab": {
+            "empty": "No activity logs found",
+            "warning_title": "Audit Notice",
+            "warning": "Activity logs are immutable. Use revert functionality with caution as it impacts data consistency.",
+            "btn_revert": "Undo Operation",
+            "status_reverting": "Undoing...",
+            "target_label": "Target: ",
+            "actions": {
+                "delete": "Deletion",
+                "create": "Creation",
+                "update": "Modification",
+                "merge": "Merge",
+                "default": "Action"
+            }
+        }
+    }
+}

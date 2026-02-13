@@ -16,11 +16,25 @@ export async function runImportPipeline(params: {
         // 1. Resolve Subjects & Tags (填充 items 中的 resolved 字段)
         const resolutionErrors = await resolveReferences(userId, items, config);
 
-        // 2. Insert Questions
-        const inserted = await insertQuestions(userId, items, importBatchId);
+        // 1.5 Deduplicate (Server Enforcement)
+        const { validItems: uniqueItems, duplicateErrors } = await deduplicateItems(userId, items, config?.allowDuplicates);
+
+        // If all items are duplicates, return early with errors
+        if (uniqueItems.length === 0 && items.length > 0) {
+            return {
+                success: 0,
+                failed: items.length,
+                rowErrors: [...resolutionErrors, ...duplicateErrors],
+                insertedIds: [],
+                importBatchId,
+            };
+        }
+
+        // 2. Insert Questions (use uniqueItems)
+        const inserted = await insertQuestions(userId, uniqueItems, importBatchId, config?.useAtomic);
 
         // 合并错误
-        const allRowErrors = [...resolutionErrors, ...inserted.rowErrors];
+        const allRowErrors = [...resolutionErrors, ...duplicateErrors, ...inserted.rowErrors];
 
         // 3. Create Tag Associations
         const tagAssoc = await createTagAssociations(items, inserted.rowToQuestionId);
@@ -35,7 +49,14 @@ export async function runImportPipeline(params: {
         try {
             const signals = [
                 { topic: 'question_list', op: 'REFRESH', user_id: userId, entity_key: 'general' },
-                { topic: 'asset', op: 'REFRESH', user_id: userId, entity_key: 'general' }
+                { topic: 'asset', op: 'REFRESH', user_id: userId, entity_key: 'general' },
+                // [V3.3] Emit specific question signals for duplicates to force UI refresh if needed
+                ...(duplicateErrors.map(e => ({
+                    topic: 'question',
+                    op: 'DUPLICATE', // Custom op not standard but useful for debug
+                    user_id: userId,
+                    entity_key: `row_${e.row}`
+                })))
             ];
             if (config?.create_cards) {
                 signals.push({ topic: 'due_list', op: 'REFRESH', user_id: userId, entity_key: 'general' });
@@ -47,7 +68,7 @@ export async function runImportPipeline(params: {
 
         return {
             success: inserted.success,
-            failed: inserted.failed + (resolutionErrors.length > 0 && inserted.success === 0 ? items.length : 0),
+            failed: inserted.failed + (resolutionErrors.length > 0 && inserted.success === 0 ? items.length : 0) + duplicateErrors.length,
             rowErrors: allRowErrors,
             insertedIds: inserted.insertedIds,
             importBatchId,
@@ -204,9 +225,65 @@ async function resolveReferences(userId: string, items: ImportItem[], config?: I
 }
 
 /**
+ * [V3.3] Server-side Deduplication
+ */
+async function deduplicateItems(userId: string, items: ImportItem[], allowDuplicates: boolean = false) {
+    if (items.length === 0) return { validItems: [], duplicateErrors: [] };
+
+    // Construct lightweight payload for hash check (matching RPC expectation)
+    const payload = items.map(it => {
+        const q = it.question;
+        return {
+            user_id: userId,
+            title: q.title,
+            content: q.content,
+            question_type: q.question_type,
+            difficulty: q.difficulty,
+            explanation: q.explanation,
+            correct_answer: q.correct_answer,
+            correct_answer_text: q.correct_answer_text,
+            hints: q.hints,
+            image_url: q.image_url,
+            explanation_image_url: q.explanation_image_url,
+            correct_answer_image_url: q.correct_answer_image_url
+        };
+    });
+
+    const { data, error } = await supabase.rpc('preflight_check_duplicates', { rows: payload });
+
+    if (error) {
+        console.warn('⚠️ [ImportService] Duplicate check failed, skipping validation:', error);
+        return { validItems: items, duplicateErrors: [] };
+    }
+
+    const duplicates = (data as any[]).map(d => ({
+        index: d.row_index as number,
+        type: d.match_type,
+        dbId: d.duplicate_id
+    }));
+
+    const duplicateIndices = new Set(duplicates.map(d => d.index));
+
+    // [V3.3] If allowDuplicates is true, we still log/detect them but don't blocking them
+    // If not allowed, filter them out.
+    const validItems = allowDuplicates ? items : items.filter((_, idx) => !duplicateIndices.has(idx));
+
+    const duplicateErrors = allowDuplicates ? [] : duplicates.map(d => ({
+        row: items[d.index]?.__row ?? 0,
+        error: `Duplicate content detected (Server-side): ${d.type === 'db' ? 'Exists in Database' : 'Duplicate in Batch'}`
+    }));
+
+    return { validItems, duplicateErrors };
+}
+
+/**
  * 插入题目数据
  */
-async function insertQuestions(userId: string, items: ImportItem[], batchId: string) {
+async function insertQuestions(userId: string, items: ImportItem[], batchId: string, useAtomic = false) {
+    if (useAtomic) {
+        return insertQuestionsAtomic(userId, items, batchId);
+    }
+
     const insertedIds: string[] = [];
     const rowErrors: { row: number, error: string }[] = [];
     const rowToQuestionId: Record<number, string> = {};
@@ -363,5 +440,60 @@ async function createCards(userId: string, questionIds: string[], config: Import
         success: totalCreated,
         failed: payloads.length - totalCreated,
         cardIds
+    };
+}
+
+/**
+ * [V3.3] Atomic Batch Insert using RPC
+ */
+async function insertQuestionsAtomic(userId: string, items: ImportItem[], batchId: string) {
+    const payloads = items.map(it => ({
+        user_id: userId,
+        title: it.question.title,
+        content: it.question.content,
+        question_type: it.question.question_type,
+        difficulty: it.question.difficulty,
+        explanation: it.question.explanation,
+        correct_answer: it.question.correct_answer || {},
+        correct_answer_text: it.question.correct_answer_text,
+        hints: it.question.hints || {},
+        metadata: {
+            ...it.question.metadata,
+            __import: { batch_id: batchId, row: it.__row, at: new Date().toISOString() }
+        },
+        image_url: it.question.image_url,
+        explanation_image_url: it.question.explanation_image_url,
+        correct_answer_image_url: it.question.correct_answer_image_url,
+        subject_id: it.question.subject_id || null
+    }));
+
+    const { data, error } = await supabase.rpc('import_questions_atomic', { rows: payloads });
+
+    if (error) {
+        console.error('❌ Atomic import failed:', error);
+        return {
+            success: 0,
+            failed: items.length,
+            rowErrors: [{ row: 0, error: `Atomic Transaction Failed: ${error.message}` }],
+            insertedIds: [],
+            rowToQuestionId: {}
+        };
+    }
+
+    const res = data as { success: boolean, count: number, ids: string[] };
+    const rowToQuestionId: Record<number, string> = {};
+
+    if (res.ids && res.ids.length === items.length) {
+        items.forEach((it, idx) => {
+            rowToQuestionId[it.__row] = res.ids[idx]!;
+        });
+    }
+
+    return {
+        success: res.count,
+        failed: 0,
+        rowErrors: [],
+        insertedIds: res.ids,
+        rowToQuestionId
     };
 }

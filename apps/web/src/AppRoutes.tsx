@@ -24,6 +24,7 @@ const ManagePage = React.lazy(() => import('./pages/ManagePage').then(m => ({ de
 const SettingsPage = React.lazy(() => import('./pages/SettingsPage').then(m => ({ default: m.SettingsPage })));
 const FsrsProfilesPage = React.lazy(() => import('./pages/FsrsProfilesPage').then(m => ({ default: m.FsrsProfilesPage })));
 const QuestionDetailPage = React.lazy(() => import('./pages/QuestionDetailPage').then(m => ({ default: m.QuestionDetailPage })));
+const NotebookPage = React.lazy(() => import('./pages/NotebookPage.tsx'));
 const LatexTestPage = React.lazy(() => import('./pages/LatexTestPage').then(m => ({ default: m.LatexTestPage })));
 const AuthPage = React.lazy(() => import('./pages/AuthPage').then(m => ({ default: m.AuthPage })));
 const NotFound = React.lazy(() => import('./pages/NotFound').then(m => ({ default: m.NotFound })));
@@ -37,6 +38,7 @@ export const router = createBrowserRouter([
             { index: true, element: <WelcomePage /> },
             { path: 'dashboard', element: <DashboardPage /> },
             { path: 'review', element: <ReviewSession /> },
+            { path: 'notebook', element: <NotebookPage /> },
             { path: 'questions', element: <QuestionBank /> },
             { path: 'import', element: <ImportPage /> },
             { path: 'exams', element: <ExamsPage /> },

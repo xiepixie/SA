@@ -7,6 +7,8 @@ import init, { parse_content } from '../pkg/markdown_parser';
 import wasmUrl from '../pkg/markdown_parser_bg.wasm?url';
 import type { ParseResult } from '../index';
 
+export { parse_content };
+
 // ✅ P0 FIX: Module-level singleton for WASM initialization
 // Prevents race conditions when multiple components initialize concurrently
 let wasmInitPromise: Promise<void> | null = null;
@@ -209,6 +211,14 @@ export interface MarkdownRendererProps {
     className?: string;
     density?: 'comfortable' | 'compact';
     onWikiLinkClick?: (target: string) => void;
+    /** Resolve asset filename to a URL for images ![[image.jpg]] */
+    resolveAsset?: (filename: string) => string | Promise<string>;
+    /** Resolve note name to its parsed HTML content ![[Note#Section]] */
+    resolveNote?: (noteName: string) => string | Promise<string>;
+    /** Whether to show the "TEX" badge on math elements. Defaults to true. */
+    showTexBadge?: boolean;
+    /** Optional translation function. Defaults to identity. */
+    t?: (key: string, options?: any) => string;
 }
 
 // LRU cache for LaTeX HTML
@@ -441,12 +451,16 @@ export function sanitizeLatex(tex: string): string {
 
     let clean = tex.trim();
 
-    // ✅ P0 FIX: Strip delimiters if they were incorrectly captured as part of the content
-    // This often happens with multi-line blocks in some parsers
-    if (clean.startsWith('$$') && clean.endsWith('$$')) {
-        clean = clean.substring(2, clean.length - 2).trim();
-    } else if (clean.startsWith('$') && clean.endsWith('$')) {
-        clean = clean.substring(1, clean.length - 1).trim();
+    // ✅ P0 FIX: Robustly strip delimiters if they were captured
+    // Handle both single and double delimiters, and recursive wrapping (e.g., $$ $$)
+    while ((clean.startsWith('$$') && clean.endsWith('$$')) || (clean.startsWith('$') && clean.endsWith('$'))) {
+        if (clean.startsWith('$$') && clean.endsWith('$$') && clean.length >= 4) {
+            clean = clean.substring(2, clean.length - 2).trim();
+        } else if (clean.startsWith('$') && clean.endsWith('$') && clean.length >= 2) {
+            clean = clean.substring(1, clean.length - 1).trim();
+        } else {
+            break;
+        }
     }
 
     // Safety: prevent nested delimiters that KaTeX can't handle inside a rendered block
@@ -477,12 +491,24 @@ export function sanitizeLatex(tex: string): string {
  */
 function renderMathElement(el: HTMLElement): void {
     const rawTex = el.dataset.tex ?? el.textContent ?? '';
+    const trimmedRaw = rawTex.trim();
+
+    // ✅ P0: Smart display mode detection
+    // 1. Check classes (set by parser)
+    // 2. Check for $$ delimiters (raw capture)
+    // 3. Check for specific block environments that SHOULD be blocks
+    const hasDisplayDelimiters = trimmedRaw.startsWith('$$') && trimmedRaw.endsWith('$$');
+    const hasBlockEnv = /\\begin\{(?:aligned|align|gather|matrix|pmatrix|bmatrix|vmatrix|Vmatrix|cases|equation|split)\}/.test(trimmedRaw);
+
+    const displayMode = el.classList.contains('math-display') ||
+        el.classList.contains('math-block') ||
+        hasDisplayDelimiters ||
+        hasBlockEnv;
+
     const tex = sanitizeLatex(rawTex);
 
     // ✅ Store cleaned tex back immediately to normalize all interaction sources
     el.dataset.tex = tex;
-
-    const displayMode = el.classList.contains('math-display') || el.classList.contains('math-block');
 
     // ✅ Normalize classes for consistent CSS targeting
     el.classList.add('not-prose');
@@ -708,13 +734,12 @@ function formatLatexSource(tex: string): string[] {
     return result.length > 0 ? result : [''];
 }
 
-function toggleMathSource(el: HTMLElement): void {
+function toggleMathSource(el: HTMLElement, t: (key: string, options?: any) => string = (k, o) => o?.defaultValue || k): void {
     const tex = el.dataset.tex || '';
     const isShowingSource = el.classList.contains('show-source');
 
-    // ✅ P1 FIX: Auto-detect block-level content even for inline formulas
-    // Formulas with \begin{...} environments or multiple \\ should use block display
-    const hasBlockContent = /\\begin\{/.test(tex) || (tex.match(/\\\\/g) || []).length >= 2;
+    // Formulas with \begin{...} environments, multiple \\, or very long text should use block display
+    const hasBlockContent = /\\begin\{/.test(tex) || (tex.match(/\\\\/g) || []).length >= 2 || tex.length > 80;
     const isBlock = el.classList.contains('math-block') || el.classList.contains('math-display') || hasBlockContent;
 
     if (isShowingSource) {
@@ -741,16 +766,16 @@ function toggleMathSource(el: HTMLElement): void {
                             <div class="code-dot code-dot-amber"></div>
                             <div class="code-dot code-dot-green"></div>
                         </div>
-                        <span class="code-lang-chip">LATEX</span>
+                        <span class="code-lang-chip">LaTeX</span>
                     </div>
                     <div class="flex items-center gap-2">
-                        <button class="code-close-btn flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-primary/10 hover:bg-primary/20 text-primary transition-all text-xs font-bold" aria-label="返回渲染">
+                        <button class="code-close-btn flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-primary/10 hover:bg-primary/20 text-primary transition-all text-xs font-bold" aria-label="${t('markdown.action.back_to_render', { defaultValue: '返回渲染' })}">
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14"></path></svg>
-                            <span>返回</span>
+                            <span>${t('markdown.action.back', { defaultValue: '返回' })}</span>
                         </button>
-                        <button class="code-copy-btn" aria-label="复制 LaTeX">
+                        <button class="code-copy-btn" aria-label="${t('markdown.action.copy_latex', { defaultValue: '复制 LaTeX' })}">
                             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2"/></svg>
-                            <span>复制</span>
+                            <span>${t('markdown.action.copy', { defaultValue: '复制' })}</span>
                         </button>
                     </div>
                 </div>
@@ -760,7 +785,7 @@ function toggleMathSource(el: HTMLElement): void {
             }).join('')}</div>
                 <div class="latex-ref-panel hidden">
                     <div class="ref-panel-header">
-                        <span class="ref-panel-title">LaTeX 参考</span>
+                        <span class="ref-panel-title">${t('markdown.panel.latex_ref', { defaultValue: 'LaTeX 参考' })}</span>
                         <button class="ref-panel-close">
                             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M6 18L18 6M6 6l12 12"></path></svg>
                         </button>
@@ -768,12 +793,7 @@ function toggleMathSource(el: HTMLElement): void {
                     <div class="ref-panel-content"></div>
                 </div>
             </div>`
-            : `<code class="math-source-content">
-                ${highlightLatex(tex)}
-                <button class="inline-copy-btn ml-2 opacity-30 hover:opacity-100 transition-opacity" title="复制">
-                    <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2"/></svg>
-                </button>
-               </code>`;
+            : `<code class="math-source-content">${highlightLatex(tex)}<button class="inline-copy-btn ml-2 opacity-30 hover:opacity-100 transition-opacity" title="${t('markdown.action.copy', { defaultValue: '复制' })}"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2"/></svg></button></code>`;
 
         el.innerHTML = content;
 
@@ -790,7 +810,7 @@ function toggleMathSource(el: HTMLElement): void {
         const doCopy = (targetEl?: HTMLElement) => {
             copyToClipboard(tex).then(success => {
                 if (success) {
-                    notify('markdown.notifications.latex_source_copied');
+                    notify('markdown:markdown.notifications.latex_source_copied');
                     (targetEl || el).classList.add('is-copied');
                     setTimeout(() => (targetEl || el).classList.remove('is-copied'), 400);
                 }
@@ -867,10 +887,73 @@ function getLatexDescription(cmd: string): string {
     return DESCRIPTIONS[cmd] || '';
 }
 
-// Kept for potential future use
-// function unescapeHtml(str: string): string {
-//     return str.replace(/&amp;/g, '&').replace(/&lt;/g, '<').replace(/&gt;/g, '>');
-// }
+/**
+ * ✅ P0: Extract a specific section from HTML based on header hierarchy
+ * Matches Obsidian/Wiki transclusion logic: captures from header until next header of same or higher level.
+ */
+function extractSection(html: string, fragmentPath: string): string {
+    const temp = document.createElement('div');
+    temp.innerHTML = html;
+
+    const norm = (s: string) => s.trim().replace(/\s+/g, ' ').toLowerCase();
+    const fragments = fragmentPath.split('#').map(norm);
+
+    let startNode: Element | null = null;
+    let currentLevel = 0;
+
+    // 1. Precise Recursive Scope Slicing
+    for (const f of fragments) {
+        let candidates: Element[] = [];
+
+        if (!startNode) {
+            // Initial search: anywhere in the document
+            candidates = Array.from(temp.querySelectorAll('h1, h2, h3, h4, h5, h6'));
+        } else {
+            // Sub-search: only search within the scope of startNode
+            // Captured headers must be sub-headings (level > currentLevel)
+            // and appear before any heading of level <= currentLevel
+            let curr = startNode.nextElementSibling;
+            while (curr) {
+                if (/^H[1-6]$/.test(curr.tagName)) {
+                    const level = parseInt(curr.tagName[1]);
+                    if (level <= currentLevel) break; // Exit scope
+                    candidates.push(curr);
+                }
+                curr = curr.nextElementSibling;
+            }
+        }
+
+        const found = candidates.find(h => norm(h.textContent || '') === f);
+        if (!found) return ''; // Link broke or heading renamed
+
+        startNode = found;
+        currentLevel = parseInt(found.tagName[1]);
+    }
+
+    if (!startNode) return '';
+
+    // 2. Section Slicing: Capture content including the start node
+    const fragment_nodes: Node[] = [startNode.cloneNode(true)];
+    let cur = startNode.nextSibling;
+    while (cur) {
+        if (cur.nodeType === 1) { // Element
+            const el = cur as HTMLElement;
+            if (/^H[1-6]$/.test(el.tagName)) {
+                if (parseInt(el.tagName[1]) <= currentLevel) break;
+            }
+        }
+        fragment_nodes.push(cur.cloneNode(true));
+        cur = cur.nextSibling;
+    }
+
+    const wrap = document.createElement('div');
+    wrap.className = 'wiki-embed-section-content';
+    fragment_nodes.forEach(node => wrap.appendChild(node));
+    return wrap.innerHTML;
+}
+
+// Global resolve cache to prevent redundant fetches within the same render cycle
+const noteContentCache = new Map<string, string | Promise<string>>();
 
 // toggleCodeSource - reserved for future code block source toggle feature
 // function toggleCodeSource(el: HTMLElement): void { ... }
@@ -965,7 +1048,16 @@ function setupCodeBlockScrollDetection(el: HTMLElement): void {
 
 
 
-export const MarkdownRenderer: React.FC<MarkdownRendererProps> = React.memo(({ content, className = '', density = 'comfortable', onWikiLinkClick }) => {
+export const MarkdownRenderer: React.FC<MarkdownRendererProps> = React.memo(({
+    content,
+    className = '',
+    density = 'comfortable',
+    onWikiLinkClick,
+    resolveAsset,
+    resolveNote,
+    showTexBadge = true,
+    t = (k: string, o?: any) => o?.defaultValue || k
+}) => {
     const [error, setError] = useState<string | null>(null);
     const containerRef = useRef<HTMLDivElement>(null);
     const [wasmReady, setWasmReady] = useState(false);
@@ -978,6 +1070,18 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = React.memo(({ c
     const touchStartPosRef = useRef<{ x: number; y: number } | null>(null);
     const lastActiveLineRef = useRef<HTMLElement | null>(null);
     const lastSelectedLineRef = useRef<HTMLElement | null>(null);
+    const embedQueueRef = useRef<Set<HTMLElement>>(new Set());
+    const embedObserverRef = useRef<IntersectionObserver | null>(null);
+    const previewTimerRef = useRef<number | null>(null);
+    const [preview, setPreview] = useState<{
+        target: string;
+        page: string;
+        fragment: string;
+        x: number;
+        y: number;
+        content: string | null;
+        visible: boolean;
+    } | null>(null);
 
 
     useEffect(() => {
@@ -987,6 +1091,80 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = React.memo(({ c
                 console.error('WASM initialization failed:', err);
                 setError('Parser initialization error');
             });
+    }, []);
+
+    const handleMouseEnter = useCallback((e: React.MouseEvent) => {
+        const target = e.target as HTMLElement;
+        const wikiLink = target.closest('.wiki-link');
+
+        if (wikiLink instanceof HTMLElement) {
+            const { target: linkTarget, page, fragment } = wikiLink.dataset;
+            if (!linkTarget || !page) return;
+
+            // Clear any pending dismissal
+            if (previewTimerRef.current) {
+                window.clearTimeout(previewTimerRef.current);
+                previewTimerRef.current = null;
+            }
+
+            // Simple debounce for showing (150ms)
+            previewTimerRef.current = window.setTimeout(async () => {
+                const rect = wikiLink.getBoundingClientRect();
+
+                // ✅ UX: Viewport-aware positioning
+                const menuWidth = 320;
+                let x = rect.left + window.scrollX;
+                // If it overflows right side of window
+                if (x + menuWidth > window.innerWidth + window.scrollX - 20) {
+                    x = window.innerWidth + window.scrollX - menuWidth - 20;
+                }
+
+                // Set initial loading state
+                setPreview({
+                    target: linkTarget,
+                    page,
+                    fragment: fragment || '',
+                    x: Math.max(10, x),
+                    y: rect.bottom + window.scrollY + 8,
+                    content: null,
+                    visible: true
+                });
+
+                // Fetch content
+                if (resolveNote) {
+                    try {
+                        let html = noteContentCache.get(page);
+                        if (html instanceof Promise) html = await html;
+                        if (!html) {
+                            const p = resolveNote(page);
+                            noteContentCache.set(page, p);
+                            html = await p;
+                            noteContentCache.set(page, html);
+                        }
+
+                        if (fragment) {
+                            html = extractSection(html, fragment);
+                        }
+
+                        setPreview(prev => prev?.page === page ? { ...prev, content: html || 'No content found' } : prev);
+                    } catch (err) {
+                        setPreview(prev => prev?.page === page ? { ...prev, content: 'Failed to load preview' } : prev);
+                    }
+                }
+            }, 150);
+        }
+    }, [resolveNote]);
+
+    const handleMouseLeave = useCallback(() => {
+        if (previewTimerRef.current) {
+            window.clearTimeout(previewTimerRef.current);
+            previewTimerRef.current = null;
+        }
+
+        // Delay dismissal slightly to allow moving mouse TO the preview (optional, but smoother)
+        previewTimerRef.current = window.setTimeout(() => {
+            setPreview(null);
+        }, 100);
     }, []);
 
     const handleClick = useCallback((e: React.MouseEvent) => {
@@ -1077,7 +1255,7 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = React.memo(({ c
                     return codeEl?.textContent || '';
                 });
                 copyToClipboard(lines.join('\n')).then(ok => {
-                    notify(ok ? 'markdown.notifications.code_lines_copied' : 'markdown.notifications.copy_failed', ok ? 'success' : 'error', ok ? { count: lines.length } : undefined);
+                    notify(ok ? 'markdown:markdown.notifications.code_lines_copied' : 'markdown:markdown.notifications.copy_failed', ok ? 'success' : 'error', ok ? { count: lines.length } : undefined);
                     if (ok) {
                         // 触发复制成功闪烁
                         container.classList.add('is-copied');
@@ -1094,7 +1272,7 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = React.memo(({ c
                 const fullCode = codeKey ? codeStore.get(codeKey) || '' : '';
                 if (fullCode) {
                     copyToClipboard(fullCode).then(success => {
-                        notify(success ? 'markdown.notifications.code_copied' : 'markdown.notifications.copy_failed', success ? 'success' : 'error');
+                        notify(success ? 'markdown:markdown.notifications.code_copied' : 'markdown:markdown.notifications.copy_failed', success ? 'success' : 'error');
                         if (success) {
                             container.classList.add('is-copied');
                             const codeElements = container.querySelectorAll('.mockup-code pre');
@@ -1162,7 +1340,7 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = React.memo(({ c
 
                 const count = container.querySelectorAll('pre.is-selected').length;
                 const copySpan = container.querySelector('.code-copy-btn span');
-                if (copySpan) copySpan.textContent = count > 0 ? `复制 ${count} 行` : '复制';
+                if (copySpan) copySpan.textContent = count > 0 ? t('markdown.action.copy_lines', { defaultValue: `复制 ${count} 行`, count }) : t('markdown.action.copy', { defaultValue: '复制' });
                 return;
             }
 
@@ -1174,7 +1352,7 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = React.memo(({ c
                     el.removeAttribute('aria-selected');
                 });
                 const copySpan = container.querySelector('.code-copy-btn span');
-                if (copySpan) copySpan.textContent = '复制';
+                if (copySpan) copySpan.textContent = t('markdown.action.copy', { defaultValue: '复制' });
             }
 
             // Update anchor for potential future Shift+Click
@@ -1234,7 +1412,8 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = React.memo(({ c
                     has_math: cached.processedHtml.includes('language-math'),
                     has_code: cached.processedHtml.includes('<pre><code'),
                     has_table: cached.processedHtml.includes('<table'),
-                    has_wiki_links: cached.processedHtml.includes('wiki-link')
+                    has_wiki_links: cached.processedHtml.includes('wiki-link'),
+                    has_wiki_embeds: cached.processedHtml.includes('wiki-embed')
                 };
                 performance.mark(`${perfId}-cache-hit`);
             } else {
@@ -1256,7 +1435,7 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = React.memo(({ c
         // ✅ P0-2: Table wrapper key uses hash prefix for cross-document uniqueness
         if (result.has_table) {
             let tableIdx = 0;
-            processedHtml = processedHtml.replace(/<table/g, () => `<div class="md-table-wrap" data-key="tw-${result.hash.substring(0, 6)}-${++tableIdx}"><table`).replace(/<\/table>/g, '</table></div>');
+            processedHtml = processedHtml.replace(/<table/g, () => `<div class="md-table-wrap" data-key="tw-${result.hash.substring(0, 10)}-${++tableIdx}"><table`).replace(/<\/table>/g, '</table></div>');
         }
 
         // ⚓ Markdown Anchor IDs processing (syntax: ### Heading {#id})
@@ -1288,7 +1467,7 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = React.memo(({ c
         let blockCounter = 0;
         const processCodeBlock = (langMeta: string, code: string) => {
             blockCounter++;
-            const blockId = `cb-${result.hash.substring(0, 6)}-${blockCounter}`;
+            const blockId = `cb-${result.hash.substring(0, 10)}-${blockCounter}`;
 
             // ✅ 支持自定义标题：```python:filename.py 或 ```python title="My Title"
             let lang = langMeta;
@@ -1330,9 +1509,9 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = React.memo(({ c
                         <div class="code-dots"><div class="code-dot code-dot-red"></div><div class="code-dot code-dot-amber"></div><div class="code-dot code-dot-green"></div></div>
                         <span class="${headerClass}">${escapeHtml(headerText)}</span>
                     </div>
-                    <button class="code-copy-btn" aria-label="复制代码">
+                    <button class="code-copy-btn" aria-label="${t('markdown.action.copy_code', { defaultValue: '复制代码' })}">
                         <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2"/></svg>
-                        <span>复制</span>
+                        <span>${t('markdown.action.copy', { defaultValue: '复制' })}</span>
                     </button>
                 </div>
                 <div class="code-fence mockup-code" data-key="${blockId}-c">${linesHtml}</div>
@@ -1343,10 +1522,11 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = React.memo(({ c
             // ✅ P0 FIX: 排除 language-math 类的代码块，它们应由 KaTeX 渲染而非代码块样式
             processedHtml = processedHtml.replace(/<pre><code class="language-([^"]+)">([\s\S]*?)<\/code><\/pre>/g, (_: any, l: any, c: any) => {
                 // Skip math blocks - they will be rendered by KaTeX
-                if (l === 'math' || l.startsWith('math ') || l.includes('math-')) {
+                if (l === 'math' || l.startsWith('math ') || l.includes('math-') || l === 'latex') {
                     // Return a simplified structure for KaTeX to process
-                    // Extract display mode from class (math-display means block mode)
-                    const isDisplay = l.includes('display') || l.includes('block');
+                    // ✅ P0 FIX: Fenced code blocks should ALWAYS be display mode by default
+                    // unless specifically marked as inline
+                    const isDisplay = l.includes('display') || l.includes('block') || l === 'math' || l === 'latex';
                     const classes = `language-math ${isDisplay ? 'math-block math-display' : 'math-inline'}`;
                     return `<code class="${classes}">${c}</code>`;
                 }
@@ -1436,7 +1616,7 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = React.memo(({ c
             RETURN_DOM_FRAGMENT: true,
             // ✅ Restore ID for deep linking and style for KaTeX/Layout
             // Note: 'style' is still allowed in ADD_ATTR, but our hook will sanitize its content.
-            ADD_ATTR: ['id', 'style', 'data-tex', 'data-key', 'data-lang', 'data-code', 'data-code-key', 'data-prefix', 'data-line', 'aria-selected', 'aria-hidden', 'tabindex'],
+            ADD_ATTR: ['id', 'style', 'data-tex', 'data-target', 'data-page', 'data-fragment', 'data-embed', 'data-type', 'data-alias', 'data-key', 'data-lang', 'data-code', 'data-code-key', 'data-prefix', 'data-line', 'aria-selected', 'aria-hidden', 'tabindex'],
             ADD_TAGS: ['svg', 'path'],
             USE_PROFILES: { html: true, mathMl: true, svg: true },
         }) as unknown as DocumentFragment;
@@ -1487,6 +1667,14 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = React.memo(({ c
                     if (n.classList.contains('math-inline') || n.classList.contains('math-block')) mathQueue.add(n);
                     n.querySelectorAll(MATH_SELECTOR).forEach(el => mathQueue.add(el as HTMLElement));
 
+                    // ✅ WikiEmbed Lazy Loading & Rendering
+                    if (n.classList.contains('wiki-embed') && !n.dataset.rendered) {
+                        embedQueueRef.current.add(n);
+                    }
+                    n.querySelectorAll('.wiki-embed:not([data-rendered])').forEach(el => {
+                        embedQueueRef.current.add(el as HTMLElement);
+                    });
+
                     // ✅ 代码块滚动状态检测：添加滚动监听器
                     if (n.classList.contains('code-fence') && n.classList.contains('mockup-code')) {
                         setupCodeBlockScrollDetection(n);
@@ -1526,7 +1714,12 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = React.memo(({ c
                 }
                 // 添加可访问性标签
                 if (!mathEl.hasAttribute('aria-label')) {
-                    mathEl.setAttribute('aria-label', `数学${isBlock ? '公式块' : '公式'}，双击${isBlock ? '或按回车' : ''}查看源码`);
+                    const label = t('markdown.aria.math_label', {
+                        defaultValue: `数学${isBlock ? '公式块' : '公式'}，双击${isBlock ? '或按回车' : ''}查看源码`,
+                        type: isBlock ? t('markdown.aria.type_block', { defaultValue: '公式块' }) : t('markdown.aria.type_inline', { defaultValue: '公式' }),
+                        action: isBlock ? t('markdown.aria.action_block', { defaultValue: '或按回车' }) : t('markdown.aria.action_inline', { defaultValue: '' })
+                    });
+                    mathEl.setAttribute('aria-label', label);
                 }
             });
         }
@@ -1534,6 +1727,14 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = React.memo(({ c
         if (mathQueue.size > 0) {
             mathQueue.forEach(el => mathHub.register(el));
             performance.mark(`${perfId}-math-queued`);
+        }
+
+        // ✅ P0: WikiEmbed Task Scheduling
+        if (embedQueueRef.current.size > 0) {
+            embedQueueRef.current.forEach(el => {
+                embedObserverRef.current?.observe(el);
+            });
+            embedQueueRef.current.clear();
         }
 
         performance.mark(`${perfId}-morph-end`);
@@ -1559,7 +1760,7 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = React.memo(({ c
             // Start long-press timer (350ms is standard for mobile long-press)
             longPressTimerRef.current = window.setTimeout(() => {
                 // Verify touch hasn't moved significantly (drag vs press)
-                toggleMathSource(mathEl);
+                toggleMathSource(mathEl, t);
                 // Haptic feedback if available
                 if ('vibrate' in navigator) {
                     navigator.vibrate(10);
@@ -1592,6 +1793,26 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = React.memo(({ c
         touchStartPosRef.current = null;
     }, []);
 
+    // ✅ P0: WikiEmbed Observer Lifecycle
+    useEffect(() => {
+        if (!wasmReady) return;
+
+        embedObserverRef.current = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const el = entry.target as HTMLElement;
+                    embedObserverRef.current?.unobserve(el);
+                    // Trigger actual embed rendering (implemented below)
+                    renderWikiEmbed(el);
+                }
+            });
+        }, { rootMargin: '400px' });
+
+        return () => {
+            embedObserverRef.current?.disconnect();
+        };
+    }, [wasmReady]);
+
     // Cleanup touch timers on unmount
     useEffect(() => {
         return () => {
@@ -1608,10 +1829,89 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = React.memo(({ c
             const mathEl = target.closest(MATH_SELECTOR);
             if (mathEl instanceof HTMLElement && mathEl.dataset.tex) {
                 e.preventDefault();  // 防止Space滚动页面
-                toggleMathSource(mathEl);
+                toggleMathSource(mathEl, t);
             }
         }
     }, []);
+
+    // ✅ P0: Implementation of WikiEmbed rendering
+    async function renderWikiEmbed(el: HTMLElement) {
+        const { type, target, page, fragment, alias } = el.dataset;
+        if (!page) return;
+
+        el.classList.add('is-loading');
+
+        try {
+            if (type === 'image') {
+                if (!resolveAsset) throw new Error('Asset resolver not provided');
+                const src = await resolveAsset(page);
+                el.innerHTML = '';
+                const img = document.createElement('img');
+                img.src = src;
+                const displayLabel = alias || page;
+                img.alt = displayLabel;
+                img.loading = 'lazy';
+                el.appendChild(img);
+
+                if (displayLabel) {
+                    const cap = document.createElement('div');
+                    cap.className = 'wiki-embed-caption';
+                    cap.textContent = displayLabel;
+                    el.appendChild(cap);
+                }
+            } else {
+                // Note / Transclusion
+                if (!resolveNote) throw new Error('Note resolver not provided');
+
+                // Check cache first
+                let noteHtml = noteContentCache.get(page);
+                if (noteHtml instanceof Promise) noteHtml = await noteHtml;
+                if (!noteHtml) {
+                    const promise = resolveNote(page);
+                    noteContentCache.set(page, promise);
+                    noteHtml = await promise;
+                    noteContentCache.set(page, noteHtml);
+                }
+
+                if (fragment) {
+                    noteHtml = extractSection(noteHtml, fragment);
+                    if (!noteHtml) {
+                        throw new Error(`Section not found: ${fragment}`);
+                    }
+                }
+
+                // Inject content with a stylized header link
+                const headerHtml = `
+                    <div class="wiki-embed-header">
+                        <span class="wiki-embed-breadcrumb">${page}${fragment ? ' > ' + fragment.replace(/#/g, ' > ') : ''}</span>
+                        <a href="${page}${fragment ? '#' + fragment : ''}" class="wiki-link wiki-embed-link-icon" data-target="${page}${fragment ? '#' + fragment : ''}" title="打开原始笔记">
+                            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x11="10" y1="14" x2="21" y2="3"></line></svg>
+                        </a>
+                    </div>
+                `;
+
+                el.innerHTML = headerHtml + `<div class="wiki-embed-content">${noteHtml}</div>`;
+
+                // Recursive Enhancement: Process math, code etc inside embedded content
+                el.querySelectorAll(MATH_SELECTOR).forEach(m => mathHub.register(m as HTMLElement));
+                el.querySelectorAll('.code-fence.mockup-code').forEach(c => setupCodeBlockScrollDetection(c as HTMLElement));
+                // Handle nested embeds
+                el.querySelectorAll('.wiki-embed:not([data-rendered])').forEach(e => renderWikiEmbed(e as HTMLElement));
+            }
+
+            el.dataset.rendered = '1';
+        } catch (err) {
+            console.warn('[WikiEmbed] Render failed:', err);
+            el.innerHTML = `
+                <div class="wiki-embed-error">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+                    <span>${err instanceof Error ? err.message : 'Embed failed'}</span>
+                </div>
+            `;
+        } finally {
+            el.classList.remove('is-loading');
+        }
+    }
 
     if (!wasmReady) return <div className="flex items-center gap-2 p-4 text-base-content/50"><span className="loading loading-spinner loading-sm" /></div>;
     if (error) return <div className="alert alert-error m-4 rounded-xl shadow-lg border-none">{error}</div>;
@@ -1628,6 +1928,7 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = React.memo(({ c
                 ref={containerRef}
                 className={`${baseClasses} ${className}`}
                 data-density={density === 'compact' ? 'compact' : undefined}
+                data-hide-tex-badge={showTexBadge ? undefined : ''}
                 onClick={handleClick}
                 onContextMenu={handleContextMenu}
                 onDoubleClick={handleDoubleClick}
@@ -1635,7 +1936,60 @@ export const MarkdownRenderer: React.FC<MarkdownRendererProps> = React.memo(({ c
                 onTouchStart={handleTouchStart}
                 onTouchMove={handleTouchMove}
                 onTouchEnd={handleTouchEnd}
+                onMouseOver={handleMouseEnter}
+                onMouseOut={handleMouseLeave}
             />
+
+            {/* ✅ WikiLink Preview Popover */}
+            {preview && preview.visible && (
+                <div
+                    className="wiki-link-preview sea glass-panel shadow-premium-lg"
+                    style={{
+                        position: 'absolute',
+                        left: preview.x,
+                        top: preview.y,
+                        width: '320px',
+                        maxHeight: '240px',
+                        overflow: 'hidden',
+                        zIndex: 1000,
+                        padding: '1rem',
+                        pointerEvents: 'none', // Allow clicking "through" if needed, or 'auto' to interact
+                        borderRadius: '16px',
+                        fontSize: '0.85rem',
+                        lineHeight: '1.5',
+                        animation: 'preview-fade-in 0.2s ease-out'
+                    }}
+                >
+                    <div className="flex flex-col gap-2">
+                        <div className="flex items-center gap-2 border-bottom border-base-content/10 pb-2 mb-2">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" /><polyline points="14 2 14 8 20 8" /></svg>
+                            <span className="font-bold truncate text-primary">{preview.page}{preview.fragment ? ` #${preview.fragment}` : ''}</span>
+                        </div>
+                        {preview.content === null ? (
+                            <div className="flex items-center justify-center p-4">
+                                <span className="loading loading-spinner loading-xs text-primary/50" />
+                            </div>
+                        ) : (
+                            <div
+                                className="prose prose-xs text-base-content/80 line-clamp-6 mask-fade-bottom"
+                                dangerouslySetInnerHTML={{ __html: preview.content }}
+                            />
+                        )}
+                    </div>
+                </div>
+            )}
+
+            <style dangerouslySetInnerHTML={{
+                __html: `
+                @keyframes preview-fade-in {
+                    from { opacity: 0; transform: translateY(-4px) scale(0.98); }
+                    to { opacity: 1; transform: translateY(0) scale(1); }
+                }
+                .mask-fade-bottom {
+                    mask-image: linear-gradient(to bottom, black 70%, transparent 100%);
+                    -webkit-mask-image: linear-gradient(to bottom, black 70%, transparent 100%);
+                }
+            `}} />
         </>
     );
 });

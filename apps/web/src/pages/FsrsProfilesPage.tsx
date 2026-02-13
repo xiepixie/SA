@@ -389,7 +389,7 @@ const WorkloadForecast: React.FC<{ retention: number; baseCount: number }> = ({ 
 // ============================================================
 
 export const FsrsProfilesPage: React.FC = () => {
-    const { t } = useTranslation();
+    const { t } = useTranslation(['settings', 'common']);
     const [selectedSubjectId, setSelectedSubjectId] = useState<string | null>(null);
     const [activeTab, setActiveTab] = useState<'overview' | 'tuning' | 'advanced'>('overview');
     const [isSidebarVisible, setIsSidebarVisible] = useState(true);
@@ -553,7 +553,7 @@ export const FsrsProfilesPage: React.FC = () => {
             useAppStore.getState().pushEffect({
                 type: 'toast',
                 level: 'error',
-                message: t('common.errors.save_failed', { defaultValue: 'Failed to save changes. Please try again.' }),
+                message: t('common:common.errors.save_failed'),
             });
         }
     };
@@ -776,7 +776,7 @@ export const FsrsProfilesPage: React.FC = () => {
                                                 if (isGlobal) return;
                                                 setDraftProfile({ ...profile!, is_inherited: true });
                                                 if (!activeProfile?.is_inherited) {
-                                                    if (window.confirm(t('settings.profiles.header.inheritance.revert_confirm', { defaultValue: 'Revert to inheritance? All custom settings for this subject will be lost.' }))) {
+                                                    if (window.confirm(t('settings.profiles.header.inheritance.revert_confirm'))) {
                                                         deleteSubjectProfile(selectedSubjectId!);
                                                     }
                                                 }

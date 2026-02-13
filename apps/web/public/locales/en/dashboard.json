@@ -1,0 +1,157 @@
+{
+    "dashboard": {
+        "overdue_warning": "{{count}} overdue",
+        "on_track": "On track",
+        "all_clear": {
+            "title": "SYSTEM CLEAR",
+            "subtitle": "Retention maintained at peak efficiency."
+        },
+        "metrics": {
+            "pulse": "Due Today",
+            "stability": "Memory Stability",
+            "persistence": "Streak Days",
+            "base": "Total Cards"
+        },
+        "retention": {
+            "title": "Retention Analysis",
+            "desc": "Statistical distribution of memory stability.",
+            "avg_stability": "Mean Stability",
+            "peak_accuracy": "Peak Recall",
+            "overdue_drift": "Latency Impact",
+            "sync_health": "Cloud Integrity",
+            "efficiency": "Efficiency",
+            "volume": "Volume"
+        },
+        "subjects": {
+            "title": "Subject Distribution",
+            "empty": "No subjects yet. Import questions to get started."
+        },
+        "discipline": {
+            "title": "Learning Patterns",
+            "footer": "Last 42-day cycle",
+            "last_42_days": "Last 42 Days",
+            "reviews": "reviews",
+            "active_rate": "Active Rate",
+            "efficiency": "Efficiency",
+            "active": "Active"
+        },
+        "milestone": {
+            "title": "Performance Milestone",
+            "desc": "You successfully stabilized <1>{{count}} concepts</1> within the last 7-day period."
+        },
+        "insight": {
+            "title": "Learning Insights",
+            "desc": "Analysis of your last <1>{{count}} interactions</1> suggests an optimal recall target of <2>{{percentage}}%</2>.",
+            "drift": "Decay Adjustment",
+            "sync": "Scheduling Optimization (FSRS)",
+            "density": "Workload",
+            "target_accuracy": "Target Precision",
+            "suggested_action": "Strategic Action",
+            "action_focus": "Prioritize the bottom 20% stability quartile",
+            "action_rest": "Learning queue cleared. We recommend periodic rest.",
+            "act_now": "Act Now"
+        },
+        "quality": {
+            "title": "Diagnostic Metrics",
+            "lapse_rate": "Retention Failure Rate",
+            "new_traps": "Critical Vulnerabilities",
+            "new_traps_desc": "High-frequency errors identified in the last 7 days."
+        }
+    },
+    "welcome": {
+        "default_username": "Practitioner",
+        "greeting": {
+            "morning": "Good morning",
+            "afternoon": "Good afternoon",
+            "evening": "Good evening",
+            "night": "Good evening"
+        },
+        "hero": {
+            "badge": "Active Workspace",
+            "title": "Manage your",
+            "subtitle": "Knowledge Base.",
+            "status": "{{count}} items are pending review. Synchronize now to maintain data consistency.",
+            "btn_review": "Initiate Review",
+            "btn_analyze": "View Analytics"
+        },
+        "states": {
+            "loading": {
+                "desc": "Synchronizing laboratory data…"
+            },
+            "ready": {
+                "badge": "Pending",
+                "title": "Session Available",
+                "btn": "Start Session",
+                "segmented_hint": "Distributed practice yields 20% higher retention."
+            },
+            "clear": {
+                "badge": "Optimized",
+                "title": "Queue Synchronized",
+                "desc": "All scheduled tasks for today have been completed.",
+                "btn_practice": "Extra Practice",
+                "btn_browse": "Browse Repository"
+            },
+            "empty": {
+                "badge": "Initialization",
+                "title": "System Cold Start",
+                "desc": "Import structured data to initialize your knowledge repository.",
+                "btn_import": "Import Data"
+            }
+        },
+        "onboarding": {
+            "step1": "Import structured source files",
+            "step2": "Initialize memory cards",
+            "step3": "Start scheduled review"
+        },
+        "quick_actions": {
+            "recommended": "Primary Path",
+            "quick_access": "Rapid Navigation",
+            "review": {
+                "title": "Daily Review",
+                "desc": "{{count}} pending",
+                "desc_empty": "System optimized",
+                "benefit": "Estimated duration: {{time}}m",
+                "unit": "pending"
+            },
+            "library": {
+                "title": "Repository",
+                "desc": "Browse knowledge base",
+                "benefit": "Categorize and archive structured intelligence."
+            },
+            "matrix": {
+                "title": "Analytics",
+                "desc": "Performance variance",
+                "benefit": "Identify structural weaknesses in memory."
+            },
+            "import": {
+                "title": "Data Import",
+                "desc": "Ingest external data",
+                "benefit": "Convert raw materials into practice units.",
+                "status_running": "Processing data pipeline…"
+            },
+            "access_now": "Enter"
+        },
+        "timer": {
+            "daily": "Cycle Reset",
+            "custom": "Target Deadline",
+            "days": "Days",
+            "hours": "Hours",
+            "min": "Min",
+            "sec": "Sec",
+            "event_label": "Milestone Title",
+            "event_placeholder": "e.g., Examination, Project Deadline…"
+        },
+        "sessions": {
+            "short": "Concentrated Session",
+            "urgent": "Intensive Review"
+        },
+        "footer": {
+            "active_nodes": "Active Knowledge Units",
+            "nodes_synced": "{{count}} units synchronized",
+            "stability": "Global Stability",
+            "latency": "Response Latency",
+            "insight_ready": "Intelligence Ready",
+            "insight_desc": "Latest optimization parameters have been calculated."
+        }
+    }
+}

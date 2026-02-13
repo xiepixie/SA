@@ -5,7 +5,7 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import {
-    ArrowLeft, Search, Wand2, PanelLeftClose, PanelRightClose,
+    Search, Wand2, PanelLeftClose, PanelRightClose,
     Layers, AlertTriangle, AlertCircle, Lightbulb, Zap
 } from 'lucide-react';
 import { cn } from '../../../../app/utils/cn';
@@ -45,7 +45,7 @@ export const ItemSidebar: React.FC<ItemSidebarProps> = ({
     onFilterModeChange,
     onSearchQueryChange,
     onAutoCleanup,
-    onReset,
+    // onReset is kept in props for API compatibility but not used in this component
 }) => {
     const { t } = useTranslation();
 
@@ -56,43 +56,29 @@ export const ItemSidebar: React.FC<ItemSidebarProps> = ({
         )}>
             {/* Sidebar Header with Search & Toggle */}
             <div className={cn(
-                "border-b border-base-content/5 transition-all duration-500 flex flex-col gap-4",
-                sidebarCollapsed ? "p-3" : "p-6"
+                "border-b border-base-content/5 transition-all duration-500 flex flex-col gap-4 shrink-0",
+                sidebarCollapsed ? "p-3" : "p-4"
             )}>
                 <div className={cn(
                     "flex items-center gap-3",
                     sidebarCollapsed && "flex-col"
                 )}>
-                    <button
-                        onClick={onReset}
-                        className={cn(
-                            "group flex items-center justify-center transition-all",
-                            sidebarCollapsed
-                                ? "w-10 h-10 rounded-xl bg-base-content/5 hover:bg-rose-500/10 text-base-content/20 hover:text-rose-500"
-                                : "h-10 px-3 gap-2 text-[10px] font-black uppercase tracking-[0.2em] text-base-content/20 hover:text-base-content/60 hover:bg-base-content/5 rounded-xl border border-transparent hover:border-base-content/5"
-                        )}
-                        title={t('common.actions.exit')}
-                    >
-                        <ArrowLeft size={18} />
-                        {!sidebarCollapsed && <span className="truncate">{t('common.actions.exit')}</span>}
-                    </button>
-
                     {!sidebarCollapsed && (
-                        <div className="flex-1 relative group mx-1">
+                        <div className="flex-1 relative group">
                             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-base-content/20 group-focus-within:text-primary transition-colors" />
                             <input
                                 id="import-sidebar-search"
                                 value={searchQuery}
                                 onChange={e => onSearchQueryChange(e.target.value)}
                                 placeholder={t('import.preview.search_ph')}
-                                className="w-full h-10 bg-base-content/5 border border-base-content/5 rounded-xl pl-9 pr-3 text-[11px] font-bold outline-none focus:bg-base-content/10 focus:border-primary/20 focus:ring-4 focus:ring-primary/5 transition-all text-base-content placeholder:opacity-40"
+                                className="w-full h-9 bg-base-content/5 border border-base-content/5 rounded-xl pl-9 pr-3 text-[11px] font-bold outline-none focus:bg-base-content/10 focus:border-primary/20 transition-all text-base-content placeholder:opacity-40"
                             />
                             {searchQuery && (
                                 <button
                                     onClick={() => onSearchQueryChange('')}
                                     className="absolute right-2 top-1/2 -translate-y-1/2 w-5 h-5 rounded-md hover:bg-base-content/10 flex items-center justify-center text-base-content/30"
                                 >
-                                    <ArrowLeft size={10} className="rotate-45" />
+                                    <span className="text-xs">×</span>
                                 </button>
                             )}
                         </div>
@@ -150,7 +136,7 @@ export const ItemSidebar: React.FC<ItemSidebarProps> = ({
             </div>
 
             {/* Item List */}
-            <div className="flex-1 overflow-y-auto custom-scrollbar-hide hover:custom-scrollbar p-2 space-y-1">
+            <div className="flex-1 overflow-y-auto custom-scrollbar-hide hover:custom-scrollbar p-3 space-y-1">
                 {filteredItems.map((item) => (
                     <SidebarItem
                         key={getItemId(item)}
@@ -163,15 +149,19 @@ export const ItemSidebar: React.FC<ItemSidebarProps> = ({
                 ))}
             </div>
 
-            {/* Sidebar Footer with Optimize button */}
-            {!sidebarCollapsed && (
+            {/* Sidebar Footer with Optimize button - only shown when there are issues */}
+            {!sidebarCollapsed && (stats.errorCount > 0 || stats.warningCount > 0) && (
                 <div className="p-4 border-t border-base-content/5 animate-in fade-in slide-in-from-bottom-2 duration-500">
                     <button
                         onClick={onAutoCleanup}
-                        className="w-full h-11 flex items-center justify-center gap-3 rounded-2xl bg-primary/10 text-primary hover:bg-primary hover:text-primary-content transition-all active:scale-95 group font-black text-[10px] uppercase tracking-widest border border-primary/10"
+                        title={t('import.preview.btn_optimize_tooltip')}
+                        className="w-full h-12 flex items-center justify-center gap-3 rounded-xl bg-gradient-to-r from-primary/10 to-secondary/10 text-primary border border-primary/20 hover:from-primary hover:to-primary hover:text-primary-content hover:border-primary transition-all duration-300 active:scale-[0.98] group font-semibold text-xs"
                     >
-                        <Wand2 size={16} className="group-hover:rotate-12 transition-transform" />
-                        {t('import.preview.btn_optimize')}
+                        <Wand2 size={16} className="group-hover:rotate-12 transition-transform duration-300" />
+                        <span>{t('import.preview.btn_optimize')}</span>
+                        <span className="ml-1 px-2 py-0.5 rounded-full bg-base-content/10 text-[10px] font-bold group-hover:bg-primary-content/20">
+                            {stats.errorCount + stats.warningCount}
+                        </span>
                     </button>
                 </div>
             )}
@@ -218,31 +208,33 @@ const SidebarItem = React.memo<SidebarItemProps>(({
                 sidebarCollapsed
                     ? "justify-center px-0 py-2 rounded-xl h-14"
                     : "gap-3 p-3 rounded-2xl text-left",
-                isSelected
-                    ? "bg-primary text-primary-content shadow-premium-md translate-x-1"
-                    : "hover:bg-base-content/5 opacity-80 hover:opacity-100",
-                hasErr && isSelected && "bg-rose-500 text-white",
-                hasWarn && isSelected && !hasErr && "bg-amber-500 text-white"
+                // Expanded mode: full selection styling
+                !sidebarCollapsed && isSelected && "bg-primary text-primary-content shadow-premium-md translate-x-1",
+                // Expanded mode: subtle hover
+                !sidebarCollapsed && !isSelected && "hover:bg-base-content/5 opacity-80 hover:opacity-100",
+                // Error states (only in expanded mode)
+                !sidebarCollapsed && hasErr && isSelected && "bg-rose-500 text-white",
+                !sidebarCollapsed && hasWarn && isSelected && !hasErr && "bg-amber-500 text-white"
             )}
         >
             <div className="relative shrink-0">
                 <div className={cn(
-                    "flex items-center justify-center text-[10px] font-black transition-all border",
+                    "flex items-center justify-center text-[10px] font-black transition-all",
                     sidebarCollapsed ? "w-9 h-9 rounded-xl" : "w-8 h-8 rounded-xl",
 
-                    // Base Colors when NOT selected
-                    !isSelected && (
-                        hasErr
-                            ? "bg-rose-500/10 border-rose-500/20 text-rose-500"
-                            : hasWarn
-                                ? "bg-amber-500/10 border-amber-500/20 text-amber-500"
-                                : "bg-base-content/5 border-base-content/5 text-base-content/30"
-                    ),
+                    // Collapsed mode: border-only selection with hover scale
+                    sidebarCollapsed && isSelected && "border-2 border-primary text-primary bg-primary/5 group-hover/item:scale-105",
+                    sidebarCollapsed && !isSelected && "border border-base-content/10 text-base-content/40 bg-base-content/5 group-hover/item:border-base-content/20 group-hover/item:bg-base-content/10 group-hover/item:scale-105",
 
-                    // Base Colors when Selected
-                    isSelected && (
-                        "bg-white/20 border-white/20 text-current"
-                    )
+                    // Expanded mode: full styling
+                    !sidebarCollapsed && !isSelected && (
+                        hasErr
+                            ? "bg-rose-500/10 border border-rose-500/20 text-rose-500"
+                            : hasWarn
+                                ? "bg-amber-500/10 border border-amber-500/20 text-amber-500"
+                                : "bg-base-content/5 border border-base-content/5 text-base-content/30"
+                    ),
+                    !sidebarCollapsed && isSelected && "bg-white/20 border border-white/20 text-current"
                 )}>
                     {item.__row}
                 </div>
@@ -256,16 +248,16 @@ const SidebarItem = React.memo<SidebarItemProps>(({
 
             {!sidebarCollapsed && (
                 <div className="flex-1 min-w-0 transition-opacity duration-300 animate-in fade-in slide-in-from-left-2">
-                    <p className={cn(
+                    <div className={cn(
                         "text-xs font-bold truncate",
                         isSelected ? "text-current" : "text-base-content/80"
                     )}>
-                        <MarkdownRenderer content={item.question.title || t('import.preview.untitled_object')} className="prose-none inline" />
-                    </p>
+                        <MarkdownRenderer content={item.question.title || t('import.preview.untitled_object')} className="prose-none inline" showTexBadge={false} />
+                    </div>
                     <div className="flex items-center justify-between gap-2 mt-0.5">
                         <div className="flex items-center gap-2 min-w-0">
                             <span className={cn(
-                                "text-[7px] font-black uppercase tracking-widest px-1.5 py-0.5 rounded-[4px]",
+                                "text-[8px] font-black uppercase tracking-widest px-1.5 py-0.5 rounded-md",
                                 isSelected ? "bg-white/20 text-current" : "bg-base-content/5 text-base-content/30"
                             )}>
                                 {getLocalizedType()}

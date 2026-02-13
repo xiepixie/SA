@@ -28,7 +28,12 @@ import {
     selectCanImport,
     selectValidItems,
 } from '../state/importSelectors';
-import { parseImportData, type ValidationIssue } from '../../../lib/importUtils';
+import {
+    parseImportData,
+    checkDuplicates,
+    type ValidationIssue,
+    supabase
+} from '../../../lib/importUtils';
 
 export interface UseImportWizardReturn {
     // State
@@ -74,8 +79,8 @@ export function useImportWizard(): UseImportWizardReturn {
     // ========================================
 
     const processedItems = useMemo<ProcessedImportItem[]>(
-        () => selectProcessedItems(state.items),
-        [state.items]
+        () => selectProcessedItems(state.items, state.duplicates),
+        [state.items, state.duplicates]
     );
 
     const stats = useMemo<ImportStats>(
@@ -118,8 +123,26 @@ export function useImportWizard(): UseImportWizardReturn {
             const result = await parseImportData(input);
 
             if (result.items.length > 0) {
-                // SET_PARSE_RESULT auto-transitions to preview step
+                // SET_PARSE_RESULT auto-transition to preview
                 dispatch(importActions.setParseResult(result, result.items));
+
+                // [V3.3] Check Duplicates (Async)
+                supabase.auth.getUser().then(async (response) => {
+                    const user = response.data.user;
+                    if (!user) return;
+                    const duplicates = await checkDuplicates(supabase, result.items, user.id);
+                    if (duplicates.length > 0) {
+                        const dupMap: Record<string, string> = {};
+                        duplicates.forEach(d => {
+                            if (d.matchType === 'db') {
+                                dupMap[String(d.rowIndex)] = `Database (${d.duplicateId?.slice(0, 8)}...)`;
+                            } else {
+                                dupMap[String(d.rowIndex)] = `Batch (Row ${d.originalIndex! + 1})`;
+                            }
+                        });
+                        dispatch(importActions.setDuplicates(dupMap));
+                    }
+                });
             } else if (result.issues.length > 0 && result.issues[0].level === 'error') {
                 dispatch(importActions.parseError(result.issues[0].message));
             }

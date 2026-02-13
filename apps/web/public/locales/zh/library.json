@@ -1,0 +1,383 @@
+{
+    "library": {
+        "question": "题目",
+        "question_list": "题目列表",
+        "select_question": "选择题目：{{title}}",
+        "errors": {
+            "delete_failed": "删除失败，请重试",
+            "save_failed": "保存失败，请检查网络连接",
+            "bulk_delete_failed": "批量删除执行失败",
+            "bulk_update_failed": "批量更新执行失败"
+        },
+        "status": {
+            "overdue": "已逾期",
+            "overdue_days": "逾期 {{count}} 天",
+            "due": "今日到期",
+            "new": "新添加",
+            "mastery": "已掌握"
+        },
+        "search_placeholder": "搜索题目或标签…",
+        "stats": {
+            "count": "{{count}} 道题目",
+            "total": "总量"
+        },
+        "toolbar": {
+            "select_mode": "选择模式",
+            "exit_select": "退出选择",
+            "bulk_inspector": "批量查看",
+            "select_all": "全选",
+            "tags": "标签操作…",
+            "batch_actions": "批量操作任务"
+        },
+        "filters": {
+            "all": "全部",
+            "all_types": "全部题型",
+            "choice": "选择题",
+            "fill_blank": "填空题",
+            "short_answer": "简答题",
+            "status": {
+                "all": "全部状态",
+                "overdue": "已逾期",
+                "due": "今日到期",
+                "new": "新添加"
+            },
+            "type": "题型",
+            "question_type": "题目类型",
+            "subject_select": "选择学科",
+            "all_subjects": "全部学科",
+            "no_tags": "暂无标签",
+            "active": "当前筛选",
+            "clear_all": "清除全部"
+        },
+        "sort": {
+            "smart": "智能排序",
+            "smart_desc": "逾期 → 今日 → 新题",
+            "due_soonest": "即将到期",
+            "lowest_mastery": "掌握度最低",
+            "least_stable": "最不稳定",
+            "most_reviewed": "复习次数最多"
+        },
+        "select_hints": {
+            "range": "范围选择",
+            "multi": "多选",
+            "exit": "退出选择模式"
+        },
+        "bulk": {
+            "scope": "当前视图已选中",
+            "select_all": "全选",
+            "deselect_all": "取消全选",
+            "confirm_delete": "删除",
+            "items": "项",
+            "items_count": "{{count}} 项",
+            "edit": "批量编辑",
+            "delete_success": "成功删除 {{count}} 个项目",
+            "update_success": "成功更新 {{count}} 个项目"
+        },
+        "grid": {
+            "empty": "没有更多题目",
+            "empty_desc": "可尝试调整筛选条件，或导入新题目",
+            "selection_banner": {
+                "active": "已进入选择模式",
+                "hint": "点击选择 · Shift+点击连选 · Esc 退出",
+                "clear": "清除并退出"
+            },
+            "selection_count": "已选 {{count}} / {{total}}"
+        },
+        "card": {
+            "untitled": "未命名题目",
+            "no_content": "暂无内容",
+            "due": {
+                "in": "{{days}} 天后",
+                "ago": "逾期 {{days}} 天",
+                "overdue": "已逾期",
+                "today": "今天",
+                "tomorrow": "明天"
+            },
+            "metrics": {
+                "stability": "稳定性",
+                "mastery": "掌握度",
+                "reviews": "复习次数"
+            }
+        },
+        "inspector": {
+            "badge": "题目详情",
+            "content": "题目内容",
+            "logic": "解析",
+            "logic_pending": "暂无解析",
+            "logic_hints": "解析 / 选项",
+            "labels_title": "标签与分类",
+            "btn_evaluate": "开始练习",
+            "interactive_preview": "交互预览",
+            "ready_to_inspect": "准备就绪",
+            "select_guide": "从列表中选择题目以查看详细信息。",
+            "modes": {
+                "preview": "预览",
+                "edit": "编辑"
+            },
+            "footer": {
+                "edit": "编辑",
+                "meta": "学习数据"
+            },
+            "mode_switcher": "视图模式",
+            "navigation": {
+                "prev": "上一题",
+                "next": "下一题"
+            },
+            "meta": {
+                "title": "记忆指标",
+                "type": "属性分类",
+                "tags": {
+                    "suggestions": {
+                        "exam": "考试",
+                        "important": "重难点",
+                        "review": "待复习",
+                        "math": "数学",
+                        "physics": "物理",
+                        "history": "历史"
+                    }
+                },
+                "stability": "稳定性",
+                "stability_unit": "（天）",
+                "half_life": "记忆半衰期",
+                "reviews": "复习次数",
+                "reps": "累计重复",
+                "lapses": "忘却次数",
+                "state": "学习状态",
+                "mastery": "掌握程度",
+                "next_session": "下次复习",
+                "not_scheduled": "未安排",
+                "ready_now": "已准备就绪",
+                "history": "近期记录",
+                "estimated_recall": "预计保留率降至 90% 的剩余时间",
+                "lifecycle": "生命周期",
+                "created_at": "创建时间",
+                "last_review": "最后复习",
+                "never_reviewed": "从未复习",
+                "technical": "元数据",
+                "content_hash": "内容指纹",
+                "last_synced_hash": "最后同步",
+                "integrity_check": "完整性校验",
+                "integrity_match": "核验通过",
+                "history_hint": "详细记录将在 V2.1 上线"
+            },
+            "edit": {
+                "title": "编辑题目",
+                "ph_explain_short": "添加补充说明或元分析...",
+                "advanced": "高级字段",
+                "unsaved": "有未保存的更改",
+                "synced": "已同步",
+                "label_title": "标题",
+                "label_answers": "答案内容",
+                "ph_title": "输入题目唯一标识",
+                "ph_add_tag": "+ 添加标签...",
+                "ph_correct": "输入标准答案（支持多行）...",
+                "ph_wrong": "常见错误或解析...",
+                "ph_md": "# 使用 Markdown 语法...",
+                "ph_explain": "在此输入最终解答、答题策略及综合解析...",
+                "ph_model_answer": "在此输入参考标准答案...",
+                "label_correct": "正确答案",
+                "label_mistake": "选项解析",
+                "label_type": "分类定义",
+                "label_tags": "元数据标签",
+                "label_content": "正文内容 (Markdown)",
+                "label_meta": "元数据 (JSON)",
+                "label_explanation": "详解",
+                "hint_count": "{{count}} 个步骤",
+                "choice_count": "{{count}} 个选项",
+                "edit_choice_id": "修改 ID",
+                "status_written": "已填写",
+                "status_empty": "未填写",
+                "explanation_title": "综合解析",
+                "choices_title": "选项配置",
+                "choices_hint": "点击编号标记正确项",
+                "choice_placeholder": "选项内容...",
+                "why_choice": "分析该选项正确/错误的原因...",
+                "add_choice": "添加选项",
+                "hints_title": "引导提示",
+                "hints_hint": "逐步拆解解题逻辑",
+                "hint_placeholder": "提示内容...",
+                "add_hint": "添加分步提示",
+                "no_correct_warning": "请至少标记一个正确答案",
+                "blanks_title": "填空答案",
+                "blanks_hint": "按空位顺序填写",
+                "blank_placeholder": "内容...",
+                "add_blank": "添加填空项",
+                "short_answer_title": "标准答案",
+                "mark_correct": "设为正确答案",
+                "unmark_correct": "取消正确项",
+                "swap": "交换顺序",
+                "live_preview": "实时预览",
+                "edit_source": "源码编辑",
+                "btn_save": "保存更改",
+                "btn_saved": "保存成功"
+            },
+            "bulk": {
+                "title": "批量操作",
+                "selected": "已选择 {{count}} 项",
+                "composition": "分类分布",
+                "common_state": "基础状态",
+                "avg_stability": "平均稳定性",
+                "mixed": "混合类型",
+                "batch_ops": "快捷操作",
+                "update_difficulty": "调整难度",
+                "manage_tags": "管理标签",
+                "warning": "此处的操作将同步到所有 {{count}} 个选中项，且不可撤销。",
+                "apply": "保存批量更改"
+            }
+        },
+        "unsaved_modal": {
+            "title": "检测到未保存的更改",
+            "description": "当前条目有尚未提交的修改。如果直接离开，这些更改将会丢失。",
+            "fields_label": "修改的字段",
+            "btn_cancel": "返回编辑",
+            "btn_discard": "放弃更改",
+            "btn_save": "保存并继续"
+        },
+        "filter_by_subject": "筛选此学科",
+        "filter_by_tag": "筛选此标签"
+    },
+    "detail": {
+        "header": {
+            "exit": "返回题库",
+            "btn_share": "分享"
+        },
+        "main": {
+            "asset_watermark": "题目",
+            "state_watermark": "学习数据",
+            "tab_asset": "题目内容",
+            "tab_state": "学习数据"
+        },
+        "actions": {
+            "edit": "编辑题目",
+            "fork": "加入题库"
+        },
+        "metrics": {
+            "success": "成功率",
+            "forks": "收藏次数",
+            "time": "平均用时",
+            "integrity": "完整性"
+        },
+        "lineage": {
+            "title": "来源与版本",
+            "created_by": "创建者",
+            "last_update": "最后更新",
+            "revision": "版本",
+            "legal_status": "许可",
+            "license": "基于知识共享许可协议（CC BY 4.0）分发。修改内容需保留署名信息。"
+        },
+        "fsrs": {
+            "title": "FSRS 稳定性",
+            "due_date": "复习日期",
+            "stability_index": "稳定性",
+            "retention": "保留率"
+        },
+        "history": {
+            "title": "历史记录",
+            "btn_audit": "查看完整审计"
+        },
+        "matrix": {
+            "title": "分析",
+            "desc": "性能分析",
+            "benefit": "可视化趋势与变化"
+        },
+        "focus": {
+            "title": "立即复习",
+            "desc": "手动触发一次复习"
+        }
+    },
+    "manage": {
+        "header": {
+            "title": "题库管理",
+            "subtitle": "配置学科、标签体系并追踪管理日志",
+            "btn_bulk": "资产合并",
+            "btn_new": "添加项目"
+        },
+        "tabs": {
+            "subjects": "学科管理",
+            "tags": "标签管理",
+            "audit": "管理日志"
+        },
+        "search": "搜索 {{tab}}...",
+        "types": {
+            "subject": "学科",
+            "tag": "标签",
+            "question": "题目"
+        },
+        "subjects": {
+            "questions": "道题目",
+            "cards": "张卡片",
+            "add_hint": "定义新的知识管理领域"
+        },
+        "tags": {
+            "col_name": "名称",
+            "col_count": "关联题目",
+            "empty": "未找到相关标签"
+        },
+        "modals": {
+            "portal": "管理配置",
+            "create_subject": "创建学科",
+            "edit_subject": "编辑学科",
+            "create_tag": "创建标签",
+            "edit_tag": "编辑标签",
+            "name_label": "名称",
+            "name_ph": "请输入唯一名称...",
+            "color_label": "配色方案",
+            "btn_deploy": "确认创建",
+            "btn_save": "保存更改",
+            "preview_title": "效果预览",
+            "preview_mode": "预览展示",
+            "new_asset": "新项目",
+            "propagate_hint": "更改将在保存后立即应用到所有关联内容。"
+        },
+        "delete": {
+            "title": "确认删除",
+            "desc": "您确定要永久删除该 {{type}} \"{{name}}\" 吗？此操作不可撤销，且会记录在系统日志中。"
+        },
+        "merge": {
+            "title": "资产合并",
+            "subtitle": "将重复的 {{type}} 合并至基准项",
+            "filter": "筛选 {{type}}...",
+            "source": "来源项",
+            "target": "基准项",
+            "pipeline": "流程预览",
+            "deleted_hint": "将被移除",
+            "absorb_hint": "将承载数据",
+            "select_source": "选择来源内容",
+            "select_target": "选择合并至...",
+            "critical_warning": "重要：来源项将被移除，所有关联题目将立即迁移至基准项。",
+            "btn_initiate": "执行合并"
+        },
+        "audit_tab": {
+            "empty": "暂无操作记录",
+            "warning_title": "审计日志提示",
+            "warning": "审计日志不可篡改。除误操作外，请谨慎执行撤销，以免影响数据分析的一致性。",
+            "btn_revert": "撤销此操作",
+            "status_reverting": "正在尝试撤销...",
+            "status_reverted": "操作已成功撤销",
+            "target_label": "操作目标: ",
+            "actions": {
+                "delete": "删除",
+                "create": "创建",
+                "update": "修改",
+                "merge": "合并",
+                "default": "操作"
+            }
+        }
+    },
+    "common": {
+        "actions": {
+            "delete": "删除"
+        },
+        "type": {
+            "choice": "选择题",
+            "fill_blank": "填空题",
+            "short_answer": "简答题"
+        }
+    },
+    "renderer": {
+        "answer": {
+            "reveal": "显示答案",
+            "reset": "重置状态"
+        }
+    }
+}

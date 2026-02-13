@@ -188,6 +188,7 @@ export const ManageModal: React.FC<ManageModalProps> = ({
                                     color={color}
                                     size="lg"
                                     showHash={type === 'tag'}
+                                    icon={type === 'subject' ? Bookmark : undefined}
                                 />
                                 <p className="text-[10px] font-bold text-base-content/40 tracking-[0.3em] uppercase opacity-40">
                                     {t('manage.modals.preview_mode')}

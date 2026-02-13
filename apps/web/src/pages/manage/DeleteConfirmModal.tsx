@@ -15,7 +15,7 @@ interface DeleteConfirmModalProps {
 export const DeleteConfirmModal: React.FC<DeleteConfirmModalProps> = ({
     isOpen, onClose, onConfirm, itemName, itemType, title
 }) => {
-    const { t } = useTranslation();
+    const { t } = useTranslation(['library', 'common']);
     const [isDeleting, setIsDeleting] = useState(false);
 
     if (!isOpen) return null;
@@ -54,8 +54,8 @@ export const DeleteConfirmModal: React.FC<DeleteConfirmModalProps> = ({
                         </h3>
                         <p className="text-sm font-medium text-base-content/60 leading-relaxed px-4">
                             <Trans
-                                i18nKey="manage.delete.desc"
-                                values={{ type: t(`manage.types.${itemType}`), name: itemName }}
+                                i18nKey="library:manage.delete.desc"
+                                values={{ type: t(`library:manage.types.${itemType}`), name: itemName }}
                                 components={[<span key="name" className="text-error font-black underline underline-offset-4 decoration-current/30" />]}
                             />
                         </p>
@@ -68,14 +68,14 @@ export const DeleteConfirmModal: React.FC<DeleteConfirmModalProps> = ({
                             onClick={onClose}
                             disabled={isDeleting}
                         >
-                            {t('manage.delete.abort')}
+                            {t('common:common.actions.cancel')}
                         </button>
                         <button
                             onClick={handleConfirm}
                             disabled={isDeleting}
                             className="btn btn-error flex-1 h-12 rounded-2xl text-[10px] font-black uppercase tracking-widest shadow-xl shadow-error/20 active:scale-95 transition-all text-error-content font-black"
                         >
-                            {isDeleting ? <span className="loading loading-spinner loading-xs" /> : t('manage.delete.confirm')}
+                            {isDeleting ? <span className="loading loading-spinner loading-xs" /> : t('common:common.actions.delete')}
                         </button>
                     </div>
                 </div>

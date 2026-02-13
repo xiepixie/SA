@@ -452,11 +452,11 @@ const formatDate = (dateStr: string, t: any, lang: string): string => {
     const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
     const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
 
-    if (diffMins < 1) return t('common.time.just_now');
-    if (diffMins < 60) return t('common.time.mins_ago', { count: diffMins });
-    if (diffHours < 24) return t('common.time.hours_ago', { count: diffHours });
-    if (diffDays === 1) return t('common.time.yesterday');
-    if (diffDays < 7) return t('common.time.days_ago', { count: diffDays });
+    if (diffMins < 1) return t('common:common.time.just_now');
+    if (diffMins < 60) return t('common:common.time.mins_ago', { count: diffMins });
+    if (diffHours < 24) return t('common:common.time.hours_ago', { count: diffHours });
+    if (diffDays === 1) return t('common:common.time.yesterday');
+    if (diffDays < 7) return t('common:common.time.days_ago', { count: diffDays });
     return date.toLocaleDateString(lang === 'zh' ? 'zh-CN' : 'en-US', { month: 'short', day: 'numeric' });
 };
 
@@ -464,9 +464,9 @@ const formatDate = (dateStr: string, t: any, lang: string): string => {
 
 const getStatusConfig = (status: ExamStatus, t: any) => {
     const configs = {
-        in_progress: { icon: Play, label: t('common.status.in_progress'), color: 'text-info', bg: 'bg-info/10', border: 'border-info/20', pulse: true },
-        completed: { icon: CheckCircle2, label: t('common.status.completed'), color: 'text-success', bg: 'bg-success/10', border: 'border-success/20', pulse: false },
-        abandoned: { icon: XCircle, label: t('common.status.abandoned'), color: 'text-base-content/40', bg: 'bg-base-content/5', border: 'border-base-content/10', pulse: false }
+        in_progress: { icon: Play, label: t('common:common.status.in_progress'), color: 'text-info', bg: 'bg-info/10', border: 'border-info/20', pulse: true },
+        completed: { icon: CheckCircle2, label: t('common:common.status.completed'), color: 'text-success', bg: 'bg-success/10', border: 'border-success/20', pulse: false },
+        abandoned: { icon: XCircle, label: t('common:common.status.abandoned'), color: 'text-base-content/40', bg: 'bg-base-content/5', border: 'border-base-content/10', pulse: false }
     };
     return configs[status];
 };
@@ -622,7 +622,7 @@ const InProgressBanner: React.FC<{
     onContinue: () => void;
     onAbandon: () => void;
 }> = ({ exam, onContinue, onAbandon }) => {
-    const { t, i18n } = useTranslation();
+    const { t, i18n } = useTranslation(['exams', 'common']);
     const lang = i18n.language;
     const [showConfirm, setShowConfirm] = useState(false);
     const progress = exam.correct_count ? Math.round((exam.correct_count / exam.question_count) * 100) : 0;
@@ -650,7 +650,7 @@ const InProgressBanner: React.FC<{
                         <div className="flex-1 min-w-0">
                             <div className="flex items-center gap-2 mb-1">
                                 <span className="px-2 py-0.5 bg-info/10 text-info text-[10px] font-black uppercase rounded-md">
-                                    {t('common.status.in_progress')}
+                                    {t('common:common.status.in_progress')}
                                 </span>
                                 <span className="text-[10px] se-muted">{formatDate(exam.start_time, t, lang)}</span>
                             </div>
@@ -785,7 +785,7 @@ const WizardProgress: React.FC<{
                     <span className="text-2xl font-black text-base-content/20 tabular-nums">
                         {Math.round((currentStep / totalSteps) * 100)}%
                     </span>
-                    <p className="text-[9px] font-black text-base-content/30 uppercase tracking-widest">{t('common.status.completed')}</p>
+                    <p className="text-[9px] font-black text-base-content/30 uppercase tracking-widest">{t('common:common.status.completed')}</p>
                 </div>
             </div>
 
@@ -1640,7 +1640,7 @@ const HistoryCard: React.FC<{
     onClick: () => void;
     onToggleFavorite?: (examId: string) => void;
 }> = ({ exam, onClick, onToggleFavorite }) => {
-    const { t, i18n } = useTranslation();
+    const { t, i18n } = useTranslation(['exams', 'common']);
     const lang = i18n.language;
     const score = exam.score;
     const gradeObj = getGrade(score);
@@ -1934,7 +1934,7 @@ const AdvancedFiltersPanel: React.FC<{
 // ============================================
 
 export const ExamsPage: React.FC = () => {
-    const { t, i18n } = useTranslation();
+    const { t, i18n } = useTranslation(['exams', 'common']);
     const lang = i18n.language;
 
     // View State

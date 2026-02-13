@@ -45,16 +45,18 @@ export const ReviewStrategyPanel: React.FC<ReviewStrategyPanelProps> = ({
     stats,
     onStart
 }) => {
-    const { t } = useTranslation();
+    const { t } = useTranslation(['review', 'common']);
 
     return (
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8 items-start w-full">
             {/* 1. Left Column: Strategy Selection Grid */}
             <div className="lg:col-span-7 flex flex-col gap-4">
-                <div className="flex items-center justify-between mb-1">
-                    <h3 className="text-[10px] font-black uppercase tracking-[0.3em] text-base-content/20 italic">
-                        {t('review.setup.mode_selection', 'Algorithm Strategy')}
-                    </h3>
+                <div className="flex items-center gap-3 mb-6 group/sec">
+                    <div className="flex items-center gap-2.5 px-3 py-1.5 rounded-xl bg-base-content/5 border border-base-content/5 group-hover/sec:bg-primary/10 group-hover/sec:border-primary/20 transition-all duration-500">
+                        <Target size={14} className="text-primary/60" />
+                        <span className="text-[10px] font-black text-base-content/60 group-hover/sec:text-primary uppercase tracking-[0.3em]">{t('review.setup.mode_selection', 'Algorithm Strategy')}</span>
+                    </div>
+                    <div className="h-px flex-1 bg-gradient-to-r from-base-content/10 via-base-content/5 to-transparent" />
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
@@ -113,11 +115,12 @@ export const ReviewStrategyPanel: React.FC<ReviewStrategyPanelProps> = ({
             <div className="lg:col-span-5 space-y-6">
                 <div className="glass-card-premium p-6 rounded-[2.25rem] border-base-content/5 space-y-6 bg-gradient-to-br from-base-content/[0.01] to-transparent shadow-premium-lg">
                     <div className="space-y-6">
-                        <div className="flex items-center justify-between">
-                            <h3 className="text-[10px] font-black uppercase tracking-[0.4em] text-base-content/20">{t('review.setup.intel_title')}</h3>
-                            <div className="flex gap-1">
-                                <span className="w-1 h-1 rounded-full bg-success/40 animate-pulse" />
+                        <div className="flex items-center gap-3 group/sec">
+                            <div className="flex items-center gap-2.5 px-3 py-1.5 rounded-xl bg-base-content/5 border border-base-content/5 group-hover/sec:bg-success/10 group-hover/sec:border-success/20 transition-all duration-500">
+                                <Sparkles size={14} className="text-success/60" />
+                                <span className="text-[10px] font-black text-base-content/60 group-hover/sec:text-success uppercase tracking-[0.3em]">{t('review.setup.intel_title', 'Intelligence')}</span>
                             </div>
+                            <div className="h-px flex-1 bg-gradient-to-r from-base-content/10 via-base-content/5 to-transparent" />
                         </div>
 
                         <div className="flex items-center gap-5 group">
@@ -138,6 +141,7 @@ export const ReviewStrategyPanel: React.FC<ReviewStrategyPanelProps> = ({
                                 </span>
                                 <span className="shrink-0">{t('review.setup.forecast_7d')}</span>
                             </div>
+
                             <div className="flex items-end gap-1.5 h-20 w-full group/chart">
                                 {[60, 80, 40, 90, 30, 50, 20].map((h, i) => (
                                     <div
@@ -163,14 +167,14 @@ export const ReviewStrategyPanel: React.FC<ReviewStrategyPanelProps> = ({
                             <div className="flex flex-col gap-1">
                                 <div className="flex items-center gap-1.5 text-primary/40">
                                     <Clock size={12} />
-                                    <span className="text-[9px] font-black uppercase tracking-[0.2em]">{t('common.status.time_est', 'EST. TIME')}</span>
+                                    <span className="text-[9px] font-black uppercase tracking-[0.2em]">{t('common:common.status.time_est', 'EST. TIME')}</span>
                                 </div>
-                                <span className="text-lg font-black text-base-content">~{Math.ceil(stats.total * 0.4)}{t('common.status.minutes_short', 'm')}</span>
+                                <span className="text-lg font-black text-base-content">~{Math.ceil(stats.total * 0.4)}{t('common:common.status.minutes_short', 'm')}</span>
                             </div>
                             <div className="flex flex-col gap-1">
                                 <div className="flex items-center gap-1.5 text-error/40">
                                     <Target size={12} />
-                                    <span className="text-[9px] font-black uppercase tracking-[0.2em]">{t('common.status.weak', 'WEAKNESS')}</span>
+                                    <span className="text-[9px] font-black uppercase tracking-[0.2em]">{t('common:common.status.weak', 'WEAKNESS')}</span>
                                 </div>
                                 <span className="text-lg font-black text-base-content">{Math.round((stats.weak / (stats.total || 1)) * 100)}%</span>
                             </div>

@@ -81,6 +81,7 @@ const SYSTEM_RESERVED_FIELDS = new Set([
 export const QUEUE_THRESHOLD = 50;
 
 import { supabase } from './supabase';
+export { supabase };
 import type { SupabaseClient, PostgrestError } from '@supabase/supabase-js';
 
 /**
@@ -144,6 +145,23 @@ export interface BatchInsertResult {
     insertedIds: string[];
     rowToQuestionId: Record<number, string>;
     importBatchId: string;
+}
+
+/** [V3.3] Duplicate Check Result */
+export interface DuplicateCheckResult {
+    rowIndex: number;
+    title: string;
+    duplicateId: string | null;
+    matchType: 'db' | 'batch';
+    originalIndex?: number;
+}
+
+/** [V3.3] Atomic Import Result */
+export interface AtomicImportResult {
+    success: boolean;
+    count: number;
+    ids: string[];
+    error?: string;
 }
 
 // ============================================
@@ -1062,6 +1080,109 @@ export function buildQuestionInsertPayload(
 }
 
 /**
+ * [V3.3] Server-side duplicate check using preflight_check_duplicates RPC
+ * Uses exactly the same hash logic as the database trigger.
+ */
+export async function checkDuplicates(
+    client: SupabaseClient,
+    items: ImportItem[],
+    userId: string
+): Promise<DuplicateCheckResult[]> {
+    if (items.length === 0) return [];
+
+    // Construct lightweight payload for hash check (matching RPC expectation)
+    const payload = items.map(it => {
+        const q = it.question;
+        return {
+            user_id: userId,
+            title: q.title,
+            content: q.content,
+            question_type: q.question_type,
+            difficulty: q.difficulty,
+            explanation: q.explanation,
+            correct_answer: q.correct_answer,
+            correct_answer_text: q.correct_answer_text,
+            hints: q.hints,
+            image_url: q.image_url,
+            explanation_image_url: q.explanation_image_url,
+            correct_answer_image_url: q.correct_answer_image_url
+        };
+    });
+
+    const { data, error } = await client.rpc('preflight_check_duplicates', { rows: payload });
+
+    if (error) {
+        console.error('Duplicate check failed:', error);
+        return []; // Fail open (assume no duplicates if check fails)
+    }
+
+    return (data as any[]).map(d => ({
+        rowIndex: d.row_index,
+        title: d.title,
+        duplicateId: d.duplicate_id,
+        matchType: d.match_type,
+        originalIndex: d.original_index
+    }));
+}
+
+/**
+ * [V3.3] Atomic Batch Insert (Transaction)
+ * Replaces insertQuestionsWithBisect when atomicity is required.
+ */
+export async function insertQuestionsAtomic(
+    client: SupabaseClient,
+    items: ImportItem[],
+    params: {
+        userId: string;
+        defaultSubjectId?: string;
+        importBatchId?: string;
+    }
+): Promise<BatchInsertResult> {
+    const importBatchId = params.importBatchId ?? safeUUID();
+
+    // Prepare full payloads
+    const payloads = items.map(it => buildQuestionInsertPayload(it, {
+        userId: params.userId,
+        importBatchId,
+        defaultSubjectId: params.defaultSubjectId,
+    }));
+
+    // Call RPC
+    const { data, error } = await client.rpc('import_questions_atomic', { rows: payloads });
+
+    if (error) {
+        // RPC throws exception on failure, so we catch it here
+        return {
+            success: 0,
+            failed: items.length,
+            rowErrors: [{ row: 0, error: formatPgError(error) }],
+            insertedIds: [],
+            rowToQuestionId: {},
+            importBatchId
+        };
+    }
+
+    const res = data as AtomicImportResult;
+    const rowToQuestionId: Record<number, string> = {};
+
+    // Map back IDs to rows (RPC returns IDs in order)
+    if (res.ids && res.ids.length === items.length) {
+        items.forEach((it, idx) => {
+            rowToQuestionId[it.__row] = res.ids[idx];
+        });
+    }
+
+    return {
+        success: res.count,
+        failed: 0,
+        rowErrors: [],
+        insertedIds: res.ids,
+        rowToQuestionId,
+        importBatchId
+    };
+}
+
+/**
  * 批量插入 + 二分法定位坏行
  * [V3.2] 返回 rowToQuestionId 用于后续关联创建
  */
@@ -1502,7 +1623,7 @@ export async function runImportPipeline(params: {
     client?: SupabaseClient;
     userId: string;
     parse: ParseResult;
-    config?: ImportConfig;
+    config?: ImportConfig & { useAtomic?: boolean }; // [V3.3] Added useAtomic flag
     onProgress?: (p: BatchInsertProgress) => void;
     abortSignal?: AbortSignal;
 }): Promise<ImportPipelineResult> {
@@ -1517,14 +1638,36 @@ export async function runImportPipeline(params: {
         defaultTagIds: params.config?.defaultTagIds,
     });
 
-    // 3) Insert questions (+ bisect)
-    const inserted = await insertQuestionsWithBisect(client, validItems, {
-        userId: params.userId,
-        defaultSubjectId: params.config?.defaultSubjectId,
-        importBatchId: params.config?.importBatchId,
-        onProgress: params.onProgress,
-        abortSignal: params.abortSignal,
-    });
+    // 3) Insert questions
+    let inserted: BatchInsertResult;
+
+    if (params.config?.useAtomic) {
+        // [V3.3] Atomic Transaction
+        // Atomic mode doesn't support progress/bisect because it's all-or-nothing
+        params.onProgress?.({ phase: 'inserting', current: 0, total: validItems.length, success: 0, failed: 0 });
+
+        inserted = await insertQuestionsAtomic(client, validItems, {
+            userId: params.userId,
+            defaultSubjectId: params.config?.defaultSubjectId,
+            importBatchId: params.config?.importBatchId,
+        });
+
+        if (inserted.failed > 0) {
+            // Atomic failure -> abort entire pipeline
+            params.onProgress?.({ phase: 'done', current: validItems.length, total: validItems.length, success: 0, failed: validItems.length });
+            return { ...inserted, tagAssoc: undefined, cards: undefined };
+        }
+        params.onProgress?.({ phase: 'done', current: validItems.length, total: validItems.length, success: validItems.length, failed: 0 });
+    } else {
+        // Default: Bisect Mode (Best Effort)
+        inserted = await insertQuestionsWithBisect(client, validItems, {
+            userId: params.userId,
+            defaultSubjectId: params.config?.defaultSubjectId,
+            importBatchId: params.config?.importBatchId,
+            onProgress: params.onProgress,
+            abortSignal: params.abortSignal,
+        });
+    }
 
     // 4) Tag associations
     const tagAssoc = await createQuestionTagAssociationsBulk(client, validItems, inserted.rowToQuestionId);

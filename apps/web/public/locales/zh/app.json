@@ -1,0 +1,53 @@
+{
+    "boot": {
+        "title": "正在加载应用",
+        "subtitle": "Smart Archive V2",
+        "status": "系统就绪，正在同步数据",
+        "steps": {
+            "renderer": "正在初始化 UI 组件",
+            "sync": "正在同步本地数据库",
+            "review": "正在计算今日复习安排"
+        }
+    },
+    "units": {
+        "cards_per_day": "题/日",
+        "days_abbr": "天"
+    },
+    "time": {
+        "just_now": "刚刚",
+        "mins_ago": "{{count}} 分钟前",
+        "hours_ago": "{{count}} 小时前",
+        "yesterday": "昨天",
+        "days_ago": "{{count}} 天前"
+    },
+    "time_left": "剩余 {{hours}} 小时 {{minutes}} 分钟",
+    "continents": {
+        "asia_oceania": "亚洲与大洋洲",
+        "europe_africa": "欧洲与非洲",
+        "americas": "美洲",
+        "system": "系统默认"
+    },
+    "difficulty": {
+        "easy": "基础",
+        "medium": "中等",
+        "hard": "进阶"
+    },
+    "metadata": {
+        "all": "全部类别",
+        "recommended": "推荐使用",
+        "experimental": "技术预览",
+        "standard": "标准规范",
+        "general": {
+            "all": "综合",
+            "unknown": "未分类",
+            "universal": "通用"
+        },
+        "question_types": {
+            "choice": "选择题",
+            "fill_blank": "填空题",
+            "short_answer": "简答题"
+        },
+        "subjects": "学科",
+        "archive": "归档"
+    }
+}

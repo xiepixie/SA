@@ -71,12 +71,12 @@ const getViewState = (dash: DashboardData): ViewState => {
 // ============================================================================
 
 export const WelcomePage: React.FC = () => {
-    const { t } = useTranslation();
+    const { t } = useTranslation(['dashboard', 'common']);
     const navigate = useNavigate();
     useActiveView('v:dashboard');
     const profile = useUserSettings(s => s.profile);
     const preferences = useUserSettings(s => s.preferences);
-    const { i18n: i18nInstance } = useTranslation();
+    const { i18n: i18nInstance } = useTranslation(['dashboard', 'common']);
 
     const dashEntity = useAppStore(s => s.entities.dashboard['me']) as DashboardData | undefined;
     const dash: DashboardData = dashEntity || {};
@@ -241,7 +241,7 @@ export const WelcomePage: React.FC = () => {
                         </div>
                         <div className="space-y-1 text-center">
                             <h2 className="text-2xl font-black text-base-content/30 tracking-tight animate-pulse-subtle">
-                                {t('common.loading')}
+                                {t('common:common.loading')}
                             </h2>
                             <p className="text-base-content/10 text-[10px] font-black uppercase tracking-widest">
                                 {t('welcome.states.loading.desc')}

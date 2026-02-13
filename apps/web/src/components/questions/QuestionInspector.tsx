@@ -105,7 +105,7 @@ export function QuestionInspector({
     availableSubjects = [], availableTags = [],
     width = 600, isDragging = false
 }: QuestionInspectorProps) {
-    const { t, i18n } = useTranslation();
+    const { t, i18n } = useTranslation(['library', 'common', 'markdown', 'renderer']);
     const { matchesShortcut } = useShortcut();
     const [isLivePreview, setIsLivePreview] = React.useState(false);
     const [userAnswer, setUserAnswer] = React.useState<any>(null);
@@ -312,7 +312,7 @@ export function QuestionInspector({
                                             onClick={() => onBulkUpdate?.({ difficulty: d as any })}
                                             className="h-10 rounded-xl border border-base-content/5 bg-base-content/[0.02] text-[9px] font-black uppercase hover:bg-primary/10 hover:border-primary/20 hover:text-primary transition-all se-interactive"
                                         >
-                                            {d}
+                                            {t(`common.difficulty.${d}`)}
                                         </button>
                                     ))}
                                 </div>
@@ -329,6 +329,7 @@ export function QuestionInspector({
                                                     key={s.id}
                                                     name={s.name}
                                                     color={s.color}
+                                                    icon={Layers}
                                                     onClick={() => onBulkUpdate?.({ subject_id: s.id })}
                                                     className="h-10 justify-start"
                                                     interactive
@@ -423,13 +424,13 @@ export function QuestionInspector({
                                 onClick={() => onDelete()}
                             >
                                 <Trash2 size={14} className="mr-2" />
-                                {t('common.actions.delete', 'Delete')}
+                                {t('common.actions.delete')}
                             </button>
                             <button
                                 className="btn btn-primary h-10 px-5 rounded-xl shadow-lg shadow-primary/20 se-interactive uppercase font-black tracking-wider text-xs"
                                 onClick={onClose}
                             >
-                                {t('common.actions.close', 'Done')}
+                                {t('common.actions.close')}
                             </button>
                         </div>
                     </div>
@@ -463,7 +464,7 @@ export function QuestionInspector({
                                         </div>
                                     ) : (
                                         <h2 className="text-base font-black text-base-content tracking-tight leading-none line-clamp-1 min-h-[2rem] flex items-center" title={stableQuestion.title}>
-                                            <MarkdownRenderer content={stableQuestion.title} className="prose-none [&_p]:m-0" density="compact" />
+                                            <MarkdownRenderer content={stableQuestion.title} className="prose-none [&_p]:m-0" density="compact" t={t} />
                                         </h2>
                                     )}
                                     <div className="flex items-center gap-2 mt-0.5 opacity-60">
@@ -517,6 +518,7 @@ export function QuestionInspector({
                                     <EntityBadge
                                         name={stableQuestion.subject_name || t('library.general_subject', 'General')}
                                         color={stableQuestion.subject_color}
+                                        icon={Layers}
                                         size="sm"
                                     />
                                 </div>
@@ -664,7 +666,7 @@ export function QuestionInspector({
                                         <SectionHeader
                                             icon={<Layers />}
                                             title={t('library.inspector.edit.label_type', 'Classification')}
-                                            value={`${t(`library.filters.${draft.question_type || 'choice'}`)} · ${t(`library.card.difficulty.${draft.difficulty || 'medium'}`)}`}
+                                            value={`${t(`common.type.${draft.question_type || 'choice'}`)} · ${t(`common.difficulty.${draft.difficulty || 'medium'}`)}`}
                                         />
                                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pb-2">
                                             <FieldGroup label={t('library.filters.question_type', 'Type')} id="inspector-type-select">
@@ -679,7 +681,7 @@ export function QuestionInspector({
                                                                 draft.question_type === type ? "bg-base-100 shadow-sm text-primary" : "opacity-40 hover:opacity-100"
                                                             )}
                                                         >
-                                                            {t(`library.filters.${type}`)}
+                                                            {t(`common.type.${type}`)}
                                                         </button>
                                                     ))}
                                                 </div>
@@ -696,7 +698,7 @@ export function QuestionInspector({
                                                                 draft.difficulty === level ? "bg-base-100 shadow-sm text-primary" : "opacity-40 hover:opacity-100"
                                                             )}
                                                         >
-                                                            {t(`library.card.difficulty.${level}`)}
+                                                            {t(`common.difficulty.${level}`)}
                                                         </button>
                                                     ))}
                                                 </div>

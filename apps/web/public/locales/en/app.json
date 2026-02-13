@@ -1,0 +1,53 @@
+{
+    "boot": {
+        "title": "Loading Application",
+        "subtitle": "Smart Archive V2",
+        "status": "System ready, synchronizing data",
+        "steps": {
+            "renderer": "Initializing UI components",
+            "sync": "Synchronizing local database",
+            "review": "Calculating today's review schedule"
+        }
+    },
+    "units": {
+        "cards_per_day": "Items / Day",
+        "days_abbr": "d"
+    },
+    "time": {
+        "just_now": "Moments ago",
+        "mins_ago": "{{count}}m ago",
+        "hours_ago": "{{count}}h ago",
+        "yesterday": "Yesterday",
+        "days_ago": "{{count}}d ago"
+    },
+    "time_left": "{{hours}}h {{minutes}}m remaining",
+    "continents": {
+        "asia_oceania": "Asia & Oceania",
+        "europe_africa": "Europe & Africa",
+        "americas": "Americas",
+        "system": "System Default"
+    },
+    "difficulty": {
+        "easy": "Foundational",
+        "medium": "Intermediate",
+        "hard": "Advanced"
+    },
+    "metadata": {
+        "all": "All Categories",
+        "recommended": "Recommended",
+        "experimental": "Technical Preview",
+        "standard": "Standard Specification",
+        "general": {
+            "all": "Comprehensive",
+            "unknown": "Unclassified",
+            "universal": "Universal"
+        },
+        "question_types": {
+            "choice": "Selective Response",
+            "fill_blank": "Cloze Deletion",
+            "short_answer": "Open Response"
+        },
+        "subjects": "Subjects",
+        "archive": "Archive"
+    }
+}

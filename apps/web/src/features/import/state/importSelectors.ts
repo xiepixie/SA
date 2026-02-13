@@ -22,12 +22,31 @@ import { validateItem, type ValidationIssue } from '../../../lib/importUtils';
 /**
  * Process raw items with validation results
  */
-export function selectProcessedItems(items: ImportItem[]): ProcessedImportItem[] {
-    return items.map(item => ({
-        ...item,
-        subject_name: item.subject_name || undefined,
-        _validation: validateItem(item),
-    }));
+export function selectProcessedItems(
+    items: ImportItem[],
+    duplicates: Record<string, string> = {}
+): ProcessedImportItem[] {
+    return items.map(item => {
+        const issues = validateItem(item);
+        const dupId = duplicates[getItemId(item)];
+        if (dupId) {
+            issues.push({
+                level: 'warning',
+                row: item.__row,
+                field: 'checksum',
+                // Updated to use standardized format for translation matching in PropertyPanel
+                message: dupId.includes('Database')
+                    ? `Exists in Database (${dupId})`
+                    : `Duplicate in Batch (${dupId})`,
+                code: 'DUPLICATE_ANSWERS' as any
+            });
+        }
+        return {
+            ...item,
+            subject_name: item.subject_name || undefined,
+            _validation: issues,
+        };
+    });
 }
 
 // ========================================
@@ -228,7 +247,7 @@ export function selectCanImport(processedItems: ProcessedImportItem[]): boolean 
  * Useful for components that need multiple derived values
  */
 export function selectDerivedState(state: ImportState) {
-    const processedItems = selectProcessedItems(state.items);
+    const processedItems = selectProcessedItems(state.items, state.duplicates);
     const stats = selectStats(processedItems);
     const filteredItems = selectFilteredItems(
         processedItems,

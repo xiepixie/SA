@@ -19,8 +19,13 @@ export const ImportingStep: React.FC<ImportingStepProps> = ({
     const { t } = useTranslation();
 
     return (
-        <div className="flex-1 min-h-full p-4 md:p-12 lg:p-16 pb-24 bg-mesh-surface reveal-smooth relative">
-            <div className="max-w-xl mx-auto w-full space-y-8">
+        <div className="h-full w-full flex flex-col items-center justify-center p-6 md:p-12 bg-base-300 relative overflow-hidden">
+            {/* Professional Background */}
+            <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden opacity-50">
+                <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(at_0%_0%,rgba(var(--p),0.02)_0,transparent_50%),radial-gradient(at_100%_0%,rgba(var(--s),0.02)_0,transparent_50%)]" />
+            </div>
+
+            <div className="max-w-3xl w-full relative z-10 space-y-12 animate-in fade-in zoom-in-95 duration-1000 ease-spring">
                 {/* Step indicator */}
                 <div className="flex justify-center">
                     <ImportStepper currentStep="importing" />

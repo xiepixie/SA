@@ -103,7 +103,7 @@ type SemanticColor = keyof typeof SEMANTIC_COLORS;
  * Incorporates real-time pulse data and FSRS statistics.
  */
 export const DashboardPage: React.FC = () => {
-    const { t } = useTranslation();
+    const { t } = useTranslation(['dashboard', 'common']);
     const navigate = useNavigate();
     useActiveView('v:dashboard');
     useActiveView('v:asset');    // Required for Subject Topology
@@ -125,7 +125,7 @@ export const DashboardPage: React.FC = () => {
     );
 
     const profile = useUserSettings(s => s.profile);
-    const { i18n: i18nInstance } = useTranslation();
+    const { i18n: i18nInstance } = useTranslation(['dashboard', 'common']);
 
     // Sync HTML lang for CSS targeting
     React.useEffect(() => {
@@ -441,7 +441,7 @@ export const DashboardPage: React.FC = () => {
                             ? t('dashboard.overdue_warning', { count: stats.overdue, defaultValue: `${stats.overdue} overdue` })
                             : stats.due > 0
                                 ? t('dashboard.on_track', { defaultValue: 'On track' })
-                                : t('dashboard.all_clear', { defaultValue: 'All clear' })
+                                : t('dashboard.all_clear.title', { defaultValue: 'All clear' })
                         }
                         color={stats.overdue > 0 ? "error" : stats.due > 0 ? "primary" : "success"}
                         onClick={() => navigate('/review')}
@@ -658,7 +658,7 @@ export const DashboardPage: React.FC = () => {
                                 </h3>
                             </div>
                             <Link to="/manage" className="text-[10px] font-black text-primary uppercase tracking-[0.15em] hover:underline flex items-center gap-1">
-                                {t('common.all')} <ChevronRight className="w-3 h-3" />
+                                {t('common:common.all')} <ChevronRight className="w-3 h-3" />
                             </Link>
                         </div>
 

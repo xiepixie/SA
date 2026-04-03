@@ -5,93 +5,98 @@ import { tags } from '@lezer/highlight';
 import { type NoteColor } from '../../types/NoteTheme';
 
 // Color definitions matching NoteTheme.ts (extracted hex values for CM6)
-const COLOR_PALETTE: Record<NoteColor, { bg: string; text: string; muted: string; accent: string; selection: string }> = {
+// 🎨 Refined Color Palette System (Light & Dark)
+const COLOR_PALETTE: Record<NoteColor, {
+    bg: string;
+    surface: string;
+    border: string;
+    text: string;
+    heading: string;
+    muted: string;
+    accent: string;
+    selection: string;
+}> = {
     primary: {
-        bg: 'oklch(var(--p) / 0.1)',
-        text: 'oklch(var(--p))',
-        muted: 'oklch(var(--p) / 0.6)',
-        accent: 'oklch(var(--p) / 0.2)',
+        bg: 'oklch(var(--b1))',
+        surface: 'oklch(var(--p) / 0.04)',
+        border: 'oklch(var(--p) / 0.15)',
+        text: 'oklch(var(--bc))',
+        heading: 'oklch(var(--p))',
+        muted: 'oklch(var(--bc) / 0.6)',
+        accent: 'oklch(var(--p))',
         selection: 'oklch(var(--p) / 0.15)',
     },
     yellow: {
-        bg: '#fff9db',
-        text: '#5c4402',
-        muted: '#856404',
-        accent: '#fcc419',
-        selection: 'rgba(252, 196, 25, 0.2)',
+        bg: '#fffdf5', surface: '#fff9db', border: '#fcc41966',
+        text: '#453401', heading: '#5c4402', muted: '#856404cc',
+        accent: '#fcc419', selection: 'rgba(252, 196, 25, 0.2)',
     },
     blue: {
-        bg: '#e7f5ff',
-        text: '#004a8f',
-        muted: '#1864ab',
-        accent: '#339af0',
-        selection: 'rgba(51, 154, 240, 0.2)',
+        bg: '#f8fbff', surface: '#e7f5ff', border: '#339af066',
+        text: '#002b5e', heading: '#004a8f', muted: '#1864abcc',
+        accent: '#339af0', selection: 'rgba(51, 154, 240, 0.2)',
     },
     green: {
-        bg: '#ebfbee',
-        text: '#0d5a1f',
-        muted: '#2b8a3e',
-        accent: '#40c057',
-        selection: 'rgba(64, 192, 87, 0.2)',
+        bg: '#f8fff9', surface: '#ebfbee', border: '#40c05766',
+        text: '#083a15', heading: '#0d5a1f', muted: '#2b8a3ecc',
+        accent: '#40c057', selection: 'rgba(64, 192, 87, 0.2)',
     },
     plum: {
-        bg: '#f8f0fc',
-        text: '#5f1970',
-        muted: '#862e9c',
-        accent: '#ae3ec9',
-        selection: 'rgba(174, 62, 201, 0.2)',
+        bg: '#fffafd', surface: '#f8f0fc', border: '#ae3ec966',
+        text: '#420b4f', heading: '#5f1970', muted: '#862e9ccc',
+        accent: '#ae3ec9', selection: 'rgba(174, 62, 201, 0.2)',
     },
     graphite: {
-        bg: '#f1f3f5',
-        text: '#212529',
-        muted: '#495057',
-        accent: '#adb5bd',
-        selection: 'rgba(173, 181, 189, 0.2)',
+        bg: '#f8f9fa', surface: '#f1f3f5', border: '#adb5bd66',
+        text: '#1a1d21', heading: '#212529', muted: '#495057cc',
+        accent: '#adb5bd', selection: 'rgba(173, 181, 189, 0.2)',
     },
 };
 
-const DARK_PALETTE: Record<NoteColor, { bg: string; text: string; muted: string; accent: string; selection: string }> = {
+const DARK_PALETTE: Record<NoteColor, {
+    bg: string;
+    surface: string;
+    border: string;
+    text: string;
+    heading: string;
+    muted: string;
+    accent: string;
+    selection: string;
+}> = {
     primary: {
-        bg: 'oklch(var(--p) / 0.2)',
-        text: 'oklch(var(--pc))',
-        muted: 'oklch(var(--pc) / 0.6)',
-        accent: 'oklch(var(--p) / 0.3)',
+        bg: 'oklch(var(--b1))',
+        surface: 'oklch(var(--p) / 0.1)',
+        border: 'oklch(var(--p) / 0.3)',
+        text: 'oklch(var(--bc))',
+        heading: 'oklch(var(--p))',
+        muted: 'oklch(var(--bc) / 0.5)',
+        accent: 'oklch(var(--p))',
         selection: 'oklch(var(--p) / 0.25)',
     },
     yellow: {
-        bg: '#3d3a2b',
-        text: '#ffde7a',
-        muted: '#f3d371',
-        accent: '#fcc419',
-        selection: 'rgba(252, 196, 25, 0.25)',
+        bg: '#1c1b14', surface: '#2b291d', border: '#fcc41944',
+        text: '#fff5d6', heading: '#ffde7a', muted: '#f3d371aa',
+        accent: '#fcc419', selection: 'rgba(252, 196, 25, 0.25)',
     },
     blue: {
-        bg: '#1a2b3b',
-        text: '#a5d8ff',
-        muted: '#74c0fc',
-        accent: '#339af0',
-        selection: 'rgba(51, 154, 240, 0.25)',
+        bg: '#0d1117', surface: '#161b22', border: '#339af044',
+        text: '#e6f4ff', heading: '#a5d8ff', muted: '#74c0fcaa',
+        accent: '#339af0', selection: 'rgba(51, 154, 240, 0.25)',
     },
     green: {
-        bg: '#1b2b1e',
-        text: '#b2f2bb',
-        muted: '#8ce99a',
-        accent: '#40c057',
-        selection: 'rgba(64, 192, 87, 0.25)',
+        bg: '#0f1410', surface: '#1b231c', border: '#40c05744',
+        text: '#e6ffec', heading: '#b2f2bb', muted: '#8ce99aaa',
+        accent: '#40c057', selection: 'rgba(64, 192, 87, 0.25)',
     },
     plum: {
-        bg: '#2b1b2d',
-        text: '#eebefa',
-        muted: '#da77f2',
-        accent: '#ae3ec9',
-        selection: 'rgba(174, 62, 201, 0.25)',
+        bg: '#141016', surface: '#231b26', border: '#ae3ec944',
+        text: '#fbe6ff', heading: '#eebefa', muted: '#da77f2aa',
+        accent: '#ae3ec9', selection: 'rgba(174, 62, 201, 0.25)',
     },
     graphite: {
-        bg: '#25262b',
-        text: '#f8f9fa',
-        muted: '#ced4da',
-        accent: '#adb5bd',
-        selection: 'rgba(173, 181, 189, 0.25)',
+        bg: '#1a1b1e', surface: '#25262b', border: '#adb5bd44',
+        text: '#f1f3f5', heading: '#ced4da', muted: '#adb5bdaa',
+        accent: '#adb5bd', selection: 'rgba(173, 181, 189, 0.25)',
     },
 };
 
@@ -100,93 +105,209 @@ export function createNoteEditorTheme(color: NoteColor, isDark: boolean): Extens
 
     const baseTheme = EditorView.theme({
         '&': {
-            backgroundColor: 'transparent',
+            backgroundColor: palette.bg,
             color: palette.text,
-            fontSize: '15px', // Slightly larger font for readability
-            fontFamily: 'ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji", "Segoe UI Emoji"',
-            // Let editor grow or fill parent based on layout
-            height: '100%',
+            fontSize: '16px',
+            fontFamily: 'var(--font-sans, system-ui, sans-serif)',
+            height: 'auto',
+            minHeight: '200px',
         },
-        '.cm-scroller': {
-            overflow: 'auto',
-            fontFamily: 'inherit',
-        },
+        '.cm-scroller': { overflow: 'visible' },
         '.cm-content': {
             caretColor: palette.accent,
-            // Add bottom padding to prevent content from being hidden behind the shortcut hint
-            padding: '12px 16px 40px 16px',
-            lineHeight: '1.6',
-            maxWidth: '100%',
-            userSelect: 'text', // Force selection enabled (fix for shortcuts)
+            padding: '40px 24px 80px 24px', // Reduced horizontal padding for tighter focus
+            lineHeight: '1.7',
             cursor: 'text',
         },
         '.cm-cursor, .cm-dropCursor': {
             borderLeftColor: palette.accent,
-            borderLeftWidth: '2.5px', // Thicker cursor for high visibility
-            // ✅ P0: 增强光标可见性 - 发光效果
-            boxShadow: `0 0 6px 1px ${palette.accent}, 0 0 12px 2px ${palette.accent}40`,
+            borderLeftWidth: '2px',
+            boxShadow: `0 0 8px ${palette.accent}44`,
         },
         '&.cm-focused .cm-selectionBackground, .cm-selectionBackground, .cm-content ::selection': {
             backgroundColor: palette.selection,
         },
-        '.cm-activeLine': {
-            backgroundColor: 'transparent', // Minimalist: no active line bg, or very subtle
+        '.cm-gutters': { display: 'none' },
+
+        // ── Active LaTeX Sync Styling (UX Redesign) ──
+        '.cm-latex-source-active': {
+            backgroundColor: `color-mix(in oklch, ${palette.accent} 12%, transparent)`,
+            borderBottom: `2px dashed ${palette.accent}`,
+            color: palette.accent,
+            fontFamily: 'var(--font-mono, monospace)',
+            fontWeight: '600',
+            borderRadius: '4px',
+            padding: '2px 4px',
         },
-        '.cm-gutters': {
-            display: 'none',
+        '.cm-latex-sync': {
+            zIndex: 10,
+            pointerEvents: 'none',
+            animation: 'cm-fade-in 400ms cubic-bezier(0.2, 0.8, 0.2, 1)',
+            // Increase base math size slightly for better legibility
+            '& .katex': { fontSize: '1.25em' },
         },
-        '.cm-placeholder': {
-            color: palette.muted,
-            fontStyle: 'normal',
-            opacity: 0.7,
-        },
-        // LaTeX preview tooltip styles
-        '.cm-latex-preview': {
-            backgroundColor: isDark ? '#2d2d2d' : '#ffffff',
-            border: `1px solid ${palette.accent}`,
+        '.cm-latex-sync-inline': {
+            display: 'inline-flex',
+            padding: '2px 8px',
             borderRadius: '8px',
-            padding: '8px 12px',
-            boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
-            maxWidth: '400px',
-            overflow: 'auto',
-            zIndex: 100, // Ensure tooltip is above other content
+            backgroundColor: palette.surface,
+            border: `1px solid ${palette.border}`,
+            boxShadow: `0 4px 12px -4px color-mix(in oklch, ${palette.text} 15%, transparent)`,
+            verticalAlign: 'middle',
+            marginLeft: '8px',
+            zIndex: 50
         },
-        '.cm-latex-preview .katex': {
-            fontSize: '1.1em',
+        '.cm-latex-sync-block': {
+            display: 'flex',
+            width: '100%',
+            justifyContent: 'center',
+            padding: '40px 0',
+            marginTop: '16px',
+            marginBottom: '16px',
+            borderRadius: '16px',
+            backgroundColor: palette.surface,
+            border: `1px solid color-mix(in oklch, ${palette.accent} 30%, transparent)`,
+            boxShadow: `0 24px 48px -12px color-mix(in oklch, ${palette.text} 8%, transparent)`,
+            '& .katex': { fontSize: '1.4em' },
         },
-        // Wiki link styles
+
+        // ── Live Preview Typography ──
+        '.cm-lp-h1': { fontSize: '2.2em', fontWeight: '850', color: palette.heading, letterSpacing: '-0.03em', paddingBottom: '0.2em', paddingTop: '0.8em' },
+        '.cm-lp-h2': { fontSize: '1.8em', fontWeight: '750', color: palette.heading, letterSpacing: '-0.02em', paddingBottom: '0.2em', paddingTop: '0.6em' },
+        '.cm-lp-h3': { fontSize: '1.45em', fontWeight: '700', color: palette.heading, letterSpacing: '-0.01em', paddingTop: '0.4em' },
+        '.cm-lp-h4': { fontSize: '1.25em', fontWeight: '650', color: palette.text, paddingTop: '0.2em' },
+        '.cm-lp-bold': { fontWeight: '750', color: palette.heading },
+        '.cm-lp-italic': { fontStyle: 'italic', opacity: 0.95 },
+        '.cm-lp-strike': { textDecoration: 'line-through', opacity: 0.5 },
+        '.cm-lp-code': {
+            fontFamily: 'var(--font-mono, monospace)',
+            fontSize: '0.9em',
+            padding: '2px 6px',
+            borderRadius: '6px',
+            backgroundColor: palette.surface,
+            color: palette.accent,
+            border: `1px solid ${palette.border}`,
+        },
+        // Wiki links
         '.cm-wiki-link': {
             color: palette.accent,
+            fontWeight: '650',
             textDecoration: 'underline',
-            textDecorationStyle: 'dotted',
+            textDecorationStyle: 'dashed',
+            textUnderlineOffset: '4px',
+            textDecorationThickness: '1px',
+            backgroundColor: `color-mix(in oklch, ${palette.accent} 8%, transparent)`,
+            padding: '2px 6px',
+            borderRadius: '6px',
+            transition: 'all 0.2s ease',
             cursor: 'pointer',
+            '&:hover': {
+                backgroundColor: `color-mix(in oklch, ${palette.accent} 15%, transparent)`,
+                textDecorationStyle: 'solid',
+                boxShadow: `0 2px 8px -2px color-mix(in oklch, ${palette.accent} 30%, transparent)`
+            }
         },
-        // Autocomplete panel
+
+        '.cm-wiki-link-unresolved': {
+            opacity: 0.6,
+            textDecorationStyle: 'dotted',
+            backgroundColor: `color-mix(in oklch, ${palette.text} 5%, transparent)`,
+            color: palette.text,
+            '&:hover': {
+                backgroundColor: `color-mix(in oklch, ${palette.accent} 10%, transparent)`,
+                color: palette.accent,
+                opacity: 1,
+            }
+        },
+
+        // Standard CodeMirror elements
+        '.cm-tooltip': {
+            backgroundColor: palette.surface,
+            border: `1px solid ${palette.border}`,
+            borderRadius: '12px',
+            backdropFilter: 'blur(20px)',
+            boxShadow: `0 12px 32px -8px color-mix(in oklch, ${palette.text} 15%, transparent)`,
+            fontFamily: 'var(--font-sans, system-ui, sans-serif)',
+            overflow: 'hidden',
+        },
+
+        // ── Autocomplete / WikiLink UI ──
         '.cm-tooltip-autocomplete': {
-            backgroundColor: isDark ? '#2d2d2d' : '#ffffff',
-            border: `1px solid ${palette.muted}`,
+            padding: '6px',
+        },
+        '.cm-tooltip-autocomplete > ul': {
+            fontFamily: 'inherit',
+            maxHeight: '400px',
+        },
+        '.cm-tooltip-autocomplete > ul > li': {
+            padding: '8px 12px',
             borderRadius: '8px',
-            boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
+            marginBottom: '2px',
+            display: 'flex',
+            alignItems: 'center',
+            fontSize: '0.85em',
+            transition: 'background 0.1s ease',
+            lineHeight: '1.4',
         },
-        '.cm-tooltip-autocomplete ul li': {
-            padding: '6px 12px',
-        },
-        '.cm-tooltip-autocomplete ul li[aria-selected]': {
+        '.cm-tooltip-autocomplete > ul > li[aria-selected]': {
             backgroundColor: palette.selection,
+            color: palette.text,
         },
+        '.cm-completionIcon': {
+            marginRight: '8px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            width: '24px',
+            height: '24px',
+            borderRadius: '6px',
+            backgroundColor: `color-mix(in oklch, ${palette.text} 5%, transparent)`,
+            fontSize: '1em',
+            flexShrink: 0,
+        },
+        '.cm-completionIcon-wiki-question': { backgroundColor: `color-mix(in oklch, var(--color-warning) 15%, transparent)` },
+        '.cm-completionIcon-wiki-question::after': { content: '"📝"' },
+        '.cm-completionIcon-wiki-global': { backgroundColor: `color-mix(in oklch, var(--color-info) 15%, transparent)` },
+        '.cm-completionIcon-wiki-global::after': { content: '"📄"' },
+        '.cm-completionIcon-wiki-new': { backgroundColor: `color-mix(in oklch, var(--color-success) 15%, transparent)` },
+        '.cm-completionIcon-wiki-new::after': { content: '"✨"' },
+        '.cm-completionIcon-wiki-search::after': { content: '"🔍"' },
+
+        '.cm-completionLabel': {
+            fontWeight: '700',
+            letterSpacing: '0.01em',
+            overflow: 'hidden',
+            textOverflow: 'ellipsis',
+            whiteSpace: 'nowrap',
+        },
+        '.cm-completionDetail': {
+            color: palette.muted,
+            marginLeft: 'auto',
+            paddingLeft: '12px',
+            fontSize: '0.8em',
+            fontStyle: 'normal',
+            fontWeight: '600',
+            textTransform: 'uppercase',
+            letterSpacing: '0.05em',
+        },
+        '.cm-completionMatchedText': {
+            color: palette.accent,
+            textDecoration: 'none',
+        },
+
+        '@keyframes cm-fade-in': {
+            from: { opacity: '0', transform: 'scale(0.97)' },
+            to: { opacity: '1', transform: 'scale(1)' },
+        }
     }, { dark: isDark });
 
     const highlightStyle = HighlightStyle.define([
-        { tag: tags.heading1, fontWeight: 'bold', fontSize: '1.4em' },
-        { tag: tags.heading2, fontWeight: 'bold', fontSize: '1.2em' },
-        { tag: tags.heading3, fontWeight: 'bold', fontSize: '1.1em' },
+        { tag: tags.heading1, fontWeight: 'bold' },
         { tag: tags.emphasis, fontStyle: 'italic' },
         { tag: tags.strong, fontWeight: 'bold' },
-        { tag: tags.strikethrough, textDecoration: 'line-through' },
         { tag: tags.link, color: palette.accent, textDecoration: 'underline' },
-        { tag: tags.url, color: palette.muted },
-        { tag: tags.monospace, fontFamily: 'ui-monospace, monospace', backgroundColor: palette.selection },
-        { tag: tags.processingInstruction, color: palette.accent }, // LaTeX delimiters
+        { tag: tags.processingInstruction, color: palette.accent },
+        { tag: tags.comment, color: palette.muted, fontStyle: 'italic' },
     ]);
 
     return [baseTheme, syntaxHighlighting(highlightStyle)];

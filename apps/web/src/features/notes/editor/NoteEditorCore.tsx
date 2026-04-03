@@ -1,5 +1,5 @@
 import { useEffect, useRef, useMemo, forwardRef, useImperativeHandle } from 'react';
-import { EditorState } from '@codemirror/state';
+import { EditorState, Compartment } from '@codemirror/state';
 import { EditorView, placeholder as cmPlaceholder, keymap, scrollPastEnd } from '@codemirror/view';
 import { defaultKeymap, history, historyKeymap, indentWithTab } from '@codemirror/commands';
 import { markdown } from '@codemirror/lang-markdown';
@@ -7,9 +7,11 @@ import {
     smartList,
     bracketPairing,
     latexPreview,
+    livePreview,
     wikiLink,
     wikiLinkCompletion
 } from './extensions';
+import { createNoteEditorTheme } from './themes/noteTheme';
 import { api } from '../../../lib/eden';
 import { cn } from '../../../app/utils/cn';
 
@@ -21,6 +23,7 @@ interface NoteEditorCoreProps {
     className?: string;
     autoFocus?: boolean;
     onWikiLinkClick?: (type: 'q' | 'n', id: string) => void;
+    onWikiLinkCreate?: (title: string) => void;
     onViewCreated?: (view: EditorView) => void;
 }
 
@@ -34,6 +37,7 @@ export const NoteEditorCore = forwardRef<HTMLDivElement, NoteEditorCoreProps>(({
     className,
     autoFocus = false,
     onWikiLinkClick,
+    onWikiLinkCreate,
     onViewCreated,
 }, ref) => {
     const containerRef = useRef<HTMLDivElement>(null);
@@ -63,6 +67,16 @@ export const NoteEditorCore = forwardRef<HTMLDivElement, NoteEditorCoreProps>(({
         }));
     }, []);
 
+    // Detect dark mode
+    const isDark = typeof window !== 'undefined' && (
+        document.documentElement.getAttribute('data-theme')?.includes('dark') ||
+        window.matchMedia('(prefers-color-scheme: dark)').matches
+    );
+
+    // Compartments for dynamic reconfiguration
+    const themeCompartment = useMemo(() => new Compartment(), []);
+    const placeholderCompartment = useMemo(() => new Compartment(), []);
+
     // Create extensions
     const extensions = useMemo(() => [
         history(),
@@ -74,10 +88,15 @@ export const NoteEditorCore = forwardRef<HTMLDivElement, NoteEditorCoreProps>(({
         markdown(),
         smartList(),
         bracketPairing(),
+        livePreview(),
         latexPreview(),
         wikiLink(),
         wikiLinkCompletion(searchNotes),
-        cmPlaceholder(placeholder),
+
+        // Dynamic Extensions (Compartments)
+        themeCompartment.of(createNoteEditorTheme('primary', isDark)),
+        placeholderCompartment.of(cmPlaceholder(placeholder)),
+
         EditorView.lineWrapping,
         scrollPastEnd(),
         EditorView.updateListener.of((update) => {
@@ -85,25 +104,7 @@ export const NoteEditorCore = forwardRef<HTMLDivElement, NoteEditorCoreProps>(({
                 onChangeRef.current(update.state.doc.toString());
             }
         }),
-        // Basic styling for the editor area
-        EditorView.theme({
-            "&": {
-                height: "100%",
-                fontSize: "15px",
-            },
-            ".cm-content": {
-                fontFamily: "var(--font-editor, ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace)",
-                padding: "0",
-                lineHeight: "1.7",
-            },
-            ".cm-line": {
-                padding: "0 4px",
-            },
-            "&.cm-focused": {
-                outline: "none",
-            }
-        })
-    ], [searchNotes, placeholder]);
+    ], [searchNotes, placeholder, themeCompartment, placeholderCompartment, isDark]);
 
     // Initialize editor
     useEffect(() => {
@@ -150,24 +151,53 @@ export const NoteEditorCore = forwardRef<HTMLDivElement, NoteEditorCoreProps>(({
         }
     }, [value]);
 
+    // Update theme when it changes
+    useEffect(() => {
+        const view = viewRef.current;
+        if (!view) return;
+
+        view.dispatch({
+            effects: themeCompartment.reconfigure(createNoteEditorTheme('primary', isDark)),
+        });
+    }, [isDark, themeCompartment]);
+
+    // Update placeholder when it changes
+    useEffect(() => {
+        const view = viewRef.current;
+        if (!view) return;
+
+        view.dispatch({
+            effects: placeholderCompartment.reconfigure(cmPlaceholder(placeholder))
+        });
+    }, [placeholder, placeholderCompartment]);
+
     // Listen for wiki-link-click events from extensions
     useEffect(() => {
         const container = containerRef.current;
         if (!container) return;
 
-        const handleWikiLink = (e: any) => {
+        const handleWikiLinkClickEvent = (e: any) => {
             const { type, id } = e.detail;
             onWikiLinkClick?.(type, id);
         };
 
-        container.addEventListener('wiki-link-click', handleWikiLink as EventListener);
-        return () => container.removeEventListener('wiki-link-click', handleWikiLink as EventListener);
-    }, [onWikiLinkClick]);
+        const handleWikiLinkCreateEvent = (e: any) => {
+            const { title } = e.detail;
+            onWikiLinkCreate?.(title);
+        };
+
+        container.addEventListener('wiki-link-click', handleWikiLinkClickEvent as EventListener);
+        container.addEventListener('wiki-link-create', handleWikiLinkCreateEvent as EventListener);
+        return () => {
+            container.removeEventListener('wiki-link-click', handleWikiLinkClickEvent as EventListener);
+            container.removeEventListener('wiki-link-create', handleWikiLinkCreateEvent as EventListener);
+        }
+    }, [onWikiLinkClick, onWikiLinkCreate]);
 
     return (
         <div
             ref={containerRef}
-            className={cn("h-full w-full", className)}
+            className={cn("w-full transition-all duration-300", className)}
         />
     );
 });

@@ -9,9 +9,10 @@ import { cn } from '../../../app/utils/cn';
 interface BacklinksListProps {
     questionId?: string;
     noteId?: string;
+    variant?: 'panel' | 'document';
 }
 
-export const BacklinksList: React.FC<BacklinksListProps> = ({ questionId, noteId }) => {
+export const BacklinksList: React.FC<BacklinksListProps> = ({ questionId, noteId, variant = 'panel' }) => {
     const { t } = useTranslation();
     const navigate = useNavigate();
     const { data, isLoading } = useNoteReferences({
@@ -30,6 +31,8 @@ export const BacklinksList: React.FC<BacklinksListProps> = ({ questionId, noteId
     }
 
     if (references.length === 0) {
+        if (variant === 'document') return null;
+
         return (
             <div className="text-center py-16 px-6 opacity-40 flex flex-col items-center gap-4 bg-base-content/[0.02] rounded-2xl border border-dashed border-base-content/10">
                 <div className="w-12 h-12 rounded-full bg-base-content/5 flex items-center justify-center">
@@ -40,6 +43,55 @@ export const BacklinksList: React.FC<BacklinksListProps> = ({ questionId, noteId
                     <p className="text-[10px] leading-relaxed max-w-[180px] mx-auto opacity-60">
                         {t('notes.backlinks.empty_desc', 'Mention this question in a notebook to see linked thoughts here.')}
                     </p>
+                </div>
+            </div>
+        );
+    }
+
+    if (variant === 'document') {
+        return (
+            <div className="pt-10 border-t border-base-content/10">
+                <h3 className="text-xl font-bold mb-8 text-base-content/80 flex items-center gap-3">
+                    <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center">
+                        <LinkIcon size={16} className="text-primary" />
+                    </div>
+                    {t('notes.backlinks.linked_in', { count: references.length })}
+                </h3>
+                <div className="pl-4 ml-4 border-l-2 border-base-content/5 space-y-8">
+                    {references.map((ref: any) => (
+                        <div
+                            key={ref.id}
+                            onClick={() => {
+                                const sourceId = ref.source_note_id;
+                                if (sourceId) navigate(`/notebook?noteId=${sourceId}`);
+                            }}
+                            className="cursor-pointer group relative"
+                        >
+                            <div className="absolute -left-[23px] top-1 w-2 h-2 rounded-full bg-base-content/20 group-hover:bg-primary transition-colors group-hover:scale-150 duration-300" />
+                            <div className="flex items-center gap-3 mb-3">
+                                <span className="text-sm font-bold text-base-content/80 group-hover:text-primary transition-colors">
+                                    {ref.notes?.title || t('notes.backlinks.untitled', 'Untitled Note')}
+                                </span>
+                                <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-base-content/5 text-[10px] uppercase font-bold tracking-widest text-base-content/40 opacity-0 transition-all duration-300 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0">
+                                    <ExternalLink size={10} />
+                                    <span>跳转</span>
+                                </div>
+                                <span className="text-xs font-mono text-base-content/30 ml-auto group-hover:text-base-content/50 transition-colors">
+                                    {formatDistanceToNow(new Date(ref.created_at), { addSuffix: true })}
+                                </span>
+                            </div>
+
+                            {ref.target_part ? (
+                                <p className="text-base text-base-content/60 leading-relaxed pl-5 border-l-[3px] border-primary/20 bg-primary/[0.015] py-3 pr-4 rounded-r-xl group-hover:bg-primary/[0.04] group-hover:border-primary/40 group-hover:text-base-content/80 transition-all duration-300">
+                                    “... {ref.target_part} ...”
+                                </p>
+                            ) : (
+                                <p className="text-sm text-base-content/40 italic pl-5 py-2">
+                                    {t('notes.backlinks.no_context', '仅直接引用，无上下文。')}
+                                </p>
+                            )}
+                        </div>
+                    ))}
                 </div>
             </div>
         );

@@ -6,6 +6,29 @@ export const notes = new Elysia({ prefix: '/notes' })
     .use(auth)
 
     /**
+     * GET /folders - Get all folders (flat list) for move operations
+     */
+    .get('/folders', async ({ user, set }) => {
+        if (!user) {
+            set.status = 401
+            return { error: 'Unauthorized' }
+        }
+        const { data, error } = await supabase
+            .from('notes')
+            .select('id, title, parent_id')
+            .eq('user_id', user.id)
+            .eq('type', 'GLOBAL')
+            .eq('is_folder', true)
+            .order('title', { ascending: true });
+
+        if (error) {
+            set.status = 500
+            return { error: error.message }
+        }
+        return { items: data };
+    })
+
+    /**
      * GET /search - Unified search across notes AND questions
      * Used by wiki link autocompletion in the editor
      * Returns mixed results with type discriminator
@@ -291,10 +314,10 @@ export const notes = new Elysia({ prefix: '/notes' })
         return data;
     }, {
         body: t.Object({
-            type: t.String(), // 'QUESTION' | 'GLOBAL'
+            type: t.Union([t.Literal('QUESTION'), t.Literal('GLOBAL')]),
             questionId: t.Optional(t.String()),
             title: t.Optional(t.String()),
-            content: t.Optional(t.Object({})), // JSON
+            content: t.Optional(t.Any()), // JSON
             plainText: t.Optional(t.String()),
             isFolder: t.Optional(t.Boolean()),
             parentId: t.Optional(t.String())
@@ -326,35 +349,38 @@ export const notes = new Elysia({ prefix: '/notes' })
 
         // If content update, use RPC for Atomic Reference Sync
         if (content !== undefined) {
-            // p_refs array construction done by client, passed here as 'refs'
-            // Format: Array<{ ref_node_id, target_question_id, ... }>
+            try {
+                // Validation: Ensure refs is array
+                const refsArray = Array.isArray(refs) ? refs : [];
 
-            // Validation: Ensure refs is array
-            const refsArray = Array.isArray(refs) ? refs : [];
+                const { error } = await supabase.rpc('update_note_with_references', {
+                    p_note_id: id,
+                    p_user_id: user.id,
+                    p_content: content,
+                    p_plain_text: plainText || '',
+                    p_refs: refsArray,
+                    p_title: title
+                });
 
-            const { error } = await supabase.rpc('update_note_with_references', {
-                p_note_id: id,
-                p_user_id: user.id,
-                p_content: content,
-                p_plain_text: plainText || '',
-                p_refs: refsArray,
-                p_title: title
-            });
+                if (error) {
+                    console.error("[Notes] RPC Error during Patch:", error);
+                    set.status = 400;
+                    return { error: error.message };
+                }
 
-            if (error) {
-                console.error("RPC Error:", error);
+                return { success: true };
+            } catch (err: any) {
+                console.error("[Notes] Patch Exception:", err);
                 set.status = 500;
-                return { error: error.message };
+                return { error: 'Internal Server Error', details: err.message };
             }
-
-            return { success: true };
         }
 
         return { success: true };
     }, {
         body: t.Object({
             title: t.Optional(t.String()),
-            content: t.Optional(t.Object({})),
+            content: t.Optional(t.Any()),
             plainText: t.Optional(t.String()),
             refs: t.Optional(t.Array(t.Object({
                 ref_node_id: t.String(),

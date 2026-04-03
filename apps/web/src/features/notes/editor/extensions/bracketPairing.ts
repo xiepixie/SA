@@ -1,115 +1,213 @@
-import { EditorView } from '@codemirror/view';
-import { EditorState } from '@codemirror/state';
+import { EditorView, keymap } from '@codemirror/view';
 import type { Extension } from '@codemirror/state';
 
-// Custom bracket pairs for notes (beyond standard closeBrackets)
-const CUSTOM_PAIRS: Record<string, { close: string; skipIfBefore?: RegExp }> = {
-    '$': { close: '$', skipIfBefore: /^\$/ },  // LaTeX inline
-    '[': { close: ']' },
-    '{': { close: '}' },
-    '(': { close: ')' },
-    '"': { close: '"' },
-    "'": { close: "'" },
-    '`': { close: '`' },
+/**
+ * bracketPairing — Smart auto-pairing for Markdown/LaTeX editing
+ *
+ * Execution order (critical!):
+ *   1. Selection wrapping
+ *   2. Special combos: [[ → [[|]] and $$ → $$|$$
+ *   3. Skip-over closing brackets / mirror chars
+ *   4. Standard open brackets: ( [ {
+ *   5. Mirror pairs: " ' ` $
+ *
+ * Features:
+ * - Auto-close brackets: ( [ { " ' ` $
+ * - Special [[ → [[|]] for wiki links
+ * - Special $$ → $$|$$ for display math
+ * - Skip-over: typing ] when next char is ] just moves cursor
+ * - Backspace: deletes the pair if cursor is between empty pair
+ * - Selection wrapping: selecting text then pressing ( wraps it in ()
+ */
+
+const OPEN_CLOSE: Record<string, string> = {
+    '(': ')',
+    '[': ']',
+    '{': '}',
 };
 
-// Special handling for [[ wiki links
-function handleDoubleOpenBracket(state: EditorState, pos: number): { changes: any; selection: any } | null {
-    // Check if previous char is [
-    if (pos > 0) {
-        const prevChar = state.doc.sliceString(pos - 1, pos);
-        if (prevChar === '[') {
-            // Insert ]] and place cursor in the middle
-            return {
-                changes: { from: pos, insert: ']]' },
-                selection: { anchor: pos },
-            };
-        }
-    }
-    return null;
-}
+const MIRROR_PAIRS: Record<string, string> = {
+    '"': '"',
+    "'": "'",
+    '`': '`',
+    '$': '$',
+};
 
-// Special handling for $$ display math
-function handleDoubleDollar(state: EditorState, pos: number): { changes: any; selection: any } | null {
-    if (pos > 0) {
-        const prevChar = state.doc.sliceString(pos - 1, pos);
-        if (prevChar === '$') {
-            // Insert $$ and place cursor in the middle
-            return {
-                changes: { from: pos, insert: '$$' },
-                selection: { anchor: pos },
-            };
-        }
-    }
-    return null;
-}
+const ALL_CLOSERS = new Set([']', ')', '}', '"', "'", '`', '$']);
 
 export function bracketPairing(): Extension {
-    return EditorView.inputHandler.of((view, from, to, text) => {
-        // Only handle single character insertions
-        if (text.length !== 1 || from !== to) return false;
+    return [
+        // ── Input handler for auto-pairing ──
+        EditorView.inputHandler.of((view, from, to, text) => {
+            if (text.length !== 1) return false;
 
-        const state = view.state;
+            const state = view.state;
+            const hasSelection = from !== to;
+            const nextChar = state.doc.sliceString(to, to + 1);
+            const prevChar = from > 0 ? state.doc.sliceString(from - 1, from) : '';
 
-        // Handle [[ for wiki links
-        if (text === '[') {
-            const result = handleDoubleOpenBracket(state, from);
-            if (result) {
-                view.dispatch(state.update(result));
+            // ═══════════════════════════════════════════════
+            // 1. Selection wrapping
+            // ═══════════════════════════════════════════════
+            if (hasSelection) {
+                const selectedText = state.doc.sliceString(from, to);
+                const closer = OPEN_CLOSE[text] || MIRROR_PAIRS[text];
+                if (closer) {
+                    view.dispatch(state.update({
+                        changes: { from, to, insert: text + selectedText + closer },
+                        selection: { anchor: from + 1, head: from + 1 + selectedText.length },
+                    }));
+                    return true;
+                }
+                return false;
+            }
+
+            // ═══════════════════════════════════════════════
+            // 2. Special combos (MUST be before skip-over!)
+            // ═══════════════════════════════════════════════
+
+            // ── [[ → [[|]] wiki link ──
+            // After typing first [, auto-pair gives [|]
+            // When second [ is typed, we need: [[|]]
+            if (text === '[' && prevChar === '[') {
+                if (nextChar === ']') {
+                    // Inside auto-pair: [|] → [[|]]
+                    // Replace the auto-paired ] with []]
+                    view.dispatch(state.update({
+                        changes: { from, to: from + 1, insert: '[]]' },
+                        selection: { anchor: from + 1 },
+                    }));
+                } else {
+                    // No auto-pair present: [|xxx → [[|]]xxx
+                    view.dispatch(state.update({
+                        changes: { from, insert: '[]]' },
+                        selection: { anchor: from + 1 },
+                    }));
+                }
                 return true;
             }
-        }
 
-        // Handle $$ for display math
-        if (text === '$') {
-            const result = handleDoubleDollar(state, from);
-            if (result) {
-                view.dispatch(state.update(result));
-                return true;
+            // ── $$ → $$|$$ display math ──
+            // After typing first $, auto-pair gives $|$
+            // When second $ is typed, we need: $$|$$
+            if (text === '$' && prevChar === '$') {
+                // Don't trigger for $$$ (already inside display math)
+                const prevPrevChar = from > 1 ? state.doc.sliceString(from - 2, from - 1) : '';
+                if (prevPrevChar !== '$') {
+                    if (nextChar === '$') {
+                        // Inside auto-pair: $|$ → $$|$$
+                        // Replace the auto-paired $ with $$$
+                        view.dispatch(state.update({
+                            changes: { from, to: from + 1, insert: '$$$' },
+                            selection: { anchor: from + 1 },
+                        }));
+                    } else {
+                        // No auto-pair present: $|xxx → $$|$$xxx
+                        view.dispatch(state.update({
+                            changes: { from, insert: '$$$' },
+                            selection: { anchor: from + 1 },
+                        }));
+                    }
+                    return true;
+                }
+                // prevPrevChar is $ — we're inside $$..$$, fall through to skip-over
             }
-        }
 
-        // Handle standard pairs
-        const pair = CUSTOM_PAIRS[text];
-        if (pair) {
-            // Check if we should skip (e.g., don't pair $ if next char is already $)
-            if (pair.skipIfBefore) {
-                const nextChar = state.doc.sliceString(from, from + 1);
-                if (pair.skipIfBefore.test(nextChar)) {
-                    return false;
+            // ═══════════════════════════════════════════════
+            // 3. Skip-over closing bracket / mirror char
+            // ═══════════════════════════════════════════════
+            if (ALL_CLOSERS.has(text) && nextChar === text) {
+                const isMirror = MIRROR_PAIRS[text] !== undefined;
+                const isCloser = text === ')' || text === ']' || text === '}';
+
+                if (isMirror || isCloser) {
+                    view.dispatch(state.update({
+                        selection: { anchor: from + 1 },
+                    }));
+                    return true;
                 }
             }
 
-            // Check if next character is the same (typing over existing)
-            const nextChar = state.doc.sliceString(from, from + 1);
-            if (nextChar === text && (text === '"' || text === "'" || text === '`' || text === '$')) {
-                // Move cursor past the existing character
+            // ═══════════════════════════════════════════════
+            // 4. Standard open brackets: ( [ {
+            // ═══════════════════════════════════════════════
+            if (OPEN_CLOSE[text]) {
                 view.dispatch(state.update({
+                    changes: { from, to, insert: text + OPEN_CLOSE[text] },
                     selection: { anchor: from + 1 },
                 }));
                 return true;
             }
 
-            // Insert pair
-            view.dispatch(state.update({
-                changes: { from, to, insert: text + pair.close },
-                selection: { anchor: from + 1 },
-            }));
-            return true;
-        }
+            // ═══════════════════════════════════════════════
+            // 5. Mirror pairs: " ' ` $
+            // ═══════════════════════════════════════════════
+            if (MIRROR_PAIRS[text]) {
+                // Don't pair ' after word characters (contractions: don't)
+                if (text === "'" && /\w/.test(prevChar)) {
+                    return false;
+                }
+                // Don't pair ` if prev is ` (e.g. user building ``` code fence)
+                if (text === '`' && prevChar === '`') {
+                    return false;
+                }
 
-        // Handle closing brackets - skip if next char is the same
-        const closingBrackets = [']', '}', ')', '"', "'", '`', '$'];
-        if (closingBrackets.includes(text)) {
-            const nextChar = state.doc.sliceString(from, from + 1);
-            if (nextChar === text) {
                 view.dispatch(state.update({
+                    changes: { from, to, insert: text + MIRROR_PAIRS[text] },
                     selection: { anchor: from + 1 },
                 }));
                 return true;
             }
-        }
 
-        return false;
-    });
+            return false;
+        }),
+
+        // ── Backspace handler: delete pair when between empty brackets ──
+        keymap.of([{
+            key: 'Backspace',
+            run: (view) => {
+                const { main } = view.state.selection;
+                if (!main.empty) return false;
+
+                const pos = main.head;
+                if (pos === 0) return false;
+
+                const before = view.state.doc.sliceString(pos - 1, pos);
+                const after = view.state.doc.sliceString(pos, pos + 1);
+
+                // Check [[ ]] wiki link pair deletion (check first — more specific)
+                if (pos >= 2) {
+                    const twoBack = view.state.doc.sliceString(pos - 2, pos);
+                    const twoForward = view.state.doc.sliceString(pos, pos + 2);
+                    if (twoBack === '[[' && twoForward === ']]') {
+                        view.dispatch(view.state.update({
+                            changes: { from: pos - 2, to: pos + 2 },
+                            selection: { anchor: pos - 2 },
+                        }));
+                        return true;
+                    }
+                    // Check $$ $$ display math pair deletion
+                    if (twoBack === '$$' && twoForward === '$$') {
+                        view.dispatch(view.state.update({
+                            changes: { from: pos - 2, to: pos + 2 },
+                            selection: { anchor: pos - 2 },
+                        }));
+                        return true;
+                    }
+                }
+
+                // Check standard pairs: () [] {} "" '' `` $$
+                const expectedClose = OPEN_CLOSE[before] || MIRROR_PAIRS[before];
+                if (expectedClose && after === expectedClose) {
+                    view.dispatch(view.state.update({
+                        changes: { from: pos - 1, to: pos + 1 },
+                        selection: { anchor: pos - 1 },
+                    }));
+                    return true;
+                }
+
+                return false;
+            },
+        }]),
+    ];
 }

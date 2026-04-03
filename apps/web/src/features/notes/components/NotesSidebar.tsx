@@ -17,18 +17,22 @@ import {
     useSearchNotes,
     useCreateNote,
     useUpdateNote,
-    useDeleteNote
+    useDeleteNote,
+    useMoveNote,
+    useAllFolders
 } from '../../../queries/notes';
 import { motion, AnimatePresence } from 'framer-motion';
 
 interface NotesSidebarProps {
     selectedNoteId: string | null;
     onSelectNote: (id: string) => void;
+    onNewNote: () => void;
 }
 
 export const NotesSidebar: React.FC<NotesSidebarProps> = ({
     selectedNoteId,
-    onSelectNote
+    onSelectNote,
+    onNewNote
 }) => {
     const { t } = useTranslation(['notes', 'common']);
     const [view, setView] = useState<'folders' | 'recents'>('folders');
@@ -39,20 +43,6 @@ export const NotesSidebar: React.FC<NotesSidebarProps> = ({
     const { data: searchResults } = useSearchNotes(searchQuery);
 
     const createNote = useCreateNote();
-
-    const handleNewNote = async () => {
-        try {
-            const newNote: any = await createNote.mutateAsync({
-                type: 'GLOBAL',
-                title: t('notes.editor.untitled'),
-                content: { markdown: '' },
-                plainText: ''
-            });
-            if (newNote?.id) onSelectNote(newNote.id);
-        } catch (err) {
-            console.error('Failed to create note:', err);
-        }
-    };
 
     const handleNewFolder = async () => {
         try {
@@ -66,8 +56,22 @@ export const NotesSidebar: React.FC<NotesSidebarProps> = ({
         }
     };
 
+    const [movingNoteId, setMovingNoteId] = useState<string | null>(null);
+    const { data: allFolders } = useAllFolders();
+    const moveNote = useMoveNote();
+
+    const handleMove = async (newParentId: string | null) => {
+        if (!movingNoteId) return;
+        try {
+            await moveNote.mutateAsync({ id: movingNoteId, parentId: newParentId });
+        } catch (error) {
+            console.error("Failed to move note:", error);
+        }
+        setMovingNoteId(null);
+    };
+
     return (
-        <div className="flex flex-col h-full bg-base-200/50">
+        <div className="flex flex-col h-full bg-base-200/50 relative">
             {/* Header: Actions & Search */}
             <div className="p-4 space-y-4 shrink-0">
                 <div className="flex items-center justify-between gap-2">
@@ -81,7 +85,7 @@ export const NotesSidebar: React.FC<NotesSidebarProps> = ({
                             <FolderPlus size={14} />
                         </button>
                         <button
-                            onClick={handleNewNote}
+                            onClick={onNewNote}
                             className="btn btn-ghost btn-xs btn-square"
                             title={t('notes.sidebar.new_note')}
                         >
@@ -155,6 +159,7 @@ export const NotesSidebar: React.FC<NotesSidebarProps> = ({
                                     onClick={() => onSelectNote(res.id)}
                                     onSelectNote={onSelectNote}
                                     selectedNoteId={selectedNoteId}
+                                    onMoveNote={setMovingNoteId}
                                 />
                             ))}
                             {(!searchResults?.results || searchResults.results.length === 0) && (
@@ -179,6 +184,7 @@ export const NotesSidebar: React.FC<NotesSidebarProps> = ({
                                     onClick={() => onSelectNote(note.id)}
                                     onSelectNote={onSelectNote}
                                     selectedNoteId={selectedNoteId}
+                                    onMoveNote={setMovingNoteId}
                                 />
                             ))}
                             {recentNotes?.length === 0 && (
@@ -204,6 +210,7 @@ export const NotesSidebar: React.FC<NotesSidebarProps> = ({
                                     onClick={() => onSelectNote(note.id)}
                                     onSelectNote={onSelectNote}
                                     selectedNoteId={selectedNoteId}
+                                    onMoveNote={setMovingNoteId}
                                 />
                             ))}
                             {rootNotes?.length === 0 && (
@@ -216,6 +223,50 @@ export const NotesSidebar: React.FC<NotesSidebarProps> = ({
                     )}
                 </AnimatePresence>
             </div>
+
+            {/* Move Dialog */}
+            <AnimatePresence>
+                {movingNoteId && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="absolute inset-0 z-50 bg-base-100/80 backdrop-blur-sm flex items-center justify-center p-4"
+                    >
+                        <motion.div
+                            initial={{ scale: 0.95, opacity: 0 }}
+                            animate={{ scale: 1, opacity: 1 }}
+                            exit={{ scale: 0.95, opacity: 0 }}
+                            className="bg-base-100 border border-base-content/10 shadow-premium-2xl rounded-2xl w-full max-w-sm flex flex-col max-h-full overflow-hidden"
+                        >
+                            <div className="p-4 border-b border-base-content/5 font-bold text-sm">
+                                {t('notes.sidebar.move_title', 'Move to folder')}
+                            </div>
+                            <div className="flex-1 overflow-y-auto p-2 custom-scrollbar space-y-1 max-h-[50vh]">
+                                <button
+                                    onClick={() => handleMove(null)}
+                                    className="w-full text-left px-4 py-3 hover:bg-base-content/5 rounded-xl text-xs font-bold transition-colors"
+                                >
+                                    / {t('notes.sidebar.root', 'Root')}
+                                </button>
+                                {allFolders?.filter((f: any) => f.id !== movingNoteId).map((f: any) => (
+                                    <button
+                                        key={f.id}
+                                        onClick={() => handleMove(f.id)}
+                                        className="w-full flex items-center gap-2 text-left px-4 py-3 hover:bg-base-content/5 rounded-xl text-xs font-bold transition-colors truncate"
+                                    >
+                                        <Folder size={14} className="opacity-40" />
+                                        {f.title || t('notes.sidebar.new_folder')}
+                                    </button>
+                                ))}
+                            </div>
+                            <div className="p-4 border-t border-base-content/5 flex justify-end">
+                                <button onClick={() => setMovingNoteId(null)} className="btn btn-sm btn-ghost">{t('common:common.actions.cancel', 'Cancel')}</button>
+                            </div>
+                        </motion.div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
         </div>
     );
 };
@@ -229,6 +280,7 @@ interface NoteItemProps {
     onClick: () => void;
     onSelectNote: (id: string) => void;
     selectedNoteId: string | null;
+    onMoveNote: (id: string) => void;
 }
 
 const NoteItem: React.FC<NoteItemProps & { parentId?: string }> = ({
@@ -238,13 +290,16 @@ const NoteItem: React.FC<NoteItemProps & { parentId?: string }> = ({
     selected,
     onClick,
     onSelectNote,
-    selectedNoteId
+    selectedNoteId,
+    onMoveNote,
+    parentId
 }) => {
     const { t } = useTranslation(['notes', 'common']);
     const [isExpanded, setIsExpanded] = useState(false);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const shouldFetchSubNotes = !!(isFolder && isExpanded);
     const { data: subNotes } = useGlobalNotes(shouldFetchSubNotes ? id : null, shouldFetchSubNotes);
+    const createNote = useCreateNote();
     const updateNote = useUpdateNote();
     const deleteNote = useDeleteNote();
 
@@ -253,6 +308,34 @@ const NoteItem: React.FC<NoteItemProps & { parentId?: string }> = ({
             e.stopPropagation();
             setIsExpanded(!isExpanded);
         }
+    };
+
+    const handleNewSubNote = async (e: React.MouseEvent) => {
+        e.stopPropagation();
+        setIsMenuOpen(false);
+        try {
+            const newNote: any = await createNote.mutateAsync({
+                type: 'GLOBAL',
+                title: t('notes.editor.untitled'),
+                parentId: id
+            });
+            if (newNote?.id) onSelectNote(newNote.id);
+            if (!isExpanded) setIsExpanded(true);
+        } catch (err) { }
+    };
+
+    const handleNewSubFolder = async (e: React.MouseEvent) => {
+        e.stopPropagation();
+        setIsMenuOpen(false);
+        try {
+            await createNote.mutateAsync({
+                type: 'GLOBAL',
+                title: t('notes.sidebar.new_folder'),
+                isFolder: true,
+                parentId: id
+            });
+            if (!isExpanded) setIsExpanded(true);
+        } catch (err) { }
     };
 
     const handleRename = async (e: React.MouseEvent) => {
@@ -268,7 +351,7 @@ const NoteItem: React.FC<NoteItemProps & { parentId?: string }> = ({
         e.stopPropagation();
         setIsMenuOpen(false);
         if (window.confirm(t('notes.sidebar.delete_confirm', { type: isFolder ? t('notes.sidebar.new_folder').toLowerCase() : t('notes.editor.untitled').toLowerCase() }))) {
-            await deleteNote.mutateAsync(id);
+            await deleteNote.mutateAsync({ id, parentId });
         }
     };
 
@@ -277,8 +360,23 @@ const NoteItem: React.FC<NoteItemProps & { parentId?: string }> = ({
             <div
                 role="button"
                 tabIndex={0}
-                onClick={onClick}
-                onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onClick(); } }}
+                onClick={(e) => {
+                    if (isFolder) {
+                        handleToggle(e);
+                    } else {
+                        onClick();
+                    }
+                }}
+                onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        if (isFolder) {
+                            handleToggle(e as any);
+                        } else {
+                            onClick();
+                        }
+                    }
+                }}
                 onContextMenu={(e) => { e.preventDefault(); setIsMenuOpen(!isMenuOpen); }}
                 className={cn(
                     "w-full group flex items-center gap-3 px-3 py-2 rounded-xl text-left transition-all duration-300 relative cursor-pointer outline-none focus-visible:ring-2 focus-visible:ring-primary/50",
@@ -333,7 +431,15 @@ const NoteItem: React.FC<NoteItemProps & { parentId?: string }> = ({
                                 exit={{ opacity: 0, scale: 0.95, y: -10 }}
                                 className="absolute right-0 top-full mt-1 w-32 bg-base-100 border border-base-content/10 rounded-xl shadow-premium-lg z-50 overflow-hidden"
                             >
+                                {isFolder && (
+                                    <>
+                                        <button onClick={handleNewSubNote} className="w-full px-4 py-2 text-left text-[10px] font-bold hover:bg-base-content/5 transition-colors">{t('notes.sidebar.new_note')}</button>
+                                        <button onClick={handleNewSubFolder} className="w-full px-4 py-2 text-left text-[10px] font-bold hover:bg-base-content/5 transition-colors">{t('notes.sidebar.new_folder')}</button>
+                                        <div className="h-px bg-base-content/5 w-full my-1"></div>
+                                    </>
+                                )}
                                 <button onClick={handleRename} className="w-full px-4 py-2 text-left text-[10px] font-bold hover:bg-base-content/5 transition-colors">{t('notes.sidebar.rename')}</button>
+                                <button onClick={(e) => { e.stopPropagation(); setIsMenuOpen(false); onMoveNote(id); }} className="w-full px-4 py-2 text-left text-[10px] font-bold hover:bg-base-content/5 transition-colors">{t('notes.sidebar.move', 'Move')}</button>
                                 <button onClick={handleDelete} className="w-full px-4 py-2 text-left text-[10px] font-bold text-error hover:bg-error/10 transition-colors">{t('notes.sidebar.delete')}</button>
                             </motion.div>
                         )}
@@ -361,6 +467,8 @@ const NoteItem: React.FC<NoteItemProps & { parentId?: string }> = ({
                                 onClick={() => onSelectNote(sub.id)}
                                 onSelectNote={onSelectNote}
                                 selectedNoteId={selectedNoteId}
+                                onMoveNote={onMoveNote}
+                                parentId={id}
                             />
                         ))}
                         {subNotes?.length === 0 && (

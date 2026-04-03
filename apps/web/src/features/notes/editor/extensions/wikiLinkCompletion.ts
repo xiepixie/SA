@@ -4,6 +4,7 @@ import {
 } from '@codemirror/autocomplete';
 import type { CompletionResult, Completion } from '@codemirror/autocomplete';
 import type { Extension } from '@codemirror/state';
+import type { EditorView } from '@codemirror/view';
 
 export interface WikiLinkSearchFn {
     (query: string): Promise<Array<{ id: string; title: string; type: string }>>;
@@ -53,7 +54,7 @@ export function createWikiLinkCompletionSource(searchNotes: WikiLinkSearchFn) {
                 options: [
                     {
                         label: 'Type to search notes...',
-                        type: 'text',
+                        type: 'wiki-search',
                         apply: '',
                         boost: -1,
                     },
@@ -65,21 +66,44 @@ export function createWikiLinkCompletionSource(searchNotes: WikiLinkSearchFn) {
         try {
             const notes = await debouncedSearch(searchTerm);
 
-            const options: Completion[] = notes.map((note) => ({
-                label: note.title || `Note ${note.id.slice(0, 8)}`,
-                type: 'text',
-                apply: `${note.title || note.id}]]`,
-                detail: note.type === 'QUESTION' ? '📝 Question' : '📄 Global',
-                info: `ID: ${note.id}`,
-            }));
+            const options: Completion[] = notes.map((note) => {
+                const typePrefix = note.type === 'QUESTION' ? 'q' : 'n';
+                const displayTitle = note.title || `Note ${note.id.slice(0, 8)}`;
+                // Resolved format: Title|type:id]]
+                const insertText = `${displayTitle}|${typePrefix}:${note.id}]]`;
+
+                return {
+                    label: displayTitle,
+                    type: note.type === 'QUESTION' ? 'wiki-question' : 'wiki-global',
+                    detail: note.type === 'QUESTION' ? 'Question' : 'Global Note',
+                    info: `ID: ${note.id}`,
+                    // Custom apply to consume auto-paired ]] if present
+                    apply: (view: EditorView, _completion: Completion, applyFrom: number, applyTo: number) => {
+                        const afterCursor = view.state.doc.sliceString(applyTo, applyTo + 2);
+                        const consumeEnd = afterCursor === ']]' ? applyTo + 2 : applyTo;
+                        view.dispatch(view.state.update({
+                            changes: { from: applyFrom, to: consumeEnd, insert: insertText },
+                            selection: { anchor: applyFrom + insertText.length },
+                        }));
+                    },
+                };
+            });
 
             // Add option to create new if no matches
             if (options.length === 0) {
+                const insertText = `${searchTerm}]]`;
                 options.push({
                     label: searchTerm,
-                    type: 'text',
-                    apply: `${searchTerm}]]`,
-                    detail: '✨ Create new link',
+                    type: 'wiki-new',
+                    detail: 'Create new link',
+                    apply: (view: EditorView, _completion: Completion, applyFrom: number, applyTo: number) => {
+                        const afterCursor = view.state.doc.sliceString(applyTo, applyTo + 2);
+                        const consumeEnd = afterCursor === ']]' ? applyTo + 2 : applyTo;
+                        view.dispatch(view.state.update({
+                            changes: { from: applyFrom, to: consumeEnd, insert: insertText },
+                            selection: { anchor: applyFrom + insertText.length },
+                        }));
+                    },
                 });
             }
 

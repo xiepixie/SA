@@ -1,239 +1,239 @@
 import {
     EditorView,
-    ViewPlugin,
-    ViewUpdate,
     Decoration,
     WidgetType,
+    ViewPlugin,
+    ViewUpdate,
 } from '@codemirror/view';
 import type { DecorationSet } from '@codemirror/view';
-import { EditorState, Range } from '@codemirror/state';
+import { Range } from '@codemirror/state';
 import katex from 'katex';
 import { sanitizeLatex } from '@v2/markdown-parser';
 
-// Find LaTeX delimiters in the document
-function findLatexRanges(state: EditorState, from = 0, to = state.doc.length): { from: number; to: number; tex: string; displayMode: boolean }[] {
-    const doc = state.sliceDoc(from, to);
-    const ranges: { from: number; to: number; tex: string; displayMode: boolean }[] = [];
+// ── Types ──
+interface LaTeXRange {
+    from: number;
+    to: number;
+    tex: string;
+    displayMode: boolean;
+}
 
-    // Display math: $$ ... $$ (Mult-line supported via [\s\S])
+// ── Regex scanning ──
+function findLatexRanges(doc: any): LaTeXRange[] { // Changed doc: string to doc: any to match state.doc type
+    const ranges: LaTeXRange[] = [];
+    const docStr = doc.toString();
+
+    // Display math: $$ ... $$
     const displayRegex = /\$\$([\s\S]+?)\$\$/g;
     let match;
-    while ((match = displayRegex.exec(doc)) !== null) {
+    while ((match = displayRegex.exec(docStr)) !== null) {
         ranges.push({
-            from: from + match.index,
-            to: from + match.index + match[0].length,
+            from: match.index,
+            to: match.index + match[0].length,
             tex: match[1].trim(),
             displayMode: true,
         });
     }
 
-    // Inline math: $ ... $ (not preceded or followed by $, and not escaped \$)
-    // Matches $...$ where the content doesn't contain unescaped $ or newline (optional)
-    // Here we allow any content except unescaped $ to stay robust
-    const inlineRegex = /(?<!\\)\$(?!\$)([\s\S]+?)(?<!\\)\$(?!\$)/g;
-
-    while ((match = inlineRegex.exec(doc)) !== null) {
-        const start = from + match.index;
+    // Inline math: $ ... $
+    const inlineRegex = /(?<!\$)\$(?!\$)([^\n$\\]*(?:\\.[^\n$\\]*)*)\$(?!\$)/g;
+    while ((match = inlineRegex.exec(docStr)) !== null) {
+        const start = match.index;
         const end = start + match[0].length;
-
-        // Skip if it contains a newline (canonical restriction for inline math)
-        if (match[1].includes('\n')) continue;
-
-        // More robust interval intersection check for overlaps
         const overlaps = ranges.some(r => !(end <= r.from || start >= r.to));
-
-        if (!overlaps) {
-            ranges.push({
-                from: start,
-                to: end,
-                tex: match[1].trim(),
-                displayMode: false,
-            });
+        if (!overlaps && match[1].trim().length > 0) {
+            ranges.push({ from: start, to: end, tex: match[1].trim(), displayMode: false });
         }
     }
 
     return ranges.sort((a, b) => a.from - b.from);
 }
 
-// NOTE: getCursorLatexRange removed - replaced by binarySearchRange for O(log n) performance
-
-
-// Widget to render LaTeX preview
-class LaTeXPreviewWidget extends WidgetType {
+// ── Rendered KaTeX Widget (Inactive state) ──
+class LaTeXWidget extends WidgetType {
     tex: string;
     displayMode: boolean;
-
     constructor(tex: string, displayMode: boolean) {
         super();
         this.tex = tex;
         this.displayMode = displayMode;
     }
 
-    eq(other: LaTeXPreviewWidget) {
+    eq(other: LaTeXWidget) {
         return other.tex === this.tex && other.displayMode === this.displayMode;
     }
 
     toDOM() {
-        const container = document.createElement('div');
-        container.className = 'cm-latex-preview';
+        const el = document.createElement(this.displayMode ? 'div' : 'span');
+        el.className = this.displayMode ? 'math-block is-rendered' : 'math-inline is-rendered';
+        el.setAttribute('data-math-tex', this.tex);
 
         try {
-            // Apply sanitization before rendering
-            const safeTex = sanitizeLatex(this.tex);
-            katex.render(safeTex, container, {
+            katex.render(sanitizeLatex(this.tex), el, {
                 displayMode: this.displayMode,
                 throwOnError: false,
                 errorColor: '#cc0000',
-                trust: false,
-                strict: false,
             });
         } catch (e) {
-            container.textContent = `LaTeX Error: ${e instanceof Error ? e.message : 'Unknown error'}`;
-            container.style.color = '#cc0000';
+            console.error('KaTeX render error:', e);
         }
-
-        return container;
+        return el;
     }
 
-    ignoreEvent() {
+    ignoreEvent() { return true; }
+}
+
+// ── Sync-Insertion Preview Widget (Active state) ──
+class LaTeXSyncWidget extends WidgetType {
+    tex: string;
+    displayMode: boolean;
+    constructor(tex: string, displayMode: boolean) {
+        super();
+        this.tex = tex;
+        this.displayMode = displayMode;
+    }
+
+    eq(other: LaTeXSyncWidget) {
+        return other.tex === this.tex && other.displayMode === this.displayMode;
+    }
+
+    toDOM() {
+        const wrap = document.createElement('div');
+        wrap.className = this.displayMode
+            ? 'cm-latex-sync cm-latex-sync-block'
+            : 'cm-latex-sync cm-latex-sync-inline';
+
+        const katexWrap = document.createElement(this.displayMode ? 'div' : 'span');
+        katexWrap.className = this.displayMode ? 'math-block' : 'math-inline';
+        wrap.appendChild(katexWrap);
+
+        if (!this.tex) {
+            katexWrap.innerHTML = '';
+            return wrap;
+        }
+        try {
+            katex.render(sanitizeLatex(this.tex), katexWrap, {
+                displayMode: this.displayMode,
+                throwOnError: false,
+                errorColor: '#cc0000',
+            });
+        } catch (e) {
+            katexWrap.textContent = `⚠ ${this.tex}`;
+            katexWrap.style.color = 'var(--color-error)';
+            katexWrap.style.fontSize = '0.8em';
+        }
+        return wrap;
+    }
+
+    updateDOM(dom: HTMLElement) {
+        const isBlock = dom.classList.contains('cm-latex-sync-block');
+        if (isBlock !== this.displayMode) return false;
+        const katexWrap = dom.querySelector('.math-block, .math-inline') as HTMLElement;
+        if (katexWrap) {
+            if (!this.tex) {
+                katexWrap.innerHTML = '';
+                return true;
+            }
+            try {
+                katex.render(sanitizeLatex(this.tex), katexWrap, {
+                    displayMode: this.displayMode,
+                    throwOnError: false,
+                    errorColor: '#cc0000',
+                });
+            } catch (e) {
+                katexWrap.textContent = `⚠ ${this.tex}`;
+                katexWrap.style.color = 'var(--color-error)';
+                katexWrap.style.fontSize = '0.8em';
+            }
+        }
         return true;
     }
+
+    ignoreEvent() { return true; }
 }
 
-// ✅ P0 优化：使用二分搜索快速查找光标所在的 LaTeX 范围
-function binarySearchRange(
-    ranges: { from: number; to: number; tex: string; displayMode: boolean }[],
-    pos: number
-): { from: number; to: number; tex: string; displayMode: boolean } | null {
-    let low = 0;
-    let high = ranges.length - 1;
-
-    while (low <= high) {
-        const mid = (low + high) >>> 1;
-        const range = ranges[mid];
-
-        if (pos < range.from) {
-            high = mid - 1;
-        } else if (pos > range.to) {
-            low = mid + 1;
-        } else {
-            // pos is within [range.from, range.to]
-            const delimLen = range.displayMode ? 2 : 1;
-            // Check if cursor is inside content (not on delimiters)
-            if (pos >= range.from + delimLen && pos <= range.to - delimLen) {
-                return range;
-            }
-            return null;
-        }
-    }
-    return null;
-}
-
-// ViewPlugin that creates tooltip decorations when cursor is in LaTeX
-const latexPreviewPlugin = ViewPlugin.fromClass(
+// ── State Management ──
+const latexPlugin = ViewPlugin.fromClass(
     class {
         decorations: DecorationSet;
-
-        // ✅ P0: 文档版本追踪 - 只在文档变化时重新扫描
-        private docVersion: number = -1;
-        private cachedRanges: { from: number; to: number; tex: string; displayMode: boolean }[] = [];
-
-        // ✅ P1: 上次光标位置和装饰缓存 - 避免不必要的重建
-        private lastCursorPos: number = -1;
-        private lastActiveRange: { from: number; to: number } | null = null;
-
         constructor(view: EditorView) {
-            this.updateCache(view);
-            this.decorations = this.buildDecorations(view);
+            this.decorations = buildDecos(view.state, view.hasFocus);
         }
-
-        // ✅ P0: 分离缓存更新逻辑
-        private updateCache(view: EditorView): void {
-            const currentVersion = view.state.doc.length; // 简单版本标识
-            if (currentVersion !== this.docVersion) {
-                this.docVersion = currentVersion;
-                // 全文档扫描，但只在文档变化时执行
-                this.cachedRanges = findLatexRanges(view.state);
-            }
-        }
-
         update(update: ViewUpdate) {
-            // ✅ P0: 文档变化时更新缓存
-            if (update.docChanged) {
-                this.updateCache(update.view);
-                this.lastCursorPos = -1; // 强制重建
-                this.lastActiveRange = null;
+            if (update.docChanged || update.selectionSet || update.focusChanged) {
+                this.decorations = buildDecos(update.state, update.view.hasFocus);
             }
-
-            // ✅ P1: 智能判断是否需要重建装饰
-            const needsRebuild = this.shouldRebuildDecorations(update);
-            if (needsRebuild) {
-                this.decorations = this.buildDecorations(update.view);
-            }
-        }
-
-        // ✅ P1: 智能重建判断 - 避免频繁更新
-        private shouldRebuildDecorations(update: ViewUpdate): boolean {
-            if (update.docChanged) return true;
-
-            const { main } = update.state.selection;
-            const cursorPos = main.head;
-
-            // 光标位置没变，不需要重建
-            if (cursorPos === this.lastCursorPos) return false;
-
-            // 检查光标是否还在同一个 LaTeX 范围内
-            if (this.lastActiveRange) {
-                const { from, to } = this.lastActiveRange;
-                if (cursorPos >= from && cursorPos <= to) {
-                    // 光标仍在同一范围内，只更新位置记录
-                    this.lastCursorPos = cursorPos;
-                    return false;
-                }
-            }
-
-            // 光标移动到了新位置，需要检查
-            this.lastCursorPos = cursorPos;
-            return true;
-        }
-
-        buildDecorations(view: EditorView): DecorationSet {
-            const decorations: Range<Decoration>[] = [];
-            const { main } = view.state.selection;
-
-            // 只在光标没有选区时显示预览
-            if (!main.empty) {
-                this.lastActiveRange = null;
-                return Decoration.set(decorations);
-            }
-
-            // ✅ P0: 使用二分搜索快速查找
-            const latexRange = binarySearchRange(this.cachedRanges, main.head);
-
-            if (latexRange && latexRange.tex.length > 0) {
-                // 更新活动范围缓存
-                this.lastActiveRange = { from: latexRange.from, to: latexRange.to };
-
-                // Create widget decoration below the LaTeX expression
-                const widget = Decoration.widget({
-                    widget: new LaTeXPreviewWidget(latexRange.tex, latexRange.displayMode),
-                    side: 1, // After the position
-                    block: true,
-                });
-
-                decorations.push(widget.range(latexRange.to));
-            } else {
-                this.lastActiveRange = null;
-            }
-
-            return Decoration.set(decorations);
         }
     },
     {
-        decorations: (v) => v.decorations,
+        decorations: v => v.decorations,
     }
 );
 
+function buildDecos(state: any, hasFocus: boolean): DecorationSet {
+    const decs: Range<Decoration>[] = [];
+    const ranges = findLatexRanges(state.doc);
+    const { main } = state.selection;
+
+    for (const r of ranges) {
+        // Selection touches or inside range AND editor is focused
+        const active = hasFocus && main.from <= r.to && main.to >= r.from;
+
+        if (active) {
+            // Expanded Source
+            decs.push(Decoration.mark({ class: 'cm-latex-source-active' }).range(r.from, r.to));
+
+            if (r.tex.length > 0) {
+                decs.push(Decoration.widget({
+                    widget: new LaTeXSyncWidget(r.tex, r.displayMode),
+                    side: 1,
+                    block: r.displayMode
+                }).range(r.to));
+            }
+        } else if (r.tex.length > 0) {
+            // Compressed Preview
+            decs.push(Decoration.replace({
+                widget: new LaTeXWidget(r.tex, r.displayMode),
+                inclusive: true
+            }).range(r.from, r.to));
+        }
+    }
+    return Decoration.set(decs.sort((a, b) => a.from - b.from), true);
+}
+
 export function latexPreview() {
-    return latexPreviewPlugin;
+    return [
+        latexPlugin,
+        EditorView.domEventHandlers({
+            mousedown(event, view) {
+                const target = event.target as HTMLElement;
+                const mathEl = target.closest('.is-rendered, .cm-latex-sync');
+                if (mathEl) {
+                    const pos = view.posAtDOM(mathEl);
+                    if (pos >= 0) {
+                        const isBlock = mathEl.classList.contains('math-block') || mathEl.classList.contains('cm-latex-sync-block');
+                        const offset = isBlock ? 2 : 1;
+
+                        // Small delay to allow browser to handle the mousedown focusing the editor first
+                        setTimeout(() => {
+                            view.dispatch({
+                                selection: { anchor: pos + offset, head: pos + offset },
+                                scrollIntoView: true,
+                                userEvent: 'select.math'
+                            });
+                        }, 10);
+
+                        return true;
+                    }
+                }
+                return false;
+            }
+        }),
+        EditorView.theme({
+            '@keyframes cm-latex-sync-in': {
+                from: { opacity: '0', transform: 'translateY(4px)' },
+                to: { opacity: '1', transform: 'translateY(0)' },
+            },
+        })
+    ];
 }

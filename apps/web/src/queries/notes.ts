@@ -108,6 +108,18 @@ export const useGlobalNotes = (parentId: string | null = null, enabled = true) =
     })
 }
 
+export const useAllFolders = () => {
+    return useQuery({
+        queryKey: [...notesKeys.all, 'folders'],
+        queryFn: async () => {
+            const { data, error } = await api.api.v1.notes.folders.get();
+
+            if (error) throw error;
+            return data.items;
+        }
+    })
+}
+
 export const useNote = (id: string, enabled = true) => {
     return useQuery({
         queryKey: notesKeys.detail(id),
@@ -234,9 +246,13 @@ export const useCreateNote = () => {
             // Draft was NOT deleted in onMutate, so no need to restore it
         },
         onSettled: (_data, _error, variables) => {
-            // ✅ P1: Only invalidate specific key, not all notes
             if (variables.type === 'QUESTION' && variables.questionId) {
                 queryClient.invalidateQueries({ queryKey: notesKeys.quickJot(variables.questionId) })
+            }
+            if (variables.type === 'GLOBAL') {
+                // Precise invalidation for the created parent folder
+                queryClient.invalidateQueries({ queryKey: notesKeys.list({ parentId: variables.parentId || null, type: 'GLOBAL' }) })
+                queryClient.invalidateQueries({ queryKey: notesKeys.recent() })
             }
         }
     })
@@ -251,10 +267,15 @@ export const useUpdateNote = () => {
             plainText?: string
             refs?: any[]
             questionId?: string // For IDB tracking and cache key
+            parentId?: string | null // For precise invalidation
         }) => {
-            const { data, error } = await api.api.v1.notes({ id }).patch(payload)
-            if (error) throw error
-            return data
+            const { data, error } = await api.api.v1.notes({ id }).patch(payload);
+            if (error) {
+                // Handle different error formats to prevent [object Object]
+                const message = (error as any)?.value?.error || (error as any)?.message || 'Update failed';
+                throw new Error(message);
+            }
+            return data;
         },
         onMutate: async (variables) => {
             if (!variables.questionId) return
@@ -333,7 +354,27 @@ export const useUpdateNote = () => {
             // ✅ P1: Only invalidate specific keys
             if (variables.questionId) {
                 queryClient.invalidateQueries({ queryKey: notesKeys.quickJot(variables.questionId) })
+            } else if (variables.parentId !== undefined) {
+                // Invalidate the specific folder this note belongs to if provided
+                queryClient.invalidateQueries({ queryKey: notesKeys.list({ parentId: variables.parentId, type: 'GLOBAL' }) })
+            } else {
+                // Fallback if parentId is unknown - but we should avoid full invalidations
+                queryClient.invalidateQueries({ queryKey: ['notes', 'list'] })
             }
+            queryClient.invalidateQueries({ queryKey: notesKeys.detail(variables.id) })
+        }
+    })
+}
+
+export const useMoveNote = () => {
+    return useMutation({
+        mutationFn: async ({ id, parentId }: { id: string, parentId: string | null }) => {
+            const { data, error } = await api.api.v1.notes({ id }).move.patch({ parentId })
+            if (error) throw error
+            return data
+        },
+        onSuccess: (_data, variables) => {
+            queryClient.invalidateQueries({ queryKey: ['notes', 'list'] })
             queryClient.invalidateQueries({ queryKey: notesKeys.detail(variables.id) })
         }
     })
@@ -341,13 +382,18 @@ export const useUpdateNote = () => {
 
 export const useDeleteNote = () => {
     return useMutation({
-        mutationFn: async (id: string) => {
+        mutationFn: async ({ id }: { id: string, parentId?: string | null }) => {
             const { data, error } = await api.api.v1.notes({ id }).delete()
             if (error) throw error
             return data
         },
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey: notesKeys.all })
+        onSuccess: (_data, variables) => {
+            if (variables.parentId !== undefined) {
+                queryClient.invalidateQueries({ queryKey: notesKeys.list({ parentId: variables.parentId, type: 'GLOBAL' }) })
+            } else {
+                queryClient.invalidateQueries({ queryKey: ['notes', 'list'] })
+            }
+            queryClient.invalidateQueries({ queryKey: notesKeys.recent() })
         }
     })
 }

@@ -19,11 +19,11 @@ const wikiLinkMatcher = new MatchDecorator({
         const target = match[2]; // type:id
 
         return Decoration.mark({
-            class: 'cm-wiki-link',
+            class: target ? 'cm-wiki-link' : 'cm-wiki-link cm-wiki-link-unresolved',
             attributes: {
                 'data-title': title,
                 'data-target': target || '',
-                title: target ? `Ctrl+Click to open: ${title}` : `Link: ${title} (unresolved)`,
+                title: target ? `Ctrl+Click to open: ${title}` : `Ctrl+Click to create note: ${title}`,
             },
         });
     },
@@ -53,7 +53,17 @@ const wikiLinkPlugin = ViewPlugin.fromClass(
                 if (!wikiLink) return false;
 
                 const targetData = wikiLink.getAttribute('data-target');
-                if (!targetData) return false;
+                const titleData = wikiLink.getAttribute('data-title');
+
+                if (!targetData) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    view.dom.dispatchEvent(new CustomEvent('wiki-link-create', {
+                        detail: { title: titleData },
+                        bubbles: true
+                    }));
+                    return true;
+                }
 
                 const [type, id] = targetData.split(':');
                 if (!type || !id) return false;

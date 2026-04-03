@@ -37,28 +37,41 @@ interface ExtractedRef {
  * Same source+target always produces same ref_node_id
  */
 function hashToUuid(input: string): string {
-    let h1 = 0xdeadbeef;
-    let h2 = 0x41c6ce57;
+    let h1 = 0xdeadbeef, h2 = 0x41c6ce57, h3 = 0xfa4a20b0, h4 = 0x6ed76b94;
     for (let i = 0; i < input.length; i++) {
         const ch = input.charCodeAt(i);
         h1 = Math.imul(h1 ^ ch, 2654435761);
         h2 = Math.imul(h2 ^ ch, 1597334677);
+        h3 = Math.imul(h3 ^ ch, 0x9e3779b9);
+        h4 = Math.imul(h4 ^ ch, 0x3243f6a8);
     }
     h1 = Math.imul(h1 ^ (h1 >>> 16), 2246822507) ^ Math.imul(h2 ^ (h2 >>> 13), 3266489909);
     h2 = Math.imul(h2 ^ (h2 >>> 16), 2246822507) ^ Math.imul(h1 ^ (h1 >>> 13), 3266489909);
-    const hex = (h2 >>> 0).toString(16).padStart(8, '0') + (h1 >>> 0).toString(16).padStart(8, '0');
-    // Format as UUID v4-like
-    return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-4${hex.slice(13, 16)}-a${hex.slice(17, 20)}-${hex.slice(20, 32).padEnd(12, '0')}`;
+    h3 = Math.imul(h3 ^ (h3 >>> 16), 2246822507) ^ Math.imul(h4 ^ (h4 >>> 13), 3266489909);
+    h4 = Math.imul(h4 ^ (h4 >>> 16), 2246822507) ^ Math.imul(h3 ^ (h3 >>> 13), 3266489909);
+
+    const s1 = (h1 >>> 0).toString(16).padStart(8, '0');
+    const s2 = (h2 >>> 0).toString(16).padStart(8, '0');
+    const s3 = (h3 >>> 0).toString(16).padStart(8, '0');
+    const s4 = (h4 >>> 0).toString(16).padStart(8, '0');
+
+    const hex = s1 + s2 + s3 + s4;
+
+    // UUID v4-like format: xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx
+    return `${hex.slice(0, 8)}-${hex.slice(8, 12)}-4${hex.slice(13, 16)}-a${hex.slice(17, 20)}-${hex.slice(20, 32)}`;
 }
 
 function makeRefNodeId(sourceNoteId: string, targetType: string, targetId: string): string {
     return hashToUuid(`${sourceNoteId}:${targetType}:${targetId}`);
 }
 
+const IS_UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
 /**
  * Extract wiki link references from markdown content
  */
 export function extractRefsFromMarkdown(sourceNoteId: string, markdown: string): ExtractedRef[] {
+    if (!sourceNoteId) return [];
     const refs: ExtractedRef[] = [];
     const seen = new Set<string>();
     let match;
@@ -70,6 +83,9 @@ export function extractRefsFromMarkdown(sourceNoteId: string, markdown: string):
 
         const [typePrefix, targetId] = resolvedId.split(':');
         if (!typePrefix || !targetId) continue;
+
+        // ✅ IMPORTANT: UUID check to prevent 500 errors on DB cast
+        if (!IS_UUID_RE.test(targetId)) continue;
 
         const dedupeKey = `${typePrefix}:${targetId}`;
         if (seen.has(dedupeKey)) continue;
@@ -137,6 +153,14 @@ export function useNoteEditor(noteId: string | null) {
     const idbTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
     const serverTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
+    // Track current note's folder status and previous noteId for save-on-switch
+    const currentIsFolderRef = useRef(false);
+    const prevNoteIdRef = useRef<string | null>(null);
+
+    // Refs for synchronization
+    const syncedContentRef = useRef<string>('');
+    const isSyncingRef = useRef(false);
+
     // ── Initialize from server data ──
     useEffect(() => {
         if (!noteId || !isFetched || !noteData) return;
@@ -144,29 +168,93 @@ export function useNoteEditor(noteId: string | null) {
         const serverContent = (noteData as any)?.content?.markdown || (noteData as any)?.plain_text || '';
         const serverTitle = (noteData as any)?.title || '';
 
-        setContent(serverContent);
-        setTitle(serverTitle);
-        setIsDirty(false);
-        setIsInitialized(true);
-        setSaveError(null);
+        // Only update if content actually changed and we aren't currently editing a dirty document
+        const isContentDifferent = serverContent !== syncedContentRef.current;
 
-        // Check for unsaved IDB draft
-        getDraft(`global:${noteId}`).then(draft => {
-            if (draft && draft.updatedAt > new Date((noteData as any)?.updated_at).getTime()) {
-                // Local draft is newer — restore it
-                setContent(draft.content);
-                setIsDirty(true);
+        if (isContentDifferent || !isInitialized) {
+            // Check for unsaved IDB draft (only on initial load)
+            if (!isInitialized) {
+                getDraft(`global:${noteId}`).then(draft => {
+                    if (draft && draft.updatedAt > new Date((noteData as any)?.updated_at).getTime()) {
+                        // Local draft is newer — restore it
+                        setContent(draft.content);
+                        setIsDirty(true);
+                        syncedContentRef.current = serverContent; // Still track server content
+                    } else {
+                        isSyncingRef.current = true;
+                        setContent(serverContent);
+                        setTitle(serverTitle);
+                        setIsDirty(false);
+                        syncedContentRef.current = serverContent;
+                    }
+                    setIsInitialized(true);
+                }).catch(err => {
+                    console.warn(err);
+                    setIsInitialized(true);
+                });
+            } else if (!isDirtyRef.current) {
+                // Not dirty, safe to sync remote changes
+                isSyncingRef.current = true;
+                setContent(serverContent);
+                setTitle(serverTitle);
+                syncedContentRef.current = serverContent;
             }
-        }).catch(console.warn);
-    }, [noteId, isFetched, noteData]);
+        }
 
-    // ── Reset on note change ──
+        // Track folder status of the loaded note for save-on-switch logic
+        currentIsFolderRef.current = (noteData as any)?.is_folder || false;
+        setSaveError(null);
+    }, [noteId, isFetched, noteData, isInitialized]);
+
+    // ── Flush + Reset on note change ──
     useEffect(() => {
+        const prevId = prevNoteIdRef.current;
+
+        // Flush old note's dirty data before switching
+        if (prevId && prevId !== noteId && isDirtyRef.current) {
+            const oldContent = contentRef.current;
+            const oldTitle = titleRef.current;
+            const wasFolder = currentIsFolderRef.current;
+
+            if (wasFolder) {
+                // Folder: title-only update (content must be NULL per DB constraint)
+                updateNote.mutateAsync({ id: prevId, title: oldTitle })
+                    .catch(err => console.warn('Auto-save folder on switch failed:', err));
+            } else {
+                const refs = extractRefsFromMarkdown(prevId, oldContent);
+                updateNote.mutateAsync({
+                    id: prevId,
+                    content: { markdown: oldContent },
+                    plainText: oldContent,
+                    title: oldTitle,
+                    refs,
+                }).then(() => {
+                    deleteDraft(`global:${prevId}`).catch(console.warn);
+                }).catch(err => console.warn('Auto-save on switch failed:', err));
+            }
+        }
+
+        prevNoteIdRef.current = noteId;
+
+        // Reset state for the new note
+        setIsInitialized(false);
+        setContent('');
+        setTitle('');
+        setIsDirty(false);
+        setSaveError(null);
+        setLastSavedAt(null);
+        syncedContentRef.current = '';
+        currentIsFolderRef.current = false;
+
+        // Clear pending timers
+        if (idbTimerRef.current) clearTimeout(idbTimerRef.current);
+        if (serverTimerRef.current) clearTimeout(serverTimerRef.current);
+
         return () => {
-            // Cleanup timers
             if (idbTimerRef.current) clearTimeout(idbTimerRef.current);
             if (serverTimerRef.current) clearTimeout(serverTimerRef.current);
         };
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [noteId]);
 
     // ── L1: Save to IDB (500ms debounce) ──
@@ -200,25 +288,38 @@ export function useNoteEditor(noteId: string | null) {
         const currentTitle = titleRef.current;
 
         try {
-            // Extract refs from wiki links
-            const refs = extractRefsFromMarkdown(currentNoteId, currentContent);
+            // Safety: If it's a folder, we MUST NOT send content according to DB constraints
+            const isFolder = currentIsFolderRef.current;
 
-            await updateNote.mutateAsync({
-                id: currentNoteId,
-                content: { markdown: currentContent },
-                plainText: currentContent,
-                title: currentTitle,
-                refs,
-            });
+            if (isFolder) {
+                await updateNote.mutateAsync({
+                    id: currentNoteId,
+                    title: currentTitle,
+                });
+            } else {
+                // Extract Refs before saving
+                const refs = extractRefsFromMarkdown(currentNoteId, currentContent);
+
+                await updateNote.mutateAsync({
+                    id: currentNoteId,
+                    content: { markdown: currentContent },
+                    plainText: currentContent,
+                    title: currentTitle,
+                    refs,
+                });
+            }
 
             setIsDirty(false);
             setLastSavedAt(new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }));
 
             // Mark IDB draft as synced
             deleteDraft(`global:${currentNoteId}`).catch(console.warn);
-        } catch (err) {
+        } catch (err: any) {
             console.error('Failed to save note:', err);
-            setSaveError((err as Error).message || 'Save failed');
+            // More detailed error parsing
+            const errorMessage = err.message || 'Save failed';
+            const details = err.details ? `: ${err.details}` : '';
+            setSaveError(`${errorMessage}${details}`);
         } finally {
             saveInProgressRef.current = false;
             setIsSaving(false);
@@ -235,6 +336,12 @@ export function useNoteEditor(noteId: string | null) {
 
     // ── Content Change Handler ──
     const handleContentChange = useCallback((newContent: string) => {
+        // If this change came from our own synchronization effect, skip re-dirtying
+        if (isSyncingRef.current) {
+            isSyncingRef.current = false;
+            return;
+        }
+
         setContent(newContent);
         setIsDirty(true);
 
@@ -270,11 +377,19 @@ export function useNoteEditor(noteId: string | null) {
         return () => window.removeEventListener('blur', handleBlur);
     }, [flushToServer]);
 
+    // ── Auto-dismiss save error after 8 seconds ──
+    useEffect(() => {
+        if (saveError) {
+            const timer = setTimeout(() => setSaveError(null), 8000);
+            return () => clearTimeout(timer);
+        }
+    }, [saveError]);
+
     // ── Save before unload ──
     useEffect(() => {
         const handleBeforeUnload = () => {
             if (isDirtyRef.current && noteIdRef.current) {
-                // Synchronous IDB write as best-effort
+                // Best-effort async IDB write — may not complete before page unload
                 const currentContent = contentRef.current;
                 const currentNoteId = noteIdRef.current;
                 try {
